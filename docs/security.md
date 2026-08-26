@@ -15,3 +15,7 @@ TURNSTILE_SECRET_KEY=
 The configured challenge input is `cf-turnstile-response`. The rule is applied during Auth Kit user creation; attach `ValidateTurnstile` or `TurnstileRule` deliberately to other application-owned endpoints. Protect only routes where a challenge is appropriate, verify the callback server-side, and never treat the browser response as sufficient on its own.
 
 Two-factor authentication is not enabled by default; MFA remains work in progress. Review the [social linking rules](social-login.md#identity-resolution-and-account-linking-safety) and [passkey origin requirements](passkeys.md#relying-party-and-browser-client) before deploying either feature. See [configuration](configuration.md) for feature and guard settings, and [testing](testing.md) for validation guidance.
+
+---
+
+[← Docs index](../README.md#documentation)

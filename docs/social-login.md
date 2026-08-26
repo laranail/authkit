@@ -62,3 +62,7 @@ Only Google, LinkedIn, and PayPal are currently trusted for `email_verified`. Fa
 ## Adding a provider
 
 The accepted route values are the `SocialProvider` enum cases. Adding a provider requires a package change: add its enum case, add its credentials, redirect, and scopes under `laranail.authkit.social`, and ensure Socialite has a driver for that key. First-party Socialite drivers work through the normal `services.<provider>` configuration; a third-party driver must be registered with Socialite's extension mechanism, as PayPal is. Add callback tests for an existing identity, a trusted verified email, an unverified or missing email, and authenticated linking before exposing the new provider.
+
+---
+
+[← Docs index](../README.md#documentation)

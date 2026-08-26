@@ -1,5 +1,10 @@
 # laranail/authkit
 
+[![Packagist Version](https://img.shields.io/packagist/v/laranail/authkit.svg?style=flat-square)](https://packagist.org/packages/laranail/authkit)
+[![Tests](https://img.shields.io/github/actions/workflow/status/laranail/authkit/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/laranail/authkit/actions/workflows/tests.yml)
+[![Static analysis](https://img.shields.io/github/actions/workflow/status/laranail/authkit/static.yml?branch=main&label=static%20analysis&style=flat-square)](https://github.com/laranail/authkit/actions/workflows/static.yml)
+[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
+
 Headless authentication for Laravel 13+. No views, routes, or controllers.
 
 > [!WARNING]
@@ -14,29 +19,56 @@ Headless authentication for Laravel 13+. No views, routes, or controllers.
 
 PHP 8.4+ / Laravel 13.x
 
-## Installation
+## Install
+
+`laranail/*` packages resolve through git, not Packagist. Add the repositories block to your
+application's `composer.json` — Composer ignores a dependency's own `repositories`, so it must list
+the whole transitive closure:
+
+```json
+"repositories": [
+    { "type": "vcs", "url": "https://github.com/laranail/authkit.git" },
+    { "type": "vcs", "url": "https://github.com/laranail/console.git" },
+    { "type": "vcs", "url": "https://github.com/laranail/enumerator.git" },
+    { "type": "vcs", "url": "https://github.com/laranail/package-tools.git" },
+    { "type": "vcs", "url": "https://github.com/laranail/captcha.git" },
+    { "type": "vcs", "url": "https://github.com/laranail/db-tools.git" }
+]
+```
+
+Then:
 
 ```bash
 composer require laranail/authkit
 php artisan vendor:publish --tag=laranail::authkit-config
 ```
 
-For a ready-made Blade UI, install `laranail/authkit-preset` instead.
+See [installation](docs/installation.md) for the full walkthrough.
 
-## Documentation
+## <a name="documentation"></a>Documentation
 
-- [Registration](docs/registration.md)
-- [Login](docs/login.md)
-- [Password reset](docs/password-reset.md)
-- [Profile management](docs/profile-management.md)
-- [Password updates](docs/password-updates.md)
-- [Email verification](docs/email-verification.md)
-- [Social login](docs/social-login.md)
-- [Passkeys](docs/passkeys.md)
-- [API tokens](docs/api-tokens.md)
-- [Configuration](docs/configuration.md)
-- [Security](docs/security.md)
-- [Testing](docs/testing.md)
+Full documentation: <https://opensource.simtabi.com/documentation/laranail/authkit/>
+
+### Guides
+
+- [Installation](docs/installation.md) — requirements, the repositories block, publishing config
+- [Getting started](docs/getting-started.md) — authenticate a user with the core alone
+- [Configuration](docs/configuration.md) — guard, rate limits, Fortify features, social credentials
+- [Architecture](docs/architecture.md) — layering, what is delegated to Fortify, the extension seams
+- [Security](docs/security.md) — the guarantees this package makes and the ones it does not
+- [Release](docs/release.md) — versioning, tagging, and ordering across the family
+
+### Reference
+
+- [Login](docs/login.md) · [Registration](docs/registration.md) · [Logout](docs/logout.md)
+- [Password reset](docs/password-reset.md) · [Password updates](docs/password-updates.md)
+- [Profile management](docs/profile-management.md) · [Email verification](docs/email-verification.md)
+- [Social login](docs/social-login.md) · [Passkeys](docs/passkeys.md) · [API tokens](docs/api-tokens.md)
+
+### Project
+
+- [Testing](docs/testing.md) — how the suite is arranged and what it does not cover
+- [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md)
 
 ## Configuration
 
@@ -269,9 +301,23 @@ $result = app(SocialCallbackAction::class)->execute(
 );
 ```
 
-## Related packages
+## Sister packages
 
-- `laranail/authkit-preset` — Blade views + routes for this package
+| Package | Role |
+|---|---|
+| [`laranail/authkit`](https://github.com/laranail/authkit) | Headless core — actions, contracts, result objects, REST API |
+| [`laranail/authkit-preset`](https://github.com/laranail/authkit-preset) | Blade scaffolding on top of the core |
+| `laranail/authkit-sso` | SAML 2.0 and OIDC single sign-on |
+| `laranail/authkit-oauth` | OAuth and social identity |
+| `laranail/authkit-tenancy` | Multi-tenancy |
+| `laranail/authkit-ldap` | LDAP and Active Directory |
+
+The family shares one root namespace, `Simtabi\Laranail\AuthKit\`, with each sibling a segment
+under it.
+
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Report security issues privately — [SECURITY.md](SECURITY.md).
 
 ## License
 
