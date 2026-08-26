@@ -21,7 +21,7 @@ composer require laranail/authkit
 php artisan vendor:publish --tag=laranail::authkit-config
 ```
 
-For a ready-made Blade UI, install `laranail/auth-preset` instead.
+For a ready-made Blade UI, install `laranail/authkit-preset` instead.
 
 ## Documentation
 
@@ -271,7 +271,7 @@ $result = app(SocialCallbackAction::class)->execute(
 
 ## Related packages
 
-- `laranail/auth-preset` — Blade views + routes for this package
+- `laranail/authkit-preset` — Blade views + routes for this package
 
 ## License
 
