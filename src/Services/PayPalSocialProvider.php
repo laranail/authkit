@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Services;
+namespace Simtabi\Laranail\AuthKit\Services;
 
 use RuntimeException;
 use GuzzleHttp\RequestOptions;
@@ -41,7 +41,7 @@ class PayPalSocialProvider extends AbstractProvider
 
     protected function useSandbox(): bool
     {
-        return config(key: 'auth-kit.social.paypal.sandbox_mode', default: true);
+        return config(key: 'laranail.authkit.social.paypal.sandbox_mode', default: true);
     }
 
     protected function getWebBaseUrl(): string

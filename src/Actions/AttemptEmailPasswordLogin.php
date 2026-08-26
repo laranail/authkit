@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Actions;
+namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Http\Request;
 use Illuminate\Cache\RateLimiter;
-use Simtabi\Laranail\Auth\Support\AuthResult;
+use Simtabi\Laranail\AuthKit\Support\AuthResult;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
-use Simtabi\Laranail\Auth\Contracts\AttemptEmailPasswordLoginInterface;
+use Simtabi\Laranail\AuthKit\Contracts\AttemptEmailPasswordLoginInterface;
 
 class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
 {
@@ -25,8 +25,8 @@ class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
         $ip = $request->ip();
 
         $key = 'login:' . $guard . ':' . mb_strtolower(string: $email) . ':' . ($ip ?? '_');
-        $maxAttempts = (int) config(key: 'auth-kit.rate_limit.max_attempts', default: 5);
-        $decaySeconds = (int) config(key: 'auth-kit.rate_limit.decay_minutes', default: 1) * 60;
+        $maxAttempts = (int) config(key: 'laranail.authkit.rate_limit.max_attempts', default: 5);
+        $decaySeconds = (int) config(key: 'laranail.authkit.rate_limit.decay_minutes', default: 1) * 60;
 
         if ($this->limiter->tooManyAttempts(key: $key, maxAttempts: $maxAttempts)) {
             return AuthResult::throttled(retryAfterSeconds: $this->limiter->availableIn(key: $key));

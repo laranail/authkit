@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Rules;
+namespace Simtabi\Laranail\AuthKit\Rules;
 
 use Closure;
-use Simtabi\Laranail\Auth\Services\Turnstile;
+use Simtabi\Laranail\AuthKit\Services\Turnstile;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
 

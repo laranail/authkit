@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Actions;
+namespace Simtabi\Laranail\AuthKit\Actions;
 
-use Simtabi\Laranail\Auth\Models\Social;
+use Simtabi\Laranail\AuthKit\Models\Social;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Simtabi\Laranail\Auth\Enums\SocialProvider;
+use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
-use Simtabi\Laranail\Auth\Contracts\CreateSocialAccountActionInterface;
+use Simtabi\Laranail\AuthKit\Contracts\CreateSocialAccountActionInterface;
 
 class CreateSocialAccountAction implements CreateSocialAccountActionInterface
 {

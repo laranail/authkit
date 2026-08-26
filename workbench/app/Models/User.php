@@ -8,7 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Workbench\Database\Factories\UserFactory;
-use Simtabi\Laranail\Auth\PasskeyAuthenticatable;
+use Simtabi\Laranail\AuthKit\PasskeyAuthenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 

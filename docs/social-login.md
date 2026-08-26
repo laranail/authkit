@@ -6,28 +6,28 @@ Auth Kit integrates Laravel Socialite but does not register routes or render but
 
 | Provider | Route value | Provider-console callback                             | Required environment prefix | Verified email trusted for auto-linking |
 |----------|-------------|-------------------------------------------------------|-----------------------------|-----------------------------------------|
-| Google   | `google`    | `https://your-app.test/auth/social/google/callback`   | `AUTH_KIT_GOOGLE_`          | Yes                                     |
-| Facebook | `facebook`  | `https://your-app.test/auth/social/facebook/callback` | `AUTH_KIT_FACEBOOK_`        | No                                      |
-| X        | `twitter`   | `https://your-app.test/auth/social/twitter/callback`  | `AUTH_KIT_TWITTER_`         | No                                      |
-| LinkedIn | `linkedin`  | `https://your-app.test/auth/social/linkedin/callback` | `AUTH_KIT_LINKEDIN_`        | Yes                                     |
-| PayPal   | `paypal`    | `https://your-app.test/auth/social/paypal/callback`   | `AUTH_KIT_PAYPAL_`          | Yes                                     |
+| Google   | `google`    | `https://your-app.test/auth/social/google/callback`   | `AUTHKIT_GOOGLE_`          | Yes                                     |
+| Facebook | `facebook`  | `https://your-app.test/auth/social/facebook/callback` | `AUTHKIT_FACEBOOK_`        | No                                      |
+| X        | `twitter`   | `https://your-app.test/auth/social/twitter/callback`  | `AUTHKIT_TWITTER_`         | No                                      |
+| LinkedIn | `linkedin`  | `https://your-app.test/auth/social/linkedin/callback` | `AUTHKIT_LINKEDIN_`        | Yes                                     |
+| PayPal   | `paypal`    | `https://your-app.test/auth/social/paypal/callback`   | `AUTHKIT_PAYPAL_`          | Yes                                     |
 
 Create an OAuth application in the provider's developer console, add the exact callback URL used by your application, then set its credentials. Google, LinkedIn, and PayPal request OpenID, profile, and email scopes; Facebook requests email and public profile; X requests user and email access. Provider approval, app mode, and email-access requirements remain provider-specific.
 
 ```env
-AUTH_KIT_GOOGLE_CLIENT_ID=
-AUTH_KIT_GOOGLE_CLIENT_SECRET=
-AUTH_KIT_GOOGLE_REDIRECT="${APP_URL}/auth/social/google/callback"
+AUTHKIT_GOOGLE_CLIENT_ID=
+AUTHKIT_GOOGLE_CLIENT_SECRET=
+AUTHKIT_GOOGLE_REDIRECT="${APP_URL}/auth/social/google/callback"
 ```
 
-Replace `GOOGLE` with `FACEBOOK`, `TWITTER`, `LINKEDIN`, or `PAYPAL` for the other providers. PayPal is sandboxed by default; set `AUTH_KIT_PAYPAL_SANDBOX_MODE=false` only when both the callback and credentials are production values. Clear Laravel's configuration cache after changing environment values.
+Replace `GOOGLE` with `FACEBOOK`, `TWITTER`, `LINKEDIN`, or `PAYPAL` for the other providers. PayPal is sandboxed by default; set `AUTHKIT_PAYPAL_SANDBOX_MODE=false` only when both the callback and credentials are production values. Clear Laravel's configuration cache after changing environment values.
 
 ## Routes, controllers, and persistence
 
 Publish the social migration before enabling a provider:
 
 ```bash
-php artisan vendor:publish --tag=auth-kit-social-migrations
+php artisan vendor:publish --tag=laranail::authkit-social-migrations
 php artisan migrate
 ```
 
@@ -37,7 +37,7 @@ Add the relation to every authenticatable model that can own a social identity:
 
 ```php
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Simtabi\Laranail\Auth\Models\Social;
+use Simtabi\Laranail\AuthKit\Models\Social;
 
 public function socials(): MorphMany
 {
@@ -61,4 +61,4 @@ Only Google, LinkedIn, and PayPal are currently trusted for `email_verified`. Fa
 
 ## Adding a provider
 
-The accepted route values are the `SocialProvider` enum cases. Adding a provider requires a package change: add its enum case, add its credentials, redirect, and scopes under `auth-kit.social`, and ensure Socialite has a driver for that key. First-party Socialite drivers work through the normal `services.<provider>` configuration; a third-party driver must be registered with Socialite's extension mechanism, as PayPal is. Add callback tests for an existing identity, a trusted verified email, an unverified or missing email, and authenticated linking before exposing the new provider.
+The accepted route values are the `SocialProvider` enum cases. Adding a provider requires a package change: add its enum case, add its credentials, redirect, and scopes under `laranail.authkit.social`, and ensure Socialite has a driver for that key. First-party Socialite drivers work through the normal `services.<provider>` configuration; a third-party driver must be registered with Socialite's extension mechanism, as PayPal is. Add callback tests for an existing identity, a trusted verified email, an unverified or missing email, and authenticated linking before exposing the new provider.

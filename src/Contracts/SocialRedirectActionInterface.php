@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Contracts;
+namespace Simtabi\Laranail\AuthKit\Contracts;
 
 use Illuminate\Http\Request;
-use Simtabi\Laranail\Auth\Support\SocialRedirectResult;
+use Simtabi\Laranail\AuthKit\Support\SocialRedirectResult;
 
 interface SocialRedirectActionInterface
 {

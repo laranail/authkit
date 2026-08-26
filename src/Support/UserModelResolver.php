@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Support;
+namespace Simtabi\Laranail\AuthKit\Support;
 
 use LogicException;
 use Illuminate\Database\Eloquent\Model;
@@ -12,10 +12,10 @@ class UserModelResolver
 {
     public static function resolve(?string $guard = null): string
     {
-        $model = config('auth-kit.user_model');
+        $model = config('laranail.authkit.user_model');
 
         if (! is_string($model) || $model === '') {
-            $guard ??= config('auth-kit.guard', 'web');
+            $guard ??= config('laranail.authkit.guard', 'web');
             $provider = config("auth.guards.{$guard}.provider", config('auth.defaults.provider'));
             $model = config("auth.providers.{$provider}.model");
         }

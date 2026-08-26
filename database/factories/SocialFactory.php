@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Database\Factories;
+namespace Simtabi\Laranail\AuthKit\Database\Factories;
 
 use Illuminate\Support\Str;
 use Workbench\App\Models\User;
-use Simtabi\Laranail\Auth\Models\Social;
-use Simtabi\Laranail\Auth\Enums\SocialProvider;
+use Simtabi\Laranail\AuthKit\Models\Social;
+use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Simtabi\Laranail\Auth\Models\Social>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Simtabi\Laranail\AuthKit\Models\Social>
  */
 class SocialFactory extends Factory
 {

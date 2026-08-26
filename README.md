@@ -1,4 +1,4 @@
-# Laravel Auth Kit
+# laranail/authkit
 
 Headless authentication for Laravel 13+. No views, routes, or controllers.
 
@@ -17,8 +17,8 @@ PHP 8.4+ / Laravel 13.x
 ## Installation
 
 ```bash
-composer require laranail/auth-kit
-php artisan vendor:publish --tag=auth-kit-config
+composer require laranail/authkit
+php artisan vendor:publish --tag=laranail::authkit-config
 ```
 
 For a ready-made Blade UI, install `laranail/auth-preset` instead.
@@ -43,24 +43,24 @@ For a ready-made Blade UI, install `laranail/auth-preset` instead.
 `.env`:
 
 ```env
-AUTH_KIT_GUARD=web
-AUTH_KIT_RATE_LIMIT_MAX_ATTEMPTS=5
-AUTH_KIT_RATE_LIMIT_DECAY_MINUTES=1
+AUTHKIT_GUARD=web
+AUTHKIT_RATE_LIMIT_MAX_ATTEMPTS=5
+AUTHKIT_RATE_LIMIT_DECAY_MINUTES=1
 
-AUTH_KIT_GOOGLE_CLIENT_ID=
-AUTH_KIT_GOOGLE_CLIENT_SECRET=
-AUTH_KIT_GOOGLE_REDIRECT=${APP_URL}/auth/google/callback
+AUTHKIT_GOOGLE_CLIENT_ID=
+AUTHKIT_GOOGLE_CLIENT_SECRET=
+AUTHKIT_GOOGLE_REDIRECT=${APP_URL}/auth/google/callback
 ```
 
-`config/auth-kit.php`:
+`config/laranail/authkit.php`:
 
 ```php
 return [
-    'guard' => env('AUTH_KIT_GUARD', 'web'),
+    'guard' => env('AUTHKIT_GUARD', 'web'),
 
     'rate_limit' => [
-        'max_attempts'  => (int) env('AUTH_KIT_RATE_LIMIT_MAX_ATTEMPTS', 5),
-        'decay_minutes' => (int) env('AUTH_KIT_RATE_LIMIT_DECAY_MINUTES', 1),
+        'max_attempts'  => (int) env('AUTHKIT_RATE_LIMIT_MAX_ATTEMPTS', 5),
+        'decay_minutes' => (int) env('AUTHKIT_RATE_LIMIT_DECAY_MINUTES', 1),
     ],
 
     'fortify' => [
@@ -70,9 +70,9 @@ return [
 
     'social' => [
         'google' => [
-            'client_id'     => env('AUTH_KIT_GOOGLE_CLIENT_ID'),
-            'client_secret' => env('AUTH_KIT_GOOGLE_CLIENT_SECRET'),
-            'redirect'      => env('AUTH_KIT_GOOGLE_REDIRECT'),
+            'client_id'     => env('AUTHKIT_GOOGLE_CLIENT_ID'),
+            'client_secret' => env('AUTHKIT_GOOGLE_CLIENT_SECRET'),
+            'redirect'      => env('AUTHKIT_GOOGLE_REDIRECT'),
             'scopes'        => ['openid', 'profile', 'email'],
         ],
         // facebook, twitter, linkedin, paypal ...
@@ -80,14 +80,14 @@ return [
 ];
 ```
 
-Remove `passkeys` from `auth-kit.fortify.features` to disable Fortify's passkey routes. Auth Kit only enables and configures Fortify; passkey ceremonies, responses, and persistence remain provided by Fortify and `laravel/passkeys`.
+Remove `passkeys` from `laranail.authkit.fortify.features` to disable Fortify's passkey routes. Auth Kit only enables and configures Fortify; passkey ceremonies, responses, and persistence remain provided by Fortify and `laravel/passkeys`.
 
 ### Security defaults
 
 - Two-factor authentication is not enabled by default. MFA is still work in progress.
 - Social sign-in only provisions or auto-links accounts when Google, LinkedIn, or PayPal supplies a trusted `email_verified` claim. Facebook and X identities can still be linked by an authenticated user, but cannot establish trust through an email-verification claim.
 - Before production, configure HTTPS, secure session cookies, a working mail transport, and Turnstile keys when bot protection is enabled.
-- PayPal uses sandbox mode by default. Set `AUTH_KIT_PAYPAL_SANDBOX_MODE=false` with production PayPal credentials before enabling it in production.
+- PayPal uses sandbox mode by default. Set `AUTHKIT_PAYPAL_SANDBOX_MODE=false` with production PayPal credentials before enabling it in production.
 
 ## Passkeys
 
@@ -95,7 +95,7 @@ Passkey support uses Fortify's native integration with `laravel/passkeys`. It is
 
 ```php
 use Laravel\Fortify\Contracts\PasskeyUser;
-use Simtabi\Laranail\Auth\PasskeyAuthenticatable;
+use Simtabi\Laranail\AuthKit\PasskeyAuthenticatable;
 
 class User extends Authenticatable implements PasskeyUser
 {
@@ -108,7 +108,7 @@ The published migration stores ownership in `passkeyable_type` and `passkeyable_
 Publish Auth Kit's passkeys migration in the consuming application and run it:
 
 ```bash
-php artisan vendor:publish --tag=auth-kit-passkey-migrations
+php artisan vendor:publish --tag=laranail::authkit-passkey-migrations
 php artisan migrate
 ```
 
@@ -206,7 +206,7 @@ Extend these to wire up your own routes. JSON responses are handled automaticall
 Add to your `User` model:
 
 ```php
-use Simtabi\Laranail\Auth\Models\Social;
+use Simtabi\Laranail\AuthKit\Models\Social;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 public function socials(): MorphMany
@@ -218,7 +218,7 @@ public function socials(): MorphMany
 Publish the migration:
 
 ```bash
-php artisan vendor:publish --tag=auth-kit-social-migrations
+php artisan vendor:publish --tag=laranail::authkit-social-migrations
 ```
 
 ## Usage

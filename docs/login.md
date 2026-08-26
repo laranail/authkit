@@ -19,4 +19,4 @@ app(LoginUser::class)->execute($result->user, 'web');
 
 `LoginUser` creates the session and regenerates it. `LogoutUser` logs the user out, invalidates the session, and regenerates the CSRF token. For controller-based integration, extend `AbstractAttemptEmailPasswordLoginController` and customize `passed()`, `failed()`, or `throttled()`; extend `AbstractLogoutController` and customize `loggedOut()`.
 
-The default guard is `web`; change it with `AUTH_KIT_GUARD` or pass the intended guard explicitly. Use the same guard for credential validation and session login.
+The default guard is `web`; change it with `AUTHKIT_GUARD` or pass the intended guard explicitly. Use the same guard for credential validation and session login.

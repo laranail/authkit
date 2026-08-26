@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Actions;
+namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Simtabi\Laranail\Auth\Support\TokenResult;
-use Simtabi\Laranail\Auth\Contracts\IssueTokenForUserInterface;
+use Simtabi\Laranail\AuthKit\Support\TokenResult;
+use Simtabi\Laranail\AuthKit\Contracts\IssueTokenForUserInterface;
 
 class IssueTokenForUser implements IssueTokenForUserInterface
 {

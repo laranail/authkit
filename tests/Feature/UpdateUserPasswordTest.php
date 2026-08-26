@@ -6,7 +6,7 @@ use Workbench\App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
-use Simtabi\Laranail\Auth\Actions\UpdateUserPassword;
+use Simtabi\Laranail\AuthKit\Actions\UpdateUserPassword;
 
 function expectPasswordUpdateValidationFailure(array $input, string $field, User $user): void
 {

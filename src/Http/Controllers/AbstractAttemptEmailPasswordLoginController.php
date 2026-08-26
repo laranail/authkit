@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Http\Controllers;
+namespace Simtabi\Laranail\AuthKit\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Simtabi\Laranail\Auth\Support\AuthKit;
-use Simtabi\Laranail\Auth\Enums\AuthStatus;
-use Simtabi\Laranail\Auth\Support\AuthResult;
-use Simtabi\Laranail\Auth\Contracts\LoginUserInterface;
-use Simtabi\Laranail\Auth\Contracts\AttemptEmailPasswordLoginInterface;
-use Simtabi\Laranail\Auth\Http\Requests\AttemptEmailPasswordLoginRequest;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
+use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
+use Simtabi\Laranail\AuthKit\Support\AuthResult;
+use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
+use Simtabi\Laranail\AuthKit\Contracts\AttemptEmailPasswordLoginInterface;
+use Simtabi\Laranail\AuthKit\Http\Requests\AttemptEmailPasswordLoginRequest;
 
 abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthController
 {

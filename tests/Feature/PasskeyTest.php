@@ -7,9 +7,9 @@ use Laravel\Passkeys\Passkeys;
 use Workbench\App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Simtabi\Laranail\Auth\Models\Passkey;
+use Simtabi\Laranail\AuthKit\Models\Passkey;
 use Laravel\Fortify\Contracts\PasskeyUser;
-use Simtabi\Laranail\Auth\AuthKitServiceProvider;
+use Simtabi\Laranail\AuthKit\AuthKitServiceProvider;
 use Laravel\Passkeys\Http\Controllers\PasskeyLoginController;
 use Laravel\Passkeys\Http\Controllers\PasskeyConfirmationController;
 use Laravel\Passkeys\Http\Controllers\PasskeyRegistrationController;
@@ -34,7 +34,7 @@ it('enables Fortify passkeys and registers the canonical routes', function (): v
 it('publishes the Auth Kit passkeys migration', function (): void {
     $paths = ServiceProvider::pathsToPublish(
         provider: AuthKitServiceProvider::class,
-        group: 'auth-kit-passkey-migrations',
+        group: 'laranail::authkit-passkey-migrations',
     );
 
     expect(array_map('realpath', array_keys($paths)))
@@ -44,7 +44,7 @@ it('publishes the Auth Kit passkeys migration', function (): void {
 it('publishes the Auth Kit social migrations on demand', function (): void {
     $paths = ServiceProvider::pathsToPublish(
         provider: AuthKitServiceProvider::class,
-        group: 'auth-kit-social-migrations',
+        group: 'laranail::authkit-social-migrations',
     );
 
     expect(array_map('realpath', array_keys($paths)))

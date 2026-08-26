@@ -6,7 +6,7 @@ use Workbench\App\Models\User;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use Simtabi\Laranail\Auth\Actions\CreateNewUser;
+use Simtabi\Laranail\AuthKit\Actions\CreateNewUser;
 
 it(description: 'creates a user with a hashed password', closure: function (): void {
     $user = app(abstract: CreateNewUser::class)->create(input: [
@@ -91,8 +91,8 @@ it(description: 'fails validation when password is missing', closure: function (
 });
 
 it(description: 'resolves model from guard config when user_model is not set', closure: function (): void {
-    config()->set(key: 'auth-kit.user_model', value: null);
-    config()->set(key: 'auth-kit.guard', value: 'web');
+    config()->set(key: 'laranail.authkit.user_model', value: null);
+    config()->set(key: 'laranail.authkit.guard', value: 'web');
 
     $user = app(abstract: CreateNewUser::class)->create(input: [
         'name'                  => 'Ada Lovelace',
@@ -105,7 +105,7 @@ it(description: 'resolves model from guard config when user_model is not set', c
 });
 
 it(description: 'resolves model from explicit user_model config', closure: function (): void {
-    config()->set(key: 'auth-kit.user_model', value: User::class);
+    config()->set(key: 'laranail.authkit.user_model', value: User::class);
 
     $user = app(abstract: CreateNewUser::class)->create(input: [
         'name'                  => 'Ada Lovelace',

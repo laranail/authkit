@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth;
+namespace Simtabi\Laranail\AuthKit;
 
 use Laravel\Fortify\Fortify;
 use Laravel\Passkeys\Passkeys;
 use Illuminate\Support\Facades\Event;
-use Simtabi\Laranail\Auth\Models\Passkey;
+use Simtabi\Laranail\AuthKit\Models\Passkey;
 use Simtabi\Laranail\Package\Tools\Package;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
@@ -17,31 +17,31 @@ class AuthKitServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('laranail/auth-kit')
+            ->name('laranail/authkit')
             ->publish(
-                paths: ['config/auth-kit.php' => config_path(path: 'auth-kit.php')],
-                tag: 'auth-kit-config',
+                paths: ['config/laranail/authkit.php' => config_path(path: 'laranail/authkit.php')],
+                tag: 'laranail::authkit-config',
             )
             ->publish(
                 paths: ['database/migrations/social' => database_path(path: 'migrations')],
-                tag: 'auth-kit-social-migrations',
+                tag: 'laranail::authkit-social-migrations',
             )
             ->publish(
                 paths: ['database/migrations/passkeys' => database_path(path: 'migrations')],
-                tag: 'auth-kit-passkey-migrations',
+                tag: 'laranail::authkit-passkey-migrations',
             );
     }
 
     public function packageRegistered(): void
     {
-        $this->mergeConfigFrom(path: __DIR__.'/../config/auth-kit.php', key: 'auth-kit');
+        $this->mergeConfigFrom(path: __DIR__.'/../config/laranail/authkit.php', key: 'laranail.authkit');
 
         Passkeys::usePasskeyModel(Passkey::class);
 
         $this->app->singleton(Services\Turnstile::class, function (): Services\Turnstile {
             return new Services\Turnstile(
-                url: (string) config(key: 'auth-kit.turnstile.url'),
-                secretKey: (string) config(key: 'auth-kit.turnstile.secret_key'),
+                url: (string) config(key: 'laranail.authkit.turnstile.url'),
+                secretKey: (string) config(key: 'laranail.authkit.turnstile.secret_key'),
             );
         });
 
@@ -67,9 +67,9 @@ class AuthKitServiceProvider extends PackageServiceProvider
 
     private function configureFortify(): void
     {
-        config()->set(key: 'fortify.guard', value: config(key: 'auth-kit.guard', default: 'web'));
-        config()->set(key: 'fortify.views', value: config(key: 'auth-kit.fortify.views', default: false));
-        config()->set(key: 'fortify.features', value: config(key: 'auth-kit.fortify.features', default: []));
+        config()->set(key: 'fortify.guard', value: config(key: 'laranail.authkit.guard', default: 'web'));
+        config()->set(key: 'fortify.views', value: config(key: 'laranail.authkit.fortify.views', default: false));
+        config()->set(key: 'fortify.features', value: config(key: 'laranail.authkit.fortify.features', default: []));
 
         Fortify::createUsersUsing(callback: Actions\CreateNewUser::class);
         Fortify::updateUserProfileInformationUsing(callback: Actions\UpdateUserProfileInformation::class);
@@ -79,7 +79,7 @@ class AuthKitServiceProvider extends PackageServiceProvider
 
     private function registerConfig(): void
     {
-        foreach (config(key: 'auth-kit.social', default: []) as $provider => $providerConfig) {
+        foreach (config(key: 'laranail.authkit.social', default: []) as $provider => $providerConfig) {
             if (is_array(value: $providerConfig)) {
                 config()->set(key: "services.{$provider}", value: $providerConfig);
             }

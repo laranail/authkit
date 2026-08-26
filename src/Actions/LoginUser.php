@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Actions;
+namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
-use Simtabi\Laranail\Auth\Contracts\LoginUserInterface;
+use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
 
 class LoginUser implements LoginUserInterface
 {

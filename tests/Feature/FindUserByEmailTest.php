@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Workbench\App\Models\User;
-use Simtabi\Laranail\Auth\Actions\FindUserByEmail;
+use Simtabi\Laranail\AuthKit\Actions\FindUserByEmail;
 
 it(description: 'returns user when the email exists', closure: function (): void {
     $user = User::factory()->create([
@@ -33,7 +33,7 @@ it(description: 'respects a custom guard', closure: function (): void {
 
     $found = $action->execute(
         email: 'guardtest@example.com',
-        guard: config('auth-kit.guard'),
+        guard: config('laranail.authkit.guard'),
     );
 
     expect($found)->not->toBeNull()

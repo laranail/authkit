@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Workbench\App\Models\User;
-use Simtabi\Laranail\Auth\Support\TokenResult;
-use Simtabi\Laranail\Auth\Actions\IssueTokenForUser;
+use Simtabi\Laranail\AuthKit\Support\TokenResult;
+use Simtabi\Laranail\AuthKit\Actions\IssueTokenForUser;
 
 it('creates a sanctum token and returns a token result', function (): void {
     $user = User::factory()->create();

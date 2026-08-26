@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Actions;
+namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Http\Request;
-use Simtabi\Laranail\Auth\Enums\SocialProvider;
-use Simtabi\Laranail\Auth\Support\SocialRedirectResult;
+use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
+use Simtabi\Laranail\AuthKit\Support\SocialRedirectResult;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
-use Simtabi\Laranail\Auth\Contracts\SocialRedirectActionInterface;
+use Simtabi\Laranail\AuthKit\Contracts\SocialRedirectActionInterface;
 
 class SocialRedirectAction implements SocialRedirectActionInterface
 {

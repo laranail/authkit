@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Http\Controllers;
+namespace Simtabi\Laranail\AuthKit\Http\Controllers;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Simtabi\Laranail\Auth\Support\AuthKit;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Illuminate\Contracts\Auth\PasswordBroker;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
 
@@ -19,7 +19,7 @@ abstract class AbstractNewPasswordController extends AbstractAuthController
             'token'                                                                   => 'required',
             'email'                                                                   => 'required|email',
             'password'                                                                => 'required|confirmed',
-            config(key: 'auth-kit.turnstile.input', default: 'cf-turnstile-response') => AuthKit::turnstileRules(),
+            config(key: 'laranail.authkit.turnstile.input', default: 'cf-turnstile-response') => AuthKit::turnstileRules(),
         ]);
 
         $credentials = $request->only('email', 'password', 'password_confirmation', 'token');
