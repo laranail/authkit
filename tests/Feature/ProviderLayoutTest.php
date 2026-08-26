@@ -8,20 +8,36 @@ declare(strict_types=1);
  * This is a layout rule, so it is asserted against the filesystem rather than the container: a
  * provider that drifts back to the root of src/ still boots perfectly well, which is exactly why
  * nothing else would notice. Copy this file into any package in the family.
+ *
+ * @return list<SplFileInfo>
  */
-it('keeps every service provider in a Providers directory', function (): void {
-    $offenders = [];
+function providerFiles(string $src): array
+{
+    if (! is_dir($src)) {
+        return [];
+    }
 
+    $found = [];
+
+    /** @var iterable<SplFileInfo> $files */
     $files = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator(__DIR__ . '/../../src', FilesystemIterator::SKIP_DOTS)
+        new RecursiveDirectoryIterator($src, FilesystemIterator::SKIP_DOTS)
     );
 
     foreach ($files as $file) {
-        if (! str_ends_with((string) $file->getFilename(), 'ServiceProvider.php')) {
-            continue;
+        if ($file->isFile() && str_ends_with($file->getFilename(), 'ServiceProvider.php')) {
+            $found[] = $file;
         }
+    }
 
-        if (basename((string) $file->getPath()) !== 'Providers') {
+    return $found;
+}
+
+it('keeps every service provider in a Providers directory', function (): void {
+    $offenders = [];
+
+    foreach (providerFiles(__DIR__ . '/../../src') as $file) {
+        if (basename($file->getPath()) !== 'Providers') {
             $offenders[] = $file->getFilename();
         }
     }
@@ -30,22 +46,16 @@ it('keeps every service provider in a Providers directory', function (): void {
 });
 
 it('ends every provider namespace in Providers', function (): void {
-    $files = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator(__DIR__ . '/../../src', FilesystemIterator::SKIP_DOTS)
-    );
-
     $checked = 0;
 
-    foreach ($files as $file) {
-        if (! str_ends_with((string) $file->getFilename(), 'ServiceProvider.php')) {
-            continue;
-        }
-
+    foreach (providerFiles(__DIR__ . '/../../src') as $file) {
         // The directory and the namespace are separate facts -- PSR-4 makes them agree only if the
-        // file declares the namespace the path implies, and a bad move can leave them disagreeing.
-        preg_match('/^namespace\s+([^;]+);/m', (string) file_get_contents((string) $file->getPathname()), $m);
+        // file declares the namespace its path implies, and a bad move can leave them disagreeing.
+        $source = file_get_contents($file->getPathname());
 
-        expect($m[1] ?? '')->toEndWith('\\Providers');
+        preg_match('/^namespace\s+([^;]+);/m', $source === false ? '' : $source, $matches);
+
+        expect($matches[1] ?? '')->toEndWith('\\Providers');
         $checked++;
     }
 
