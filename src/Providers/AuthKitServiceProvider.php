@@ -37,7 +37,7 @@ class AuthKitServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->mergeConfigFrom(path: __DIR__.'/../../config/laranail/authkit.php', key: 'laranail.authkit');
+        $this->mergeConfigFrom(path: $this->packagePath('config/laranail/authkit.php'), key: 'laranail.authkit');
 
         Passkeys::usePasskeyModel(Passkey::class);
 
