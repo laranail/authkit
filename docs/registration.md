@@ -7,3 +7,7 @@ Use `CreateNewUser` for registration. It implements Fortify's `CreatesNewUsers` 
 Extend `AbstractRegisterController` to connect registration to an application route. Override `registered()` when the default JSON response does not fit the application.
 
 For session authentication and logout, see [login](login.md). Configure bot protection separately in [security](security.md).
+
+---
+
+[← Docs index](../README.md#documentation)

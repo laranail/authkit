@@ -41,3 +41,7 @@ Configure the relying-party ID and exact allowed browser origins in `config/fort
 Auth Kit does not ship JavaScript. Install `@laravel/passkeys` and connect the browser client to Fortify's canonical passkey endpoints. Passkey login and confirmation use the stateful guard and session, so they are not available as Sanctum API equivalents.
 
 Keep `passkeys` in `laranail.authkit.fortify.features` to enable Fortify's passkey routes. Fortify's `confirmPassword` option and `passkeys` limiter continue to govern management operations.
+
+---
+
+[← Docs index](../README.md#documentation)
