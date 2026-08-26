@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Support;
+namespace Simtabi\Laranail\AuthKit\Support;
 
 class SocialRedirectResult
 {

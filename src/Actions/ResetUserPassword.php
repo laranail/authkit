@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Actions;
+namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;

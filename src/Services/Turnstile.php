@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Services;
+namespace Simtabi\Laranail\AuthKit\Services;
 
 use Throwable;
 use Illuminate\Support\Facades\Http;

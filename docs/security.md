@@ -1,13 +1,13 @@
 # Security
 
-Review the published `config/auth-kit.php` before production. Set the intended guard and user model, keep credential rate limits enabled, and configure HTTPS, secure session cookies, CSRF protection, trusted hosts/proxies, and a working mail transport in the consuming Laravel application.
+Review the published `config/laranail/authkit.php` before production. Set the intended guard and user model, keep credential rate limits enabled, and configure HTTPS, secure session cookies, CSRF protection, trusted hosts/proxies, and a working mail transport in the consuming Laravel application.
 
 Auth Kit's implemented safeguards are credential throttling by email, IP, and guard; session regeneration on login; session invalidation and CSRF-token regeneration on logout; verified-email-only guest social linking for trusted providers; uniqueness of provider identities; reset/password-change revocation of personal tokens; and password-change invalidation of other compatible guard sessions. They complement—not replace—Laravel's application and deployment security configuration.
 
 Turnstile support is opt-in:
 
 ```env
-AUTH_KIT_TURNSTILE_ENABLED=true
+AUTHKIT_TURNSTILE_ENABLED=true
 TURNSTILE_SITE_KEY=
 TURNSTILE_SECRET_KEY=
 ```

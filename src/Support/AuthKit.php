@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Support;
+namespace Simtabi\Laranail\AuthKit\Support;
 
-use Simtabi\Laranail\Auth\Rules\TurnstileRule;
+use Simtabi\Laranail\AuthKit\Rules\TurnstileRule;
 
 class AuthKit
 {
     public static function guard(): string
     {
-        return config(key: 'auth-kit.guard', default: 'web');
+        return config(key: 'laranail.authkit.guard', default: 'web');
     }
 
     public static function redirect(string $key, string $default = '/'): string
     {
-        return config(key: "auth-kit.redirects.{$key}", default: $default);
+        return config(key: "laranail.authkit.redirects.{$key}", default: $default);
     }
 
     public static function afterLoginRedirect(): string
@@ -45,7 +45,7 @@ class AuthKit
 
     public static function turnstileRules(): array
     {
-        if (! config(key: 'auth-kit.turnstile.enabled', default: false)) {
+        if (! config(key: 'laranail.authkit.turnstile.enabled', default: false)) {
             return [];
         }
 

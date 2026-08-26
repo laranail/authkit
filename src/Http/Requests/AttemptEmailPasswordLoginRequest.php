@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Http\Requests;
+namespace Simtabi\Laranail\AuthKit\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

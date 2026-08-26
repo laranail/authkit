@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Http\Controllers;
+namespace Simtabi\Laranail\AuthKit\Http\Controllers;
 
-use Simtabi\Laranail\Auth\Support\AuthKit;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
 
 abstract class AbstractAuthController
 {

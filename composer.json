@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laranail/auth-kit",
+    "name": "laranail/authkit",
     "type": "library",
-    "description": "A publish-first Laravel authentication scaffolding package.",
+    "description": "Headless Laravel authentication core: actions, contracts, result objects and the REST API.",
     "keywords": [
         "laravel",
         "authentication",
@@ -34,13 +34,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Simtabi\\Laranail\\Auth\\": "src/"
+            "Simtabi\\Laranail\\AuthKit\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Simtabi\\Laranail\\Auth\\Tests\\": "tests/",
-            "Simtabi\\Laranail\\Auth\\Database\\Factories\\": "database/factories/",
+            "Simtabi\\Laranail\\AuthKit\\Tests\\": "tests/",
+            "Simtabi\\Laranail\\AuthKit\\Database\\Factories\\": "database/factories/",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
@@ -49,8 +49,11 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Simtabi\\Laranail\\Auth\\AuthKitServiceProvider"
+                "Simtabi\\Laranail\\AuthKit\\AuthKitServiceProvider"
             ]
+        },
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
         }
     },
     "repositories": [
@@ -65,6 +68,14 @@
         {
             "type": "vcs",
             "url": "https://github.com/laranail/package-tools.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/laranail/captcha.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/laranail/db-tools.git"
         }
     ],
     "scripts": {

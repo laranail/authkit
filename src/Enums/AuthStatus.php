@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Enums;
+namespace Simtabi\Laranail\AuthKit\Enums;
 
 enum AuthStatus: string
 {

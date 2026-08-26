@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth;
+namespace Simtabi\Laranail\AuthKit;
 
 use Laravel\Passkeys\Passkeys;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Simtabi\Laranail\Auth\Relations\PasskeyMorphMany;
+use Simtabi\Laranail\AuthKit\Relations\PasskeyMorphMany;
 use Laravel\Passkeys\PasskeyAuthenticatable as BasePasskeyAuthenticatable;
 
 /**

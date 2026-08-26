@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Workbench\App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Simtabi\Laranail\Auth\Actions\ResetUserPassword;
+use Simtabi\Laranail\AuthKit\Actions\ResetUserPassword;
 
 it('hashes and persists the new password', function (): void {
     $user = User::factory()->create([

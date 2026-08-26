@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Workbench\App\Models\User;
-use Simtabi\Laranail\Auth\Enums\AuthStatus;
-use Simtabi\Laranail\Auth\Actions\AttemptEmailPasswordLogin;
+use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
+use Simtabi\Laranail\AuthKit\Actions\AttemptEmailPasswordLogin;
 
 function loginRequest(array $data = [], ?string $ip = null): Request
 {
@@ -74,7 +74,7 @@ it('returns failed when credentials are wrong', function (): void {
 });
 
 it('throttles repeated failed credentials', function (): void {
-    config()->set('auth-kit.rate_limit.max_attempts', 1);
+    config()->set('laranail.authkit.rate_limit.max_attempts', 1);
 
     User::factory()->create([
         'email'    => 'ada@example.com',
@@ -91,7 +91,7 @@ it('throttles repeated failed credentials', function (): void {
 });
 
 it('throttles per ip address', function (): void {
-    config()->set('auth-kit.rate_limit.max_attempts', 1);
+    config()->set('laranail.authkit.rate_limit.max_attempts', 1);
 
     User::factory()->create([
         'email'    => 'ada@example.com',
@@ -115,7 +115,7 @@ it('throttles per ip address', function (): void {
 });
 
 it('throttles same ip with same email', function (): void {
-    config()->set('auth-kit.rate_limit.max_attempts', 1);
+    config()->set('laranail.authkit.rate_limit.max_attempts', 1);
 
     User::factory()->create([
         'email'    => 'ada@example.com',
@@ -138,7 +138,7 @@ it('throttles same ip with same email', function (): void {
 });
 
 it('clears the throttle limit on successful login', function (): void {
-    config()->set('auth-kit.rate_limit.max_attempts', 2);
+    config()->set('laranail.authkit.rate_limit.max_attempts', 2);
 
     $password = Str::random(16);
 

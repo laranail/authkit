@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Http\Controllers;
+namespace Simtabi\Laranail\AuthKit\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Simtabi\Laranail\Auth\Contracts\CheckEmailExistsInterface;
-use Simtabi\Laranail\Auth\Http\Requests\CheckEmailExistsRequest;
+use Simtabi\Laranail\AuthKit\Contracts\CheckEmailExistsInterface;
+use Simtabi\Laranail\AuthKit\Http\Requests\CheckEmailExistsRequest;
 
 abstract class AbstractCheckEmailExistsController extends AbstractAuthController
 {

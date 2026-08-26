@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Contracts;
+namespace Simtabi\Laranail\AuthKit\Contracts;
 
 interface LogoutUserInterface
 {

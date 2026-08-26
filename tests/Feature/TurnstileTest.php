@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
-use Simtabi\Laranail\Auth\Support\AuthKit;
-use Simtabi\Laranail\Auth\Rules\TurnstileRule;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
+use Simtabi\Laranail\AuthKit\Rules\TurnstileRule;
 
 function useTurnstileRoute(string $middleware): void
 {
@@ -19,8 +19,8 @@ function useTurnstileRoute(string $middleware): void
 }
 
 beforeEach(function (): void {
-    config()->set('auth-kit.turnstile.enabled', true);
-    config()->set('auth-kit.turnstile.secret_key', 'secret-key');
+    config()->set('laranail.authkit.turnstile.enabled', true);
+    config()->set('laranail.authkit.turnstile.secret_key', 'secret-key');
 });
 
 it('accepts a valid token on web requests', function (): void {
@@ -63,7 +63,7 @@ it('rejects a missing token on web requests', function (): void {
 });
 
 it('does not add rules when Turnstile is disabled', function (): void {
-    config()->set('auth-kit.turnstile.enabled', false);
+    config()->set('laranail.authkit.turnstile.enabled', false);
     useTurnstileRoute(middleware: 'web');
 
     expect(AuthKit::turnstileRules())->toBe([]);

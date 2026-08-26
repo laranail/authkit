@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Models;
+namespace Simtabi\Laranail\AuthKit\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Simtabi\Laranail\Auth\Enums\SocialProvider;
+use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Simtabi\Laranail\Auth\Database\Factories\SocialFactory;
+use Simtabi\Laranail\AuthKit\Database\Factories\SocialFactory;
 
 class Social extends Model
 {

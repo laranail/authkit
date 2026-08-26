@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Actions;
+namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
-use Simtabi\Laranail\Auth\Models\Social;
+use Simtabi\Laranail\AuthKit\Models\Social;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Simtabi\Laranail\Auth\Enums\SocialProvider;
-use Simtabi\Laranail\Auth\Support\UserModelResolver;
+use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
+use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
-use Simtabi\Laranail\Auth\Contracts\ResolveSocialIdentityInterface;
-use Simtabi\Laranail\Auth\Contracts\CreateSocialAccountActionInterface;
+use Simtabi\Laranail\AuthKit\Contracts\ResolveSocialIdentityInterface;
+use Simtabi\Laranail\AuthKit\Contracts\CreateSocialAccountActionInterface;
 
 class ResolveSocialIdentity implements ResolveSocialIdentityInterface
 {

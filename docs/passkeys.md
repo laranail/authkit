@@ -8,7 +8,7 @@ The authenticatable model must implement Fortify's `PasskeyUser` contract and us
 
 ```php
 use Laravel\Fortify\Contracts\PasskeyUser;
-use Simtabi\Laranail\Auth\PasskeyAuthenticatable;
+use Simtabi\Laranail\AuthKit\PasskeyAuthenticatable;
 
 class User extends Authenticatable implements PasskeyUser
 {
@@ -19,7 +19,7 @@ class User extends Authenticatable implements PasskeyUser
 Publish Auth Kit's migration, then migrate:
 
 ```bash
-php artisan vendor:publish --tag=auth-kit-passkey-migrations
+php artisan vendor:publish --tag=laranail::authkit-passkey-migrations
 php artisan migrate
 ```
 
@@ -40,4 +40,4 @@ Configure the relying-party ID and exact allowed browser origins in `config/fort
 
 Auth Kit does not ship JavaScript. Install `@laravel/passkeys` and connect the browser client to Fortify's canonical passkey endpoints. Passkey login and confirmation use the stateful guard and session, so they are not available as Sanctum API equivalents.
 
-Keep `passkeys` in `auth-kit.fortify.features` to enable Fortify's passkey routes. Fortify's `confirmPassword` option and `passkeys` limiter continue to govern management operations.
+Keep `passkeys` in `laranail.authkit.fortify.features` to enable Fortify's passkey routes. Fortify's `confirmPassword` option and `passkeys` limiter continue to govern management operations.

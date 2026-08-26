@@ -6,7 +6,7 @@ use Workbench\App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
-use Simtabi\Laranail\Auth\Actions\UpdateUserProfileInformation;
+use Simtabi\Laranail\AuthKit\Actions\UpdateUserProfileInformation;
 
 class ProfileVerifiableUser extends User implements MustVerifyEmail
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Workbench\App\Models\User;
-use Simtabi\Laranail\Auth\Actions\CheckEmailExists;
+use Simtabi\Laranail\AuthKit\Actions\CheckEmailExists;
 
 function checkEmailRequest(string $email): Request
 {
@@ -36,6 +36,6 @@ it(description: 'respects a custom guard', closure: function (): void {
 
     expect($action->execute(
         request: checkEmailRequest('guardtest@example.com'),
-        guard: config('auth-kit.guard'),
+        guard: config('laranail.authkit.guard'),
     ))->toBeTrue();
 });

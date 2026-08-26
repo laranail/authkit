@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\Auth\Tests;
+namespace Simtabi\Laranail\AuthKit\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Simtabi\Laranail\Auth\AuthKitServiceProvider;
+use Simtabi\Laranail\AuthKit\AuthKitServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {

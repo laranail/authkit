@@ -1,6 +1,6 @@
 # Email verification
 
-Email verification is a Fortify feature enabled by including `email-verification` in `auth-kit.fortify.features`.
+Email verification is a Fortify feature enabled by including `email-verification` in `laranail.authkit.fortify.features`.
 
 ```php
 'fortify' => [

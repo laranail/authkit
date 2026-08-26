@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Workbench\App\Models\User;
-use Simtabi\Laranail\Auth\Models\Social;
-use Simtabi\Laranail\Auth\Enums\SocialProvider;
+use Simtabi\Laranail\AuthKit\Models\Social;
+use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Laravel\Socialite\Two\User as SocialiteUser;
-use Simtabi\Laranail\Auth\Actions\ResolveSocialIdentity;
+use Simtabi\Laranail\AuthKit\Actions\ResolveSocialIdentity;
 
 function socialiteUser(array $overrides = []): SocialiteUser
 {
