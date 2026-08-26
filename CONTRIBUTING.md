@@ -34,8 +34,9 @@ missing translation, or a security control attached to nothing.
 | Config key | `laranail.authkit` |
 | Config file | `config/laranail/authkit.php` |
 | Publish tag | `laranail::authkit-<suffix>` |
-| View namespace | `laranail-authkit::<view>` |
-| Translation namespace | `laranail-authkit::<key>` |
+| View namespace | `laranail/authkit::<view>` |
+| Translation namespace | `laranail/authkit::<key>` |
+| Blade component prefix | `laranail-authkit::<component>` |
 | Artisan command | `laranail::authkit.<command>` |
 | Middleware alias | `laranail-authkit` |
 
@@ -43,6 +44,17 @@ The separators differ because each registry parses its key differently, and that
 than stylistic. Commands use `::` because Symfony resolves an exact name before splitting on `:`.
 Middleware aliases must not, because Laravel does `explode(':', $name, 2)` to take parameters.
 Blade prefixes must not, because the tag already spends `::` between prefix and component.
+
+Views and translations take a **slash** — the composer package name — because Laravel interpolates
+the namespace into the override path itself, so published files land in `lang/vendor/laranail/authkit`
+and are read back from exactly there. Blade component tags are the one registry that cannot: their
+name pattern is `[\w\-\:\.]`, with no forward slash, so `<x-laranail/authkit::card />` truncates
+at `laranail` and renders as literal text with no error. Tags keep the hyphen —
+`<x-laranail-authkit::card />`, nesting with a dot as `<x-laranail-authkit::forms.input />` — and
+`package-tools` registers that prefix as an alias over the same resolved paths, so both spellings
+find the same file.
+
+This package is headless and registers neither, but a sub-package that does inherits the shapes.
 
 **No bare short aliases.** A `authkit:install`
 alias hands back exactly the collision the namespaced name exists to prevent.
