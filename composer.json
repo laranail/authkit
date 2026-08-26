@@ -49,7 +49,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Simtabi\\Laranail\\AuthKit\\AuthKitServiceProvider"
+                "Simtabi\\Laranail\\AuthKit\\Providers\\AuthKitServiceProvider"
             ]
         },
         "branch-alias": {

@@ -7,10 +7,10 @@ use Laravel\Passkeys\Passkeys;
 use Workbench\App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Simtabi\Laranail\AuthKit\Models\Passkey;
 use Laravel\Fortify\Contracts\PasskeyUser;
-use Simtabi\Laranail\AuthKit\AuthKitServiceProvider;
+use Simtabi\Laranail\AuthKit\Models\Passkey;
 use Laravel\Passkeys\Http\Controllers\PasskeyLoginController;
+use Simtabi\Laranail\AuthKit\Providers\AuthKitServiceProvider;
 use Laravel\Passkeys\Http\Controllers\PasskeyConfirmationController;
 use Laravel\Passkeys\Http\Controllers\PasskeyRegistrationController;
 

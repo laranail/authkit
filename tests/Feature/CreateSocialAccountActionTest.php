@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Workbench\App\Models\User;
 use Simtabi\Laranail\AuthKit\Models\Social;
-use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Laravel\Socialite\Two\User as SocialiteUser;
+use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Simtabi\Laranail\AuthKit\Actions\CreateSocialAccountAction;
 
 it(description: 'creates a social account with morph', closure: function (): void {

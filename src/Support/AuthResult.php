@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Support;
 
-use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
 
 class AuthResult
 {

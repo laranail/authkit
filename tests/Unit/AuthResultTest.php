@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
 use Simtabi\Laranail\AuthKit\Support\AuthResult;
-use Illuminate\Contracts\Auth\Authenticatable;
 
 it(description: 'creates a passed result', closure: function () {
     $user = Mockery::mock(Authenticatable::class);

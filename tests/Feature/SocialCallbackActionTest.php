@@ -7,8 +7,8 @@ use Illuminate\Routing\Route;
 use Workbench\App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
 use Simtabi\Laranail\AuthKit\Models\Social;
-use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Laravel\Socialite\Two\User as SocialiteUser;
+use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Simtabi\Laranail\AuthKit\Actions\SocialCallbackAction;
 
 function callbackRequest(string $provider): Request

@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 use Simtabi\Laranail\AuthKit\Models\Social;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
-use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
+use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
 use Simtabi\Laranail\AuthKit\Contracts\ResolveSocialIdentityInterface;
 use Simtabi\Laranail\AuthKit\Contracts\CreateSocialAccountActionInterface;
 

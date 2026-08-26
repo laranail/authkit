@@ -7,8 +7,8 @@ namespace Simtabi\Laranail\AuthKit\Http\Controllers;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Illuminate\Contracts\Auth\PasswordBroker;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
 
 abstract class AbstractNewPasswordController extends AbstractAuthController
@@ -16,9 +16,9 @@ abstract class AbstractNewPasswordController extends AbstractAuthController
     public function store(Request $request): mixed
     {
         $request->validate([
-            'token'                                                                   => 'required',
-            'email'                                                                   => 'required|email',
-            'password'                                                                => 'required|confirmed',
+            'token'                                                                           => 'required',
+            'email'                                                                           => 'required|email',
+            'password'                                                                        => 'required|confirmed',
             config(key: 'laranail.authkit.turnstile.input', default: 'cf-turnstile-response') => AuthKit::turnstileRules(),
         ]);
 

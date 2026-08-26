@@ -2,13 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\AuthKit;
+namespace Simtabi\Laranail\AuthKit\Providers;
 
 use Laravel\Fortify\Fortify;
 use Laravel\Passkeys\Passkeys;
 use Illuminate\Support\Facades\Event;
-use Simtabi\Laranail\AuthKit\Models\Passkey;
+use Simtabi\Laranail\AuthKit\Actions;
+use Simtabi\Laranail\AuthKit\Services;
+use Simtabi\Laranail\AuthKit\Contracts;
 use Simtabi\Laranail\Package\Tools\Package;
+use Simtabi\Laranail\AuthKit\Models\Passkey;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 
@@ -34,7 +37,7 @@ class AuthKitServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->mergeConfigFrom(path: __DIR__.'/../config/laranail/authkit.php', key: 'laranail.authkit');
+        $this->mergeConfigFrom(path: __DIR__.'/../../config/laranail/authkit.php', key: 'laranail.authkit');
 
         Passkeys::usePasskeyModel(Passkey::class);
 

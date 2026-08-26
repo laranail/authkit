@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Validator;
-use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Simtabi\Laranail\Enumerator\Rules\EnumValue;
+use Simtabi\Laranail\AuthKit\Enums\SocialProvider;
 use Simtabi\Laranail\AuthKit\Actions\SocialRedirectAction;
 
 function redirectRequest(string $provider): Request
