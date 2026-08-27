@@ -23,6 +23,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 | Env prefix | `AUTH_KIT_*` | `AUTHKIT_*` |
 
 
+- `laranail/package-tools` and `laranail/enumerator` are constrained as `^0.1` rather than
+  `dev-main`. A `dev-` constraint in `require` propagates dev stability to every consumer,
+  and the org convention states no laranail package carries one.
+
+
 ### Added
 
 - A `NamingConventionTest` that asserts the public names against the **live registries** on a booted

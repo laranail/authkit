@@ -22,8 +22,8 @@
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.0",
-        "laranail/package-tools": "dev-main",
-        "laranail/enumerator": "dev-main",
+        "laranail/package-tools": "^0.1",
+        "laranail/enumerator": "^0.1",
         "socialiteproviders/manager": "^4.4"
     },
     "require-dev": {
