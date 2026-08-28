@@ -58,6 +58,11 @@ class AuthKitServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        // The REST API ships with the core, so an API-only or Filament consumer that installs
+        // this package alone gets it. A frontend package that would rather mount its own sets
+        // laranail.authkit.api.enabled to false.
+        $this->loadRoutesFrom($this->packagePath('routes/api.php'));
+
         $this->configureFortify();
     }
 

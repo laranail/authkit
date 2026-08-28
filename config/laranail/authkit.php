@@ -60,4 +60,23 @@ return [
         'expires_after_minutes' => (int) env(key: 'AUTHKIT_TOKEN_EXPIRES_AFTER_MINUTES', default: 60 * 24 * 30),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | REST API
+    |--------------------------------------------------------------------------
+    |
+    | This package is the headless core, so the REST API ships here rather than in the frontend
+    | preset: an API-only or Filament consumer that installs the core alone gets the API with it,
+    | and never has to pull in Blade scaffolding to obtain a login endpoint.
+    |
+    | A frontend package that mounts its own API can turn this off and register its own.
+    |
+    */
+
+    'api' => [
+        'enabled'    => (bool) env(key: 'AUTHKIT_API_ENABLED', default: true),
+        'prefix'     => env(key: 'AUTHKIT_API_PREFIX', default: 'api/auth'),
+        'middleware' => ['api', 'throttle:60,1'],
+    ],
+
 ];

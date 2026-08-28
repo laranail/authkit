@@ -38,6 +38,33 @@ class AuthKit
         static::$redirectResolver = $resolver;
     }
 
+    /**
+     * Whether a Fortify-style feature is switched on in this package's own config.
+     *
+     * The frontend preset has its own richer feature list; this is the core's, so the API can
+     * gate an endpoint without depending on a package that depends on it.
+     */
+    public static function hasFeature(string $feature): bool
+    {
+        return in_array($feature, (array) config(key: 'laranail.authkit.fortify.features', default: []), strict: true);
+    }
+
+    public static function apiEnabled(): bool
+    {
+        return (bool) config(key: 'laranail.authkit.api.enabled', default: true);
+    }
+
+    public static function apiPrefix(): string
+    {
+        return (string) config(key: 'laranail.authkit.api.prefix', default: 'api/auth');
+    }
+
+    /** @return array<int, string> */
+    public static function apiMiddleware(): array
+    {
+        return (array) config(key: 'laranail.authkit.api.middleware', default: ['api']);
+    }
+
     public static function redirect(string $key, string $default = '/'): string
     {
         if (static::$redirectResolver !== null) {
