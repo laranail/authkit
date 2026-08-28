@@ -6,6 +6,7 @@ namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Simtabi\Laranail\AuthKit\Services\BrowserSessionService;
 use Illuminate\Validation\Rules\Password;
 use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
@@ -36,6 +37,15 @@ class UpdateUserPassword implements UpdatesUserPasswords
 
         if ($guardInstance->id() === $user->getAuthIdentifier() && method_exists($guardInstance, 'logoutOtherDevices')) {
             $guardInstance->logoutOtherDevices($input['password']);
+
+            // logoutOtherDevices() only rotates the remembered password hash, which stops the
+            // other browsers on their next request but leaves their rows in the sessions table.
+            // Those rows keep the devices listed as active, so someone who changed their password
+            // precisely because a laptop was stolen still sees it signed in. Remove them too.
+            app(abstract: BrowserSessionService::class)->deleteOthersFor(
+                user: $user,
+                currentSessionId: request()->hasSession() ? request()->session()->getId() : null,
+            );
         }
     }
 }

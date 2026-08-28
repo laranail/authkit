@@ -48,6 +48,8 @@ class AuthKitServiceProvider extends PackageServiceProvider
         $this->app->bind(abstract: Contracts\LoginUserInterface::class, concrete: Actions\LoginUser::class);
         $this->app->bind(abstract: Contracts\LogoutUserInterface::class, concrete: Actions\LogoutUser::class);
         $this->app->bind(abstract: Contracts\IssueTokenForUserInterface::class, concrete: Actions\IssueTokenForUser::class);
+        $this->app->bind(abstract: Contracts\ListBrowserSessionsInterface::class, concrete: Actions\ListBrowserSessions::class);
+        $this->app->bind(abstract: Contracts\LogoutOtherBrowserSessionsInterface::class, concrete: Actions\LogoutOtherBrowserSessions::class);
     }
 
     public function packageBooted(): void
