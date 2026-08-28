@@ -41,10 +41,41 @@ it('scopes the token to the given abilities', function (): void {
     expect($user->tokens->first()->abilities)->toBe(['read', 'write']);
 });
 
-it('defaults to wildcard abilities when none are specified', function (): void {
+it('defaults to the configured scope rather than a wildcard', function (): void {
+    // A wildcard token can do anything its owner can, so a leaked one is a full account
+    // compromise rather than a bounded one. The default is a real scope, not '*'.
     $user = User::factory()->create();
 
     app(IssueTokenForUser::class)->execute(user: $user);
 
-    expect($user->tokens->first()->abilities)->toBe(['*']);
+    expect($user->tokens->first()->abilities)
+        ->toBe(config('laranail.authkit.tokens.abilities'))
+        ->not->toBe(['*']);
+});
+
+it('gives an issued token an expiry, so a leaked one stops working', function (): void {
+    $user = User::factory()->create();
+
+    app(IssueTokenForUser::class)->execute(user: $user);
+
+    expect($user->tokens->first()->expires_at)->not->toBeNull();
+});
+
+it('defers to sanctum when the configured lifetime is null', function (): void {
+    config()->set('laranail.authkit.tokens.expires_after_minutes', null);
+    $user = User::factory()->create();
+
+    app(IssueTokenForUser::class)->execute(user: $user);
+
+    // Null here means "use sanctum.expiration", which is itself unset in the test app -- the
+    // point is that this package stops imposing a lifetime, not that it forces none.
+    expect($user->tokens->first()->expires_at)->toBeNull();
+});
+
+it('lets a caller narrow a token further than the default', function (): void {
+    $user = User::factory()->create();
+
+    app(IssueTokenForUser::class)->execute(user: $user, abilities: ['user:read']);
+
+    expect($user->tokens->first()->abilities)->toBe(['user:read']);
 });
