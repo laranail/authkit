@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Simtabi\Laranail\AuthKit\Services\BrowserSessionService;
 use Illuminate\Validation\Rules\Password;
 use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
+use Simtabi\Laranail\AuthKit\Services\UserValidationService;
+use Simtabi\Laranail\AuthKit\Http\Requests\UpdatePasswordRequest;
 
 class UpdateUserPassword implements UpdatesUserPasswords
 {
@@ -17,12 +18,12 @@ class UpdateUserPassword implements UpdatesUserPasswords
     {
         $guard = AuthKit::guard();
 
-        Validator::make(data: $input, rules: [
-            'current_password' => ['required', 'string', "current_password:{$guard}"],
-            'password'         => ['required', 'string', Password::default(), 'confirmed'],
-        ], messages: [
-            'current_password.current_password' => __(key: 'The provided password does not match your current password.'),
-        ])->validateWithBag(errorBag: 'updatePassword');
+        app(abstract: UserValidationService::class)->validate(
+            input: $input,
+            rules: UpdatePasswordRequest::rulesFor(guard: $guard),
+            messages: UpdatePasswordRequest::messagesFor(),
+            errorBag: 'updatePassword',
+        );
 
         $user->forceFill(attributes: [
             'password'       => Hash::make(value: $input['password']),

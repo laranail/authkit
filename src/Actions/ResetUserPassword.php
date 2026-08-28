@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Fortify\Contracts\ResetsUserPasswords as FortifyResetUserPassword;
+use Simtabi\Laranail\AuthKit\Services\UserValidationService;
+use Simtabi\Laranail\AuthKit\Http\Requests\ResetPasswordRequest;
 
 class ResetUserPassword implements FortifyResetUserPassword
 {
     public function reset($user, array $input): void
     {
-        Validator::make($input, [
-            'password' => ['required', 'string', Password::default(), 'confirmed'],
-        ])->validate();
+        app(abstract: UserValidationService::class)->validate(
+            input: $input,
+            rules: ResetPasswordRequest::rulesFor(),
+        );
 
         $user->forceFill([
             'password'       => Hash::make($input['password']),

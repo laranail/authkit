@@ -7,12 +7,14 @@ namespace Simtabi\Laranail\AuthKit\Actions;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
 use Laravel\Fortify\Contracts\CreatesNewUsers as FortifyCreateNewUser;
+use Simtabi\Laranail\AuthKit\Services\UserValidationService;
+use Simtabi\Laranail\AuthKit\Http\Requests\RegisterRequest;
+use Simtabi\Laranail\AuthKit\Services\UserProvisioningService;
 
 class CreateNewUser implements FortifyCreateNewUser
 {
@@ -26,25 +28,18 @@ class CreateNewUser implements FortifyCreateNewUser
         // constraint. The user saw a 500 from a PDOException where they should have seen "this
         // email is already taken".
         if (isset($input['email']) && is_string($input['email'])) {
-            $input['email'] = Str::lower(value: $input['email']);
+            $input['email'] = app(abstract: UserProvisioningService::class)->normaliseEmail($input['email']);
         }
 
-        Validator::make(
-            data: $input,
-            rules: array_merge([
-                'name'     => ['required', 'string', 'max:255'],
-                'email'    => ['required', 'string', 'email', 'max:255', Rule::unique(table: $model)],
-                'password' => ['required', 'string', Password::default(), 'confirmed'],
-            ], [
-                config(key: 'laranail.authkit.turnstile.input', default: 'cf-turnstile-response') => AuthKit::turnstileRules(),
-            ]),
-        )->validate();
+        app(abstract: UserValidationService::class)->validate(
+            input: $input,
+            rules: RegisterRequest::rulesFor(),
+        );
 
-        /** @var \Illuminate\Database\Eloquent\Model&Authenticatable $user */
-        $user = $model::query()->create([
+        $user = app(abstract: UserProvisioningService::class)->create(attributes: [
             'name'     => $input['name'],
             'email'    => $input['email'],
-            'password' => Hash::make(value: $input['password']),
+            'password' => $input['password'],
         ]);
 
         return $user;

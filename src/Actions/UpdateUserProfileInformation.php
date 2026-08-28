@@ -6,9 +6,10 @@ namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
+use Simtabi\Laranail\AuthKit\Services\UserValidationService;
+use Simtabi\Laranail\AuthKit\Http\Requests\UpdateProfileInformationRequest;
 
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
@@ -20,16 +21,14 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $input['email'] = Str::lower(value: $input['email']);
         }
 
-        Validator::make(data: $input, rules: [
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique(table: $user->getTable())->ignore(id: $user->getKey()),
-            ],
-        ])->validateWithBag(errorBag: 'updateProfileInformation');
+        app(abstract: UserValidationService::class)->validate(
+            input: $input,
+            rules: UpdateProfileInformationRequest::rulesFor(
+                table: $user->getTable(),
+                ignoreId: $user->getKey(),
+            ),
+            errorBag: 'updateProfileInformation',
+        );
 
         if ($input['email'] !== $user->email && $user instanceof MustVerifyEmail) {
             $this->updateVerifiedUser(user: $user, input: $input);
