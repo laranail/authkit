@@ -71,6 +71,16 @@
         {
             "type": "vcs",
             "url": "https://github.com/laranail/db-tools.git"
+        },
+        {
+            "type": "composer",
+            "url": "https://repo.packagist.org",
+            "exclude": [
+                "laranail/*"
+            ]
+        },
+        {
+            "packagist.org": false
         }
     ],
     "scripts": {
