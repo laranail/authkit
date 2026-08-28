@@ -48,6 +48,10 @@ class AuthKitServiceProvider extends PackageServiceProvider
         $this->app->bind(abstract: Contracts\LoginUserInterface::class, concrete: Actions\LoginUser::class);
         $this->app->bind(abstract: Contracts\LogoutUserInterface::class, concrete: Actions\LogoutUser::class);
         $this->app->bind(abstract: Contracts\IssueTokenForUserInterface::class, concrete: Actions\IssueTokenForUser::class);
+        // A singleton because registrations accumulate: every sub-package that contributes a
+        // provider does so against the same instance, and a fresh one per resolution would drop
+        // whatever registered before it.
+        $this->app->singleton(abstract: Contracts\IdentityProviderRegistryInterface::class, concrete: Services\IdentityProviderRegistry::class);
         $this->app->bind(abstract: Contracts\ListBrowserSessionsInterface::class, concrete: Actions\ListBrowserSessions::class);
         $this->app->bind(abstract: Contracts\LogoutOtherBrowserSessionsInterface::class, concrete: Actions\LogoutOtherBrowserSessions::class);
     }
