@@ -12,7 +12,7 @@ Headless authentication for Laravel 13+. No views, routes, or controllers.
 
 - **Fortify-backed** — password reset, profile updates, password updates, email verification, passkeys, login throttling
 - **Sanctum-ready** — API token issuance via `IssueTokenForUser`
-- **Social login** — Google, Facebook, X, LinkedIn, PayPal via Socialite
+- **Social login** — Google, X, LinkedIn, PayPal via Socialite
 - **Composable** — separate actions for credential check vs session login
 
 ## Requirements
@@ -117,7 +117,7 @@ return [
         'redirect'      => env('AUTHKIT_GOOGLE_REDIRECT'),
         'scopes'        => ['openid', 'profile', 'email'],
     ],
-    // facebook, twitter, linkedin, paypal ...
+    // twitter, linkedin, paypal ...
 ```
 
 Remove `passkeys` from `laranail.authkit.fortify.features` to disable Fortify's passkey routes. Auth Kit only enables and configures Fortify; passkey ceremonies, responses, and persistence remain provided by Fortify and `laravel/passkeys`.
@@ -125,7 +125,7 @@ Remove `passkeys` from `laranail.authkit.fortify.features` to disable Fortify's 
 ### Security defaults
 
 - Two-factor authentication is not enabled by default. MFA is still work in progress.
-- Social sign-in only provisions or auto-links accounts when Google, LinkedIn, or PayPal supplies a trusted `email_verified` claim. Facebook and X identities can still be linked by an authenticated user, but cannot establish trust through an email-verification claim.
+- Social sign-in only provisions or auto-links an account when the provider asserts it verified the address. Every shipped provider does, through its own claim: Google, LinkedIn, and PayPal return `email_verified`, X returns `confirmed_email`. Facebook is not shipped, because it asserts nothing.
 - Before production, configure HTTPS, secure session cookies, a working mail transport, and Turnstile keys when bot protection is enabled.
 - PayPal uses sandbox mode by default. Set `AUTHKIT_PAYPAL_SANDBOX_MODE=false` with production PayPal credentials before enabling it in production.
 
