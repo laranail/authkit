@@ -63,7 +63,7 @@ Full documentation: <https://opensource.simtabi.com/documentation/laranail/authk
 - [Login](docs/login.md) · [Registration](docs/registration.md) · [Logout](docs/logout.md)
 - [Password reset](docs/password-reset.md) · [Password updates](docs/password-updates.md)
 - [Profile management](docs/profile-management.md) · [Email verification](docs/email-verification.md)
-- [Social login](docs/social-login.md) · [Passkeys](docs/passkeys.md) · [API tokens](docs/api-tokens.md)
+- [Social login](https://github.com/laranail/authkit-social/blob/main/docs/social-login.md) · [Passkeys](docs/passkeys.md) · [API tokens](docs/api-tokens.md)
 
 ### Project
 
@@ -99,17 +99,25 @@ return [
         'views'    => false,
         'features' => ['reset-passwords', 'update-profile-information', 'update-passwords', 'email-verification', 'passkeys'],
     ],
-
-    'social' => [
-        'google' => [
-            'client_id'     => env('AUTHKIT_GOOGLE_CLIENT_ID'),
-            'client_secret' => env('AUTHKIT_GOOGLE_CLIENT_SECRET'),
-            'redirect'      => env('AUTHKIT_GOOGLE_REDIRECT'),
-            'scopes'        => ['openid', 'profile', 'email'],
-        ],
-        // facebook, twitter, linkedin, paypal ...
-    ],
 ];
+```
+
+Social login moved to [`laranail/authkit-social`](https://github.com/laranail/authkit-social) and
+carries its own `laranail.authkit-social` config. The provider env variables are unchanged, so an
+existing `.env` keeps working:
+
+```php
+// config/laranail/authkit-social.php
+return [
+    'enabled' => (bool) env('AUTHKIT_SOCIAL_ENABLED', default: true),
+
+    'google' => [
+        'client_id'     => env('AUTHKIT_GOOGLE_CLIENT_ID'),
+        'client_secret' => env('AUTHKIT_GOOGLE_CLIENT_SECRET'),
+        'redirect'      => env('AUTHKIT_GOOGLE_REDIRECT'),
+        'scopes'        => ['openid', 'profile', 'email'],
+    ],
+    // facebook, twitter, linkedin, paypal ...
 ```
 
 Remove `passkeys` from `laranail.authkit.fortify.features` to disable Fortify's passkey routes. Auth Kit only enables and configures Fortify; passkey ceremonies, responses, and persistence remain provided by Fortify and `laravel/passkeys`.
@@ -238,7 +246,7 @@ Extend these to wire up your own routes. JSON responses are handled automaticall
 Add to your `User` model:
 
 ```php
-use Simtabi\Laranail\AuthKit\Models\Social;
+use Simtabi\Laranail\AuthKit\Social\Models\Social;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 public function socials(): MorphMany

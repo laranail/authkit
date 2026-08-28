@@ -41,16 +41,6 @@ it('publishes the Auth Kit passkeys migration', function (): void {
         ->toContain(realpath(dirname(__DIR__, 2) . '/database/migrations/passkeys'));
 });
 
-it('publishes the Auth Kit social migrations on demand', function (): void {
-    $paths = ServiceProvider::pathsToPublish(
-        provider: AuthKitServiceProvider::class,
-        group: 'laranail::authkit-social-migrations',
-    );
-
-    expect(array_map('realpath', array_keys($paths)))
-        ->toContain(realpath(dirname(__DIR__, 2) . '/database/migrations/social'));
-});
-
 it('delegates passkey routes to the laravel passkeys controllers', function (): void {
     expect(Route::getRoutes()->getByName('passkey.login')->getActionName())
         ->toBe(PasskeyLoginController::class . '@store')

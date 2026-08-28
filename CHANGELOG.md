@@ -9,6 +9,27 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- **Breaking. Social login moved to `laranail/authkit-social`.** Fifteen classes, the `socials`
+  migration, its factory and the `social` config block left this package. See
+  [UPGRADING.md](UPGRADING.md); `rector-migrate-social.php` codemods the class renames.
+
+  The config key moved from `laranail.authkit.social.*` to `laranail.authkit-social.*`, in the new
+  package's own published file. **Provider env variable names are unchanged** — `AUTHKIT_GOOGLE_CLIENT_ID`
+  and the rest keep working, because renaming them would break deployed `.env` files with
+  credentials silently resolving to null.
+
+  `laravel/socialite`, `socialiteproviders/manager` and `laranail/enumerator` are no longer required.
+  All three were used only by social code, so the core no longer pulls Socialite into applications
+  that never touch social login.
+
+  The `laranail::authkit-social-migrations` publish tag is unchanged, but is now published by the
+  new package rather than this one. The migration filename is unchanged, so an application that has
+  already run it will not run it again.
+
+- `testbench.yaml` no longer declares `Workbench\Database\Seeders\DatabaseSeeder` or
+  `workbench/database/migrations`. Neither existed. `composer.json` dropped the matching
+  autoload-dev root for the same reason.
+
 - The PHP floor is `^8.4.1`, up from `^8.4`. `laranail/package-tools` and `laranail/console`
   are `^8.4.1`, so a resolver that took the manifest at its word and pinned the platform to
   8.4.0 could not install them. Dependabot does exactly that, and had been failing on it.

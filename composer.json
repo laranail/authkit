@@ -21,10 +21,7 @@
         "laravel/fortify": "^1.38",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
-        "laravel/socialite": "^5.0",
-        "laranail/package-tools": "^0.1",
-        "laranail/enumerator": "^0.1",
-        "socialiteproviders/manager": "^4.4"
+        "laranail/package-tools": "^0.1"
     },
     "require-dev": {
         "pestphp/pest": "^4.0",
@@ -40,10 +37,8 @@
     "autoload-dev": {
         "psr-4": {
             "Simtabi\\Laranail\\AuthKit\\Tests\\": "tests/",
-            "Simtabi\\Laranail\\AuthKit\\Database\\Factories\\": "database/factories/",
             "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/"
         }
     },
     "extra": {

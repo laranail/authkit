@@ -12,7 +12,6 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            \Laravel\Socialite\SocialiteServiceProvider::class,
             \Laravel\Fortify\FortifyServiceProvider::class,
             \Laravel\Sanctum\SanctumServiceProvider::class,
             AuthKitServiceProvider::class,
@@ -39,6 +38,5 @@ abstract class TestCase extends BaseTestCase
         $this->loadMigrationsFrom(dirname(__DIR__) . '/vendor/laravel/fortify/database/migrations');
         $this->loadMigrationsFrom(dirname(__DIR__) . '/database/migrations/passkeys');
         $this->loadMigrationsFrom(dirname(__DIR__) . '/vendor/laravel/sanctum/database/migrations');
-        $this->loadMigrationsFrom(dirname(__DIR__) . '/database/migrations/social');
     }
 }

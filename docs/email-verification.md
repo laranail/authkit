@@ -18,7 +18,7 @@ Auth Kit provides headless controller bases for the verification lifecycle:
 
 The application owns route registration, presentation, redirects, and mail configuration. The user model must implement Laravel's `MustVerifyEmail` contract for verification notifications and state changes to apply. Use Laravel's signed URL and `verified` middleware on the verification endpoint and routes that require a verified address. A profile email change for such a user clears its verification timestamp and sends a new notification.
 
-Social login has its own verified-email rules. See [Social login](social-login.md) before enabling automatic social-account linking.
+Social login has its own verified-email rules. See [Social login](https://github.com/laranail/authkit-social/blob/main/docs/social-login.md) before enabling automatic social-account linking.
 
 ---
 

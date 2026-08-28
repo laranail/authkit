@@ -8,7 +8,8 @@ How the core is layered, what it delegates to Fortify, and the seams the sibling
 laranail/authkit           Simtabi\Laranail\AuthKit\           this package — headless core
 laranail/authkit-preset    Simtabi\Laranail\AuthKit\Preset\    Blade scaffolding
 laranail/authkit-sso       Simtabi\Laranail\AuthKit\Sso\       SAML and OIDC
-laranail/authkit-oauth     Simtabi\Laranail\AuthKit\OAuth\     OAuth and social identity
+laranail/authkit-oauth     Simtabi\Laranail\AuthKit\OAuth\     OAuth server, apps and scopes
+laranail/authkit-social    Simtabi\Laranail\AuthKit\Social\    social login (Socialite)
 laranail/authkit-tenancy   Simtabi\Laranail\AuthKit\Tenancy\   multi-tenancy
 laranail/authkit-ldap      Simtabi\Laranail\AuthKit\Ldap\      LDAP and Active Directory
 ```
