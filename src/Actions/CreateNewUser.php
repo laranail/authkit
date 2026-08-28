@@ -20,6 +20,15 @@ class CreateNewUser implements FortifyCreateNewUser
     {
         $model = UserModelResolver::resolve();
 
+        // Normalise before validating, not after. The address was validated as typed and then
+        // stored lowercased, so registering ADA@example.com against an existing ada@example.com
+        // passed the unique rule -- no row matched that exact casing -- and then hit the database
+        // constraint. The user saw a 500 from a PDOException where they should have seen "this
+        // email is already taken".
+        if (isset($input['email']) && is_string($input['email'])) {
+            $input['email'] = Str::lower(value: $input['email']);
+        }
+
         Validator::make(
             data: $input,
             rules: array_merge([
@@ -34,7 +43,7 @@ class CreateNewUser implements FortifyCreateNewUser
         /** @var \Illuminate\Database\Eloquent\Model&Authenticatable $user */
         $user = $model::query()->create([
             'name'     => $input['name'],
-            'email'    => Str::lower(value: $input['email']),
+            'email'    => $input['email'],
             'password' => Hash::make(value: $input['password']),
         ]);
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
@@ -13,6 +14,12 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
     public function update($user, array $input): void
     {
+        // Normalised before validating for the same reason as registration: a differently-cased
+        // address is the same address, and comparing it as typed lets a duplicate through.
+        if (isset($input['email']) && is_string($input['email'])) {
+            $input['email'] = Str::lower(value: $input['email']);
+        }
+
         Validator::make(data: $input, rules: [
             'name'  => ['required', 'string', 'max:255'],
             'email' => [
