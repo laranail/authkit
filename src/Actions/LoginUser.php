@@ -14,8 +14,7 @@ class LoginUser implements LoginUserInterface
     public function __construct(
         private AuthFactory $auth,
         private Session $session,
-    ) {
-    }
+    ) {}
 
     public function execute(Authenticatable $user, string $guard, bool $remember = false): void
     {

@@ -12,7 +12,7 @@ it('returns the same response for known and unknown password reset email address
 
     User::factory()->create(['email' => 'known@example.com']);
 
-    $controller = new class () extends AbstractPasswordResetLinkController {};
+    $controller = new class extends AbstractPasswordResetLinkController {};
 
     $knownResponse = $controller->store(jsonRequest(['email' => 'known@example.com']));
     $unknownResponse = $controller->store(jsonRequest(['email' => 'unknown@example.com']));

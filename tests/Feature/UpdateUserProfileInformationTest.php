@@ -11,6 +11,7 @@ use Simtabi\Laranail\AuthKit\Actions\UpdateUserProfileInformation;
 class ProfileVerifiableUser extends User implements MustVerifyEmail
 {
     public bool $verificationNotificationSent = false;
+
     protected $table = 'users';
 
     public function hasVerifiedEmail(): bool

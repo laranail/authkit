@@ -56,7 +56,7 @@ class AuthKit
 
         return [
             'required',
-            new TurnstileRule(),
+            new TurnstileRule,
         ];
     }
 }

@@ -13,8 +13,7 @@ class AuthResult
         public AuthStatus $status,
         public ?Authenticatable $user = null,
         public ?int $retryAfterSeconds = null,
-    ) {
-    }
+    ) {}
 
     public static function passed(Authenticatable $user): self
     {

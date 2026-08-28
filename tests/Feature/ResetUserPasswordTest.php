@@ -51,9 +51,9 @@ it('fails validation when password is missing', function (): void {
 it('integrates with laravel password broker for a full reset flow', function (): void {
     $user = User::factory()->create(['password' => Hash::make('old-password')]);
 
-    $token = \Illuminate\Support\Facades\Password::broker()->createToken($user);
+    $token = Illuminate\Support\Facades\Password::broker()->createToken($user);
 
-    $status = \Illuminate\Support\Facades\Password::broker()->reset(
+    $status = Illuminate\Support\Facades\Password::broker()->reset(
         [
             'email'                 => $user->email,
             'password'              => 'broker-secret',
@@ -65,9 +65,9 @@ it('integrates with laravel password broker for a full reset flow', function ():
                 'password'              => $password,
                 'password_confirmation' => $password,
             ]);
-        }
+        },
     );
 
-    expect($status)->toBe(\Illuminate\Support\Facades\Password::PASSWORD_RESET)
+    expect($status)->toBe(Illuminate\Support\Facades\Password::PASSWORD_RESET)
         ->and(Hash::check('broker-secret', $user->fresh()->password))->toBeTrue();
 });

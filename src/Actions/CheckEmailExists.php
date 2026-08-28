@@ -12,8 +12,7 @@ class CheckEmailExists implements CheckEmailExistsInterface
 {
     public function __construct(
         private AuthFactory $auth,
-    ) {
-    }
+    ) {}
 
     public function execute(Request $request, string $guard): bool
     {

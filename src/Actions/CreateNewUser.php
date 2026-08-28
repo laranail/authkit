@@ -28,7 +28,7 @@ class CreateNewUser implements FortifyCreateNewUser
                 'password' => ['required', 'string', Password::default(), 'confirmed'],
             ], [
                 config(key: 'laranail.authkit.turnstile.input', default: 'cf-turnstile-response') => AuthKit::turnstileRules(),
-            ])
+            ]),
         )->validate();
 
         /** @var \Illuminate\Database\Eloquent\Model&Authenticatable $user */

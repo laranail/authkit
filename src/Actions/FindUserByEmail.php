@@ -12,8 +12,7 @@ class FindUserByEmail implements FindUserByEmailInterface
 {
     public function __construct(
         private AuthFactory $auth,
-    ) {
-    }
+    ) {}
 
     public function execute(string $email, string $guard): ?Authenticatable
     {

@@ -12,8 +12,7 @@ class Turnstile
     public function __construct(
         protected string $url,
         protected string $secretKey,
-    ) {
-    }
+    ) {}
 
     public function validate(string $token): bool
     {

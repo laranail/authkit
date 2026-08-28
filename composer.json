@@ -74,15 +74,15 @@
         }
     ],
     "scripts": {
-        "format": [
-            "vendor/bin/pint --parallel"
-        ],
+        "format": "@pint-fix",
         "test": [
             "vendor/bin/pest --parallel"
         ],
         "lint": [
-            "@php vendor/bin/pint --ansi"
-        ]
+            "@pint"
+        ],
+        "pint": "vendor/bin/pint --test --config vendor/laranail/package-tools/pint.json",
+        "pint-fix": "vendor/bin/pint --parallel --config vendor/laranail/package-tools/pint.json"
     },
     "config": {
         "sort-packages": true,

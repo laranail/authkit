@@ -31,7 +31,7 @@ abstract class AbstractNewPasswordController extends AbstractAuthController
             $credentials,
             function ($user) use ($request) {
                 app(ResetsUserPasswords::class)->reset($user, $request->all());
-            }
+            },
         );
 
         if ($request->expectsJson()) {

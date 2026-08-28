@@ -13,8 +13,7 @@ class LogoutUser implements LogoutUserInterface
     public function __construct(
         private AuthFactory $auth,
         private Session $session,
-    ) {
-    }
+    ) {}
 
     public function execute(string $guard): void
     {

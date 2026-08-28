@@ -15,8 +15,7 @@ class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
     public function __construct(
         private AuthFactory $auth,
         private RateLimiter $limiter,
-    ) {
-    }
+    ) {}
 
     public function execute(Request $request, string $guard): AuthResult
     {
