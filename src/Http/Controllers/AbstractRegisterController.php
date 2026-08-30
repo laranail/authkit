@@ -12,6 +12,7 @@ use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
 use Laravel\Fortify\Contracts\CreatesNewUsers as FortifyCreateNewUser;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 abstract class AbstractRegisterController extends AbstractAuthController
 {
@@ -45,8 +46,15 @@ abstract class AbstractRegisterController extends AbstractAuthController
         // resolved by name so a host that has moved or renamed it still works, and the
         // registration redirect remains the answer when nothing needs verifying.
         if ($user instanceof MustVerifyEmail && $user->hasVerifiedEmail() === false) {
-            if (Route::has(name: 'verification.notice')) {
-                return redirect()->route(route: 'verification.notice');
+            // Resolved through the URL generator rather than Route::has(), because a frontend
+            // package may register this route under a vendor-scoped name. route() consults the
+            // missing-named-route resolver and finds it either way; Route::has() asks the route
+            // collection directly and would answer false, silently sending an unverified user
+            // into the application instead of to the notice.
+            try {
+                return redirect()->to(path: route(name: 'verification.notice'));
+            } catch (RouteNotFoundException) {
+                // No verification notice is mounted; fall through to the registration redirect.
             }
         }
 
