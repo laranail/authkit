@@ -21,6 +21,17 @@ interface SocialIdentityProviderInterface
     public function label(): string;
 
     /**
+     * The Socialite driver key this provider authenticates through.
+     *
+     * Deliberately separate from slug(). The slug is stored data -- it is the route value and the
+     * value written to `socials.provider` -- so it cannot change without a migration. The driver key
+     * belongs to Socialite and does change: `linkedin` resolves to a legacy provider whose payload
+     * has no `email_verified`, and only `linkedin-openid` returns it. Assuming the two are the same
+     * string is what let a provider ship unable to authenticate.
+     */
+    public function driver(): string;
+
+    /**
      * Whether this provider's raw payload asserts the address was verified.
      *
      * This is the security-critical answer: an address treated as verified may link to an

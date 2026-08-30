@@ -30,12 +30,14 @@ final readonly class IdentityProvider implements SocialIdentityProviderInterface
      * @param  string                        $label                  human-readable name
      * @param  bool                          $assertsEmailVerified   whether this provider verifies the address it returns
      * @param  (Closure(array<string, mixed>): bool)|null  $verifiedEmailResolver  reads this provider's own claim
+     * @param  string|null                   $driver                 Socialite driver key, when it differs from the slug
      */
     public function __construct(
         public string $slug,
         public string $label,
         public bool $assertsEmailVerified,
         public ?Closure $verifiedEmailResolver = null,
+        public ?string $driver = null,
     ) {}
 
     public function slug(): string
@@ -46,6 +48,12 @@ final readonly class IdentityProvider implements SocialIdentityProviderInterface
     public function label(): string
     {
         return $this->label;
+    }
+
+    /** Defaults to the slug, which is right whenever Socialite's key and ours agree. */
+    public function driver(): string
+    {
+        return $this->driver ?? $this->slug;
     }
 
     /**
