@@ -118,7 +118,7 @@ return [
         'redirect'      => env('AUTHKIT_GOOGLE_REDIRECT'),
         'scopes'        => ['openid', 'profile', 'email'],
     ],
-    // apple, twitter, linkedin, paypal ...
+    // apple, x, linkedin, paypal ...
 ```
 
 Remove `passkeys` from `laranail.authkit.fortify.features` to disable Fortify's passkey routes. Auth Kit only enables and configures Fortify; passkey ceremonies, responses, and persistence remain provided by Fortify and `laravel/passkeys`.
