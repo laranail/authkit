@@ -5,7 +5,7 @@
 [![Static analysis](https://img.shields.io/github/actions/workflow/status/laranail/authkit/static.yml?branch=main&label=static%20analysis&style=flat-square)](https://github.com/laranail/authkit/actions/workflows/static.yml)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-Headless authentication for Laravel 13+. No views, routes, or controllers.
+Headless authentication for Laravel 13+. Ships the REST API; no views and no web routes.
 
 > [!WARNING]
 > This package is still in development. Breaking changes are imminent; use it in production at your own risk.
@@ -63,6 +63,7 @@ Full documentation: <https://opensource.simtabi.com/documentation/laranail/authk
 - [Login](docs/login.md) · [Registration](docs/registration.md) · [Logout](docs/logout.md)
 - [Password reset](docs/password-reset.md) · [Password updates](docs/password-updates.md)
 - [Profile management](docs/profile-management.md) · [Email verification](docs/email-verification.md)
+- [Browser sessions](docs/browser-sessions.md) · [API routes](docs/api-routes.md) · [API tokens](docs/api-tokens.md)
 - [Social login](https://github.com/laranail/authkit-social/blob/main/docs/social-login.md) · [Passkeys](docs/passkeys.md) · [API tokens](docs/api-tokens.md)
 
 ### Project

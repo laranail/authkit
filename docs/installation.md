@@ -46,7 +46,9 @@ php artisan migrate
 
 ## For a Blade UI
 
-This package is headless by design — no views, no routes, no shipped controllers. For a ready-made
+This package is headless by design: no views, no web routes, and no Blade layer. It does ship the
+REST API — routes and controllers under `/api/auth` — so an API-only or Filament consumer installs
+this package alone and has a login endpoint without pulling in scaffolding. For a browser interface
 interface use [`laranail/authkit-preset`](https://github.com/laranail/authkit-preset), which
 consumes these actions and adds the Blade layer.
 

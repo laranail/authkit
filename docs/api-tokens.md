@@ -9,9 +9,9 @@ $result = app(IssueTokenForUser::class)->execute(
 );
 ```
 
-The consuming application's model must use Sanctum's `HasApiTokens` trait and its Sanctum migration must be installed. Auth Kit does not register API routes or decide when a token should be issued; authenticate and authorize the request first, then choose a token name and abilities appropriate to the client. Return the plain-text token only at issuance, never log it, and use Sanctum ability middleware plus token revocation for client lifecycle management.
+The consuming application's model must use Sanctum's `HasApiTokens` trait and its Sanctum migration must be installed. Auth Kit registers the REST API itself (see [API routes](api-routes.md)); a caller issuing a token directly should authenticate and authorize the request first, then choose a token name and abilities appropriate to the client. Return the plain-text token only at issuance, never log it, and use Sanctum ability middleware plus token revocation for client lifecycle management.
 
-For a ready-made API route set and Sanctum response handling, use `laranail/authkit-preset` and see its [API routes guide](../../authkit-preset/docs/api-routes.md).
+Tokens are scoped and time-limited by default rather than wildcard and eternal — see [API routes](api-routes.md) for the endpoints and `laranail.authkit.tokens` for the defaults.
 
 ---
 
