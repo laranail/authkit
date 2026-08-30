@@ -18,6 +18,11 @@ use Simtabi\Laranail\AuthKit\Contracts\SocialIdentityProviderInterface;
  * sub-package's behalf. Requiring it means a new provider cannot be added without someone
  * answering the question.
  *
+ * `driverClass` closes the other half of the seam. Registering a provider with us and binding its
+ * Socialite driver were separate steps, and nothing warned when the second was forgotten: the slug
+ * resolved, then Socialite threw at the callback. Supplying the class here means one registration
+ * does both.
+ *
  * `verifiedEmailResolver` exists because the claim is not standard. The OpenID-style providers
  * return a boolean `email_verified`; X returns the confirmed address itself as `confirmed_email`
  * and omits it when unconfirmed. A provider that asserts verification through some third shape
@@ -31,6 +36,7 @@ final readonly class IdentityProvider implements SocialIdentityProviderInterface
      * @param  bool                          $assertsEmailVerified   whether this provider verifies the address it returns
      * @param  (Closure(array<string, mixed>): bool)|null  $verifiedEmailResolver  reads this provider's own claim
      * @param  string|null                   $driver                 Socialite driver key, when it differs from the slug
+     * @param  string|null                   $driverClass            Socialite provider class to register for that key
      */
     public function __construct(
         public string $slug,
@@ -38,6 +44,7 @@ final readonly class IdentityProvider implements SocialIdentityProviderInterface
         public bool $assertsEmailVerified,
         public ?Closure $verifiedEmailResolver = null,
         public ?string $driver = null,
+        public ?string $driverClass = null,
     ) {}
 
     public function slug(): string
