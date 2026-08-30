@@ -27,18 +27,21 @@ if (! AuthKit::apiEnabled()) {
 
 Route::prefix(AuthKit::apiPrefix())
     ->middleware(AuthKit::apiMiddleware())
+    // Positional, not named: Route::name() resolves through RouteRegistrar::__call, which reads
+    // $parameters[0]; a named argument leaves that slot empty and degrades to true.
+    ->name(AuthKit::apiRouteNamePrefix())
     ->group(function (): void {
         Route::post('/register', [Api\RegisterController::class, 'store'])
             ->middleware('throttle:10,1')
-            ->name('api.register');
+            ->name('register');
 
         Route::post('/login', [Api\LoginController::class, 'store'])
             ->middleware('throttle:10,1')
-            ->name('api.login');
+            ->name('login');
 
         Route::post('/logout', Api\LogoutController::class)
             ->middleware('auth:sanctum')
-            ->name('api.logout');
+            ->name('logout');
 
         // CheckEmailExistsController ships with no route, exactly as it did before this move.
         // Exposing an endpoint that answers whether an address is registered is a user-enumeration
@@ -47,32 +50,32 @@ Route::prefix(AuthKit::apiPrefix())
         if (AuthKit::hasFeature('email-verification')) {
             Route::post('/email/verification-notification', [Api\EmailVerificationNotificationController::class, 'store'])
                 ->middleware(['auth:sanctum', 'throttle:6,1'])
-                ->name('api.verification.send');
+                ->name('verification.send');
 
             Route::get('/email/verify/{id}/{hash}', Api\VerifyEmailController::class)
                 ->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])
-                ->name('api.verification.verify');
+                ->name('verification.verify');
         }
 
         if (AuthKit::hasFeature('reset-passwords')) {
             Route::post('/forgot-password', [Api\PasswordResetLinkController::class, 'store'])
                 ->middleware('throttle:10,1')
-                ->name('api.password.email');
+                ->name('password.email');
 
             Route::post('/reset-password', [Api\NewPasswordController::class, 'store'])
                 ->middleware('throttle:10,1')
-                ->name('api.password.update');
+                ->name('password.update');
         }
 
         if (AuthKit::hasFeature('update-passwords')) {
             Route::put('/user/password', [Api\UpdatePasswordController::class, 'update'])
                 ->middleware('auth:sanctum')
-                ->name('api.user-password.update');
+                ->name('user-password.update');
         }
 
         if (AuthKit::hasFeature('update-profile-information')) {
             Route::put('/user/profile-information', [Api\UpdateProfileInformationController::class, 'update'])
                 ->middleware('auth:sanctum')
-                ->name('api.user-profile-information.update');
+                ->name('user-profile-information.update');
         }
     });

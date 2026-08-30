@@ -76,6 +76,16 @@ return [
     'api' => [
         'enabled'    => (bool) env(key: 'AUTHKIT_API_ENABLED', default: true),
         'prefix'     => env(key: 'AUTHKIT_API_PREFIX', default: 'api/auth'),
+
+        /*
+         * Route names are a flat, global registry: a second package -- or the host application
+         * itself -- claiming `api.login` silently replaces whichever registered first, and the
+         * damage surfaces far away as the wrong controller answering. Names are therefore
+         * vendor-scoped by default.
+         *
+         * Set this to '' to fall back to bare names, if an application already depends on them.
+         */
+        'name_prefix' => env(key: 'AUTHKIT_API_ROUTE_NAME_PREFIX', default: 'laranail-auth-api.'),
         'middleware' => ['api', 'throttle:60,1'],
     ],
 

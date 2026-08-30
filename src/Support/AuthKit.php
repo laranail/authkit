@@ -59,6 +59,17 @@ class AuthKit
         return (string) config(key: 'laranail.authkit.api.prefix', default: 'api/auth');
     }
 
+    /**
+     * The prefix every API route name carries.
+     *
+     * Bare names such as `api.login` sit in a flat global registry that the host application and
+     * every other package share, so a second claimant silently wins.
+     */
+    public static function apiRouteNamePrefix(): string
+    {
+        return (string) config(key: 'laranail.authkit.api.name_prefix', default: 'laranail-auth-api.');
+    }
+
     /** @return array<int, string> */
     public static function apiMiddleware(): array
     {
