@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Actions;
 
-use Illuminate\Http\Request;
 use Illuminate\Cache\RateLimiter;
-use Simtabi\Laranail\AuthKit\Support\AuthResult;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Http\Request;
 use Simtabi\Laranail\AuthKit\Contracts\AttemptEmailPasswordLoginInterface;
+use Simtabi\Laranail\AuthKit\Support\AuthResult;
 
 class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
 {
@@ -23,7 +23,7 @@ class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
         $password = $request->input('password');
         $ip = $request->ip();
 
-        $key = 'login:' . $guard . ':' . mb_strtolower(string: $email) . ':' . ($ip ?? '_');
+        $key = 'login:'.$guard.':'.mb_strtolower(string: $email).':'.($ip ?? '_');
         $maxAttempts = (int) config(key: 'laranail.authkit.rate_limit.max_attempts', default: 5);
         $decaySeconds = (int) config(key: 'laranail.authkit.rate_limit.decay_minutes', default: 1) * 60;
 

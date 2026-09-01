@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Workbench\App\Models;
 
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\Contracts\PasskeyUser;
-use Workbench\Database\Factories\UserFactory;
-use Simtabi\Laranail\AuthKit\PasskeyAuthenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\Contracts\PasskeyUser;
+use Laravel\Sanctum\HasApiTokens;
+use Simtabi\Laranail\AuthKit\PasskeyAuthenticatable;
+use Workbench\Database\Factories\UserFactory;
 
 class User extends Authenticatable implements PasskeyUser
 {
@@ -39,7 +39,7 @@ class User extends Authenticatable implements PasskeyUser
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
+            'password' => 'hashed',
         ];
     }
 }

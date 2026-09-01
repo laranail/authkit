@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Workbench\App\Models\User;
-use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
+use Illuminate\Support\Str;
 use Simtabi\Laranail\AuthKit\Actions\AttemptEmailPasswordLogin;
+use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
+use Workbench\App\Models\User;
 
 function loginRequest(array $data = [], ?string $ip = null): Request
 {
@@ -24,7 +24,7 @@ it('returns passed when credentials are valid', function (): void {
     $password = Str::random(16);
 
     $user = User::factory()->create([
-        'email'    => 'ada@example.com',
+        'email' => 'ada@example.com',
         'password' => bcrypt($password),
     ]);
 
@@ -42,7 +42,7 @@ it('returns passed when credentials are valid', function (): void {
 it('validates credentials without logging the user into the session', function (): void {
     $password = Str::random(16);
     User::factory()->create([
-        'email'    => 'ada@example.com',
+        'email' => 'ada@example.com',
         'password' => bcrypt($password),
     ]);
 
@@ -59,7 +59,7 @@ it('returns failed when credentials are wrong', function (): void {
     $password = Str::random(16);
 
     User::factory()->create([
-        'email'    => 'ada@example.com',
+        'email' => 'ada@example.com',
         'password' => bcrypt($password),
     ]);
 
@@ -77,7 +77,7 @@ it('throttles repeated failed credentials', function (): void {
     config()->set('laranail.authkit.rate_limit.max_attempts', 1);
 
     User::factory()->create([
-        'email'    => 'ada@example.com',
+        'email' => 'ada@example.com',
         'password' => bcrypt(Str::random(16)),
     ]);
 
@@ -94,7 +94,7 @@ it('throttles per ip address', function (): void {
     config()->set('laranail.authkit.rate_limit.max_attempts', 1);
 
     User::factory()->create([
-        'email'    => 'ada@example.com',
+        'email' => 'ada@example.com',
         'password' => bcrypt(Str::random(16)),
     ]);
 
@@ -118,7 +118,7 @@ it('throttles same ip with same email', function (): void {
     config()->set('laranail.authkit.rate_limit.max_attempts', 1);
 
     User::factory()->create([
-        'email'    => 'ada@example.com',
+        'email' => 'ada@example.com',
         'password' => bcrypt(Str::random(16)),
     ]);
 
@@ -143,7 +143,7 @@ it('clears the throttle limit on successful login', function (): void {
     $password = Str::random(16);
 
     User::factory()->create([
-        'email'    => 'ada@example.com',
+        'email' => 'ada@example.com',
         'password' => bcrypt($password),
     ]);
 

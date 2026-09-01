@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Services;
 
-use Illuminate\Support\Str;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Str;
 use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
 
 /**
@@ -34,8 +34,8 @@ class UserProvisioningService
 
         /** @var Model&Authenticatable $user */
         $user = $model::query()->create([
-            'name'     => $attributes['name'],
-            'email'    => $this->normaliseEmail($attributes['email']),
+            'name' => $attributes['name'],
+            'email' => $this->normaliseEmail($attributes['email']),
             'password' => Hash::make(value: $attributes['password']),
         ]);
 

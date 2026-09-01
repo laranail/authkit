@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use Workbench\App\Models\User;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Simtabi\Laranail\AuthKit\Actions\CreateNewUser;
+use Workbench\App\Models\User;
 
 it(description: 'creates a user with a hashed password', closure: function (): void {
     $user = app(abstract: CreateNewUser::class)->create(input: [
-        'name'                  => 'Ada Lovelace',
-        'email'                 => 'ADA@EXAMPLE.COM',
-        'password'              => 'password',
+        'name' => 'Ada Lovelace',
+        'email' => 'ADA@EXAMPLE.COM',
+        'password' => 'password',
         'password_confirmation' => 'password',
     ]);
 
@@ -24,9 +24,9 @@ it(description: 'fails validation for duplicate email addresses', closure: funct
     User::factory()->create(attributes: ['email' => 'ada@example.com']);
 
     $validator = Validator::make(data: [
-        'name'                  => 'Ada Lovelace',
-        'email'                 => 'ada@example.com',
-        'password'              => 'password',
+        'name' => 'Ada Lovelace',
+        'email' => 'ada@example.com',
+        'password' => 'password',
         'password_confirmation' => 'password',
     ], rules: [
         'email' => ['required', 'string', 'email', 'max:255', Rule::unique(table: User::class)],
@@ -38,9 +38,9 @@ it(description: 'fails validation for duplicate email addresses', closure: funct
 
 it(description: 'fails validation when password confirmation does not match', closure: function (): void {
     $validator = Validator::make(data: [
-        'name'                  => 'Ada Lovelace',
-        'email'                 => 'ada@example.com',
-        'password'              => 'password',
+        'name' => 'Ada Lovelace',
+        'email' => 'ada@example.com',
+        'password' => 'password',
         'password_confirmation' => 'different',
     ], rules: [
         'password' => ['required', 'string', Password::default(), 'confirmed'],
@@ -52,9 +52,9 @@ it(description: 'fails validation when password confirmation does not match', cl
 
 it(description: 'fails validation when name is missing', closure: function (): void {
     $validator = Validator::make(data: [
-        'name'                  => '',
-        'email'                 => 'ada@example.com',
-        'password'              => 'password',
+        'name' => '',
+        'email' => 'ada@example.com',
+        'password' => 'password',
         'password_confirmation' => 'password',
     ], rules: [
         'name' => ['required', 'string', 'max:255'],
@@ -66,9 +66,9 @@ it(description: 'fails validation when name is missing', closure: function (): v
 
 it(description: 'fails validation when email is invalid', closure: function (): void {
     $validator = Validator::make(data: [
-        'name'                  => 'Ada Lovelace',
-        'email'                 => 'not-an-email',
-        'password'              => 'password',
+        'name' => 'Ada Lovelace',
+        'email' => 'not-an-email',
+        'password' => 'password',
         'password_confirmation' => 'password',
     ], rules: [
         'email' => ['required', 'string', 'email', 'max:255'],
@@ -80,7 +80,7 @@ it(description: 'fails validation when email is invalid', closure: function (): 
 
 it(description: 'fails validation when password is missing', closure: function (): void {
     $validator = Validator::make(data: [
-        'name'  => 'Ada Lovelace',
+        'name' => 'Ada Lovelace',
         'email' => 'ada@example.com',
     ], rules: [
         'password' => ['required', 'string', Password::default(), 'confirmed'],
@@ -95,9 +95,9 @@ it(description: 'resolves model from guard config when user_model is not set', c
     config()->set(key: 'laranail.authkit.guard', value: 'web');
 
     $user = app(abstract: CreateNewUser::class)->create(input: [
-        'name'                  => 'Ada Lovelace',
-        'email'                 => 'ada@example.com',
-        'password'              => 'password',
+        'name' => 'Ada Lovelace',
+        'email' => 'ada@example.com',
+        'password' => 'password',
         'password_confirmation' => 'password',
     ]);
 
@@ -108,9 +108,9 @@ it(description: 'resolves model from explicit user_model config', closure: funct
     config()->set(key: 'laranail.authkit.user_model', value: User::class);
 
     $user = app(abstract: CreateNewUser::class)->create(input: [
-        'name'                  => 'Ada Lovelace',
-        'email'                 => 'ada2@example.com',
-        'password'              => 'password',
+        'name' => 'Ada Lovelace',
+        'email' => 'ada2@example.com',
+        'password' => 'password',
         'password_confirmation' => 'password',
     ]);
 

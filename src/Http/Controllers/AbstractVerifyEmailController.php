@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AuthKit\Http\Controllers;
 
 use Illuminate\Auth\Events\Verified;
-use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Laravel\Fortify\Http\Requests\VerifyEmailRequest;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
 
 abstract class AbstractVerifyEmailController extends AbstractAuthController
 {

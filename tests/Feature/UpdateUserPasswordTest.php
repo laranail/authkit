@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Workbench\App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 use Simtabi\Laranail\AuthKit\Actions\UpdateUserPassword;
+use Workbench\App\Models\User;
 
 function expectPasswordUpdateValidationFailure(array $input, string $field, User $user): void
 {
@@ -27,7 +27,7 @@ it('binds the Fortify password updater to Auth Kit', function (): void {
 
 it('updates the password when the current password is valid', function (): void {
     $user = User::factory()->create([
-        'password'       => Hash::make('old-password'),
+        'password' => Hash::make('old-password'),
         'remember_token' => 'stolen-remember-token',
     ]);
     $user->createToken('stolen-token');
@@ -35,8 +35,8 @@ it('updates the password when the current password is valid', function (): void 
     $this->actingAs($user);
 
     app(UpdateUserPassword::class)->update($user, [
-        'current_password'      => 'old-password',
-        'password'              => 'new-password',
+        'current_password' => 'old-password',
+        'password' => 'new-password',
         'password_confirmation' => 'new-password',
     ]);
 
@@ -53,8 +53,8 @@ it('rejects an invalid current password', function (): void {
 
     expectPasswordUpdateValidationFailure(
         input: [
-            'current_password'      => 'invalid-password',
-            'password'              => 'new-password',
+            'current_password' => 'invalid-password',
+            'password' => 'new-password',
             'password_confirmation' => 'new-password',
         ],
         field: 'current_password',
@@ -69,8 +69,8 @@ it('rejects an unconfirmed password', function (): void {
 
     expectPasswordUpdateValidationFailure(
         input: [
-            'current_password'      => 'old-password',
-            'password'              => 'new-password',
+            'current_password' => 'old-password',
+            'password' => 'new-password',
             'password_confirmation' => 'different-password',
         ],
         field: 'password',

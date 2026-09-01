@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Http\Request;
-use Workbench\App\Models\User;
 use Illuminate\Support\Facades\Notification;
 use Simtabi\Laranail\AuthKit\Http\Controllers\AbstractPasswordResetLinkController;
+use Workbench\App\Models\User;
 
 it('returns the same response for known and unknown password reset email addresses', function (): void {
     Notification::fake();

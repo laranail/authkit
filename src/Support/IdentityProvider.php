@@ -31,12 +31,12 @@ use Simtabi\Laranail\AuthKit\Contracts\SocialIdentityProviderInterface;
 final readonly class IdentityProvider implements SocialIdentityProviderInterface
 {
     /**
-     * @param  string                        $slug                   the route value, e.g. 'okta'
-     * @param  string                        $label                  human-readable name
-     * @param  bool                          $assertsEmailVerified   whether this provider verifies the address it returns
+     * @param  string  $slug  the route value, e.g. 'okta'
+     * @param  string  $label  human-readable name
+     * @param  bool  $assertsEmailVerified  whether this provider verifies the address it returns
      * @param  (Closure(array<string, mixed>): bool)|null  $verifiedEmailResolver  reads this provider's own claim
-     * @param  string|null                   $driver                 Socialite driver key, when it differs from the slug
-     * @param  string|null                   $driverClass            Socialite provider class to register for that key
+     * @param  string|null  $driver  Socialite driver key, when it differs from the slug
+     * @param  string|null  $driverClass  Socialite provider class to register for that key
      */
     public function __construct(
         public string $slug,

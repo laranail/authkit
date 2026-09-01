@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\AuthKit\Support\AuthKit;
 
 abstract class AbstractAuthController
@@ -13,11 +14,11 @@ abstract class AbstractAuthController
         return AuthKit::guard();
     }
 
-    protected function jsonResponse(string $status, mixed $data = [], int $code = 200): \Illuminate\Http\JsonResponse
+    protected function jsonResponse(string $status, mixed $data = [], int $code = 200): JsonResponse
     {
         return response()->json(data: [
             'status' => $status,
-            'data'   => $data,
+            'data' => $data,
         ], status: $code);
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Actions;
 
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Contracts\Session\Session;
 use Simtabi\Laranail\AuthKit\Contracts\LogoutUserInterface;
 
 class LogoutUser implements LogoutUserInterface

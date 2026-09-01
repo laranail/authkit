@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Http\Request;
-use Workbench\App\Models\User;
 use Simtabi\Laranail\AuthKit\Actions\CheckEmailExists;
+use Workbench\App\Models\User;
 
 function checkEmailRequest(string $email): Request
 {

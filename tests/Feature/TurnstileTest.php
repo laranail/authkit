@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
-use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Simtabi\Laranail\AuthKit\Rules\TurnstileRule;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
 
 function useTurnstileRoute(string $middleware): void
 {

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Simtabi\Laranail\AuthKit\Support\AuthKit;
-use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
-use Simtabi\Laranail\AuthKit\Contracts\IssueTokenForUserInterface;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Laravel\Fortify\Contracts\CreatesNewUsers as FortifyCreateNewUser;
+use Simtabi\Laranail\AuthKit\Contracts\IssueTokenForUserInterface;
+use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
 use Simtabi\Laranail\AuthKit\Http\Controllers\AbstractRegisterController;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
 
 class RegisterController extends AbstractRegisterController
 {
@@ -34,7 +34,7 @@ class RegisterController extends AbstractRegisterController
 
         return $this->jsonResponse(status: 'success', data: [
             'token' => $tokenResult->token,
-            'user'  => $tokenResult->user,
+            'user' => $tokenResult->user,
         ], code: 201);
     }
 
@@ -52,7 +52,7 @@ class RegisterController extends AbstractRegisterController
 
         return response()->json([
             'token' => $tokenResult->token,
-            'user'  => $tokenResult->user,
+            'user' => $tokenResult->user,
         ], 201);
     }
 }
