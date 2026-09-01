@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Actions;
 
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
-use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
+use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers as FortifyCreateNewUser;
-use Simtabi\Laranail\AuthKit\Services\UserValidationService;
 use Simtabi\Laranail\AuthKit\Http\Requests\RegisterRequest;
 use Simtabi\Laranail\AuthKit\Services\UserProvisioningService;
+use Simtabi\Laranail\AuthKit\Services\UserValidationService;
+use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
 
 class CreateNewUser implements FortifyCreateNewUser
 {
@@ -37,8 +33,8 @@ class CreateNewUser implements FortifyCreateNewUser
         );
 
         $user = app(abstract: UserProvisioningService::class)->create(attributes: [
-            'name'     => $input['name'],
-            'email'    => $input['email'],
+            'name' => $input['name'],
+            'email' => $input['email'],
             'password' => $input['password'],
         ]);
 

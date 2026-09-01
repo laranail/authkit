@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Http\Requests;
 
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 use Simtabi\Laranail\AuthKit\Support\AuthKit;
 
 class UpdatePasswordRequest extends FormRequest
@@ -21,7 +21,7 @@ class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password' => ['required', 'string', "current_password:{$guard}"],
-            'password'         => ['required', 'string', Password::default(), 'confirmed'],
+            'password' => ['required', 'string', Password::default(), 'confirmed'],
         ];
     }
 

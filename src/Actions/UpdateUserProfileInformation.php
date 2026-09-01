@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Actions;
 
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
-use Simtabi\Laranail\AuthKit\Services\UserValidationService;
 use Simtabi\Laranail\AuthKit\Http\Requests\UpdateProfileInformationRequest;
+use Simtabi\Laranail\AuthKit\Services\UserValidationService;
 
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
@@ -37,7 +36,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         }
 
         $user->forceFill(attributes: [
-            'name'  => $input['name'],
+            'name' => $input['name'],
             'email' => $input['email'],
         ])->save();
     }
@@ -45,8 +44,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     protected function updateVerifiedUser($user, array $input): void
     {
         $user->forceFill(attributes: [
-            'name'              => $input['name'],
-            'email'             => $input['email'],
+            'name' => $input['name'],
+            'email' => $input['email'],
             'email_verified_at' => null,
         ])->save();
 

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Simtabi\Laranail\AuthKit\Http\Controllers\Api;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
 
 /*
 |--------------------------------------------------------------------------

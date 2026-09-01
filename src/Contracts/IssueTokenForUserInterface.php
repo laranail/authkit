@@ -13,7 +13,7 @@ interface IssueTokenForUserInterface
     /** @param array<int, string> $abilities */
     /**
      * @param  array<int, string>|null  $abilities  null takes the configured default scope
-     * @param  DateTimeInterface|null   $expiresAt  null takes the configured lifetime
+     * @param  DateTimeInterface|null  $expiresAt  null takes the configured lifetime
      */
     public function execute(
         Authenticatable $user,

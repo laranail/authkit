@@ -36,7 +36,7 @@ function providerFiles(string $src): array
 it('keeps every service provider in a Providers directory', function (): void {
     $offenders = [];
 
-    foreach (providerFiles(__DIR__ . '/../../src') as $file) {
+    foreach (providerFiles(__DIR__.'/../../src') as $file) {
         if (basename($file->getPath()) !== 'Providers') {
             $offenders[] = $file->getFilename();
         }
@@ -48,7 +48,7 @@ it('keeps every service provider in a Providers directory', function (): void {
 it('ends every provider namespace in Providers', function (): void {
     $checked = 0;
 
-    foreach (providerFiles(__DIR__ . '/../../src') as $file) {
+    foreach (providerFiles(__DIR__.'/../../src') as $file) {
         // The directory and the namespace are separate facts -- PSR-4 makes them agree only if the
         // file declares the namespace its path implies, and a bad move can leave them disagreeing.
         $source = file_get_contents($file->getPathname());

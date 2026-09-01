@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Workbench\App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 use Simtabi\Laranail\AuthKit\Actions\UpdateUserProfileInformation;
+use Workbench\App\Models\User;
 
 class ProfileVerifiableUser extends User implements MustVerifyEmail
 {
@@ -60,17 +60,17 @@ it('binds the Fortify profile updater to Auth Kit', function (): void {
 
 it('updates the user profile information', function (): void {
     $user = User::factory()->create([
-        'name'  => 'Ada Lovelace',
+        'name' => 'Ada Lovelace',
         'email' => 'ada@example.com',
     ]);
 
     app(UpdateUserProfileInformation::class)->update($user, [
-        'name'  => 'Grace Hopper',
+        'name' => 'Grace Hopper',
         'email' => 'grace@example.com',
     ]);
 
     expect($user->fresh()->only(['name', 'email']))->toBe([
-        'name'  => 'Grace Hopper',
+        'name' => 'Grace Hopper',
         'email' => 'grace@example.com',
     ]);
 });
@@ -80,7 +80,7 @@ it('rejects invalid profile information', function (): void {
 
     expectProfileUpdateValidationFailure(
         input: [
-            'name'  => '',
+            'name' => '',
             'email' => 'not-an-email',
         ],
         field: 'name',
@@ -94,7 +94,7 @@ it('rejects an email address already used by another user', function (): void {
 
     expectProfileUpdateValidationFailure(
         input: [
-            'name'  => 'Updated User',
+            'name' => 'Updated User',
             'email' => $otherUser->email,
         ],
         field: 'email',
@@ -104,15 +104,15 @@ it('rejects an email address already used by another user', function (): void {
 
 it('resets email verification when a verified user changes their email', function (): void {
     $user = new ProfileVerifiableUser([
-        'name'              => 'Ada Lovelace',
-        'email'             => 'ada@example.com',
-        'password'          => 'password',
+        'name' => 'Ada Lovelace',
+        'email' => 'ada@example.com',
+        'password' => 'password',
         'email_verified_at' => now(),
     ]);
     $user->save();
 
     app(UpdateUserProfileInformation::class)->update($user, [
-        'name'  => 'Ada Lovelace',
+        'name' => 'Ada Lovelace',
         'email' => 'ada@lovelace.example',
     ]);
 

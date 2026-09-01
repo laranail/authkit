@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Simtabi\Laranail\AuthKit\Support\IdentityProvider;
 use Simtabi\Laranail\AuthKit\Contracts\IdentityProviderRegistryInterface;
+use Simtabi\Laranail\AuthKit\Support\IdentityProvider;
 
 it('lets a sub-package contribute a provider without editing this package', function (): void {
     $registry = app(IdentityProviderRegistryInterface::class);
