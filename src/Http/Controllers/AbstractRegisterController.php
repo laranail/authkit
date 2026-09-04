@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Http\Controllers;
 
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Contracts\CreatesNewUsers as FortifyCreateNewUser;
-use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
+use Illuminate\Auth\Events\Registered;
 use Simtabi\Laranail\AuthKit\Support\AuthKit;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Laravel\Fortify\Contracts\CreatesNewUsers as FortifyCreateNewUser;
 
 abstract class AbstractRegisterController extends AbstractAuthController
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Models;
 
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Laravel\Passkeys\Passkey as BasePasskey;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Passkey extends BasePasskey
 {

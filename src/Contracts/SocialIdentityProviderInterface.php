@@ -38,7 +38,7 @@ interface SocialIdentityProviderInterface
      * existing local account, so a provider that does not genuinely verify must answer false
      * whatever the payload claims.
      *
-     * @param  array<string, mixed>  $rawUser
+     * @param array<string, mixed> $rawUser
      */
     public function hasVerifiedEmail(array $rawUser): bool;
 }

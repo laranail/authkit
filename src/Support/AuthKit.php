@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Support;
 
+use Closure;
 use Simtabi\Laranail\AuthKit\Rules\TurnstileRule;
 
 class AuthKit
 {
+    /**
+     * Resolves a redirect target ahead of this package's own config, or null to defer.
+     *
+     * @var (Closure(string): ?string)|null
+     */
+    protected static ?Closure $redirectResolver = null;
+
     public static function guard(): string
     {
         return config(key: 'laranail.authkit.guard', default: 'web');
     }
-
-    /**
-     * Resolves a redirect target ahead of this package's own config, or null to defer.
-     *
-     * @var (\Closure(string): ?string)|null
-     */
-    protected static ?\Closure $redirectResolver = null;
 
     /**
      * Let a frontend package own the redirect targets.
@@ -31,9 +32,9 @@ class AuthKit
      * The resolver is consulted at read time rather than copied at boot, so a value changed after
      * the container has booted is still honoured. Returning null defers to this package's config.
      *
-     * @param  (\Closure(string): ?string)|null  $resolver
+     * @param (Closure(string): ?string)|null $resolver
      */
-    public static function resolveRedirectsUsing(?\Closure $resolver): void
+    public static function resolveRedirectsUsing(?Closure $resolver): void
     {
         static::$redirectResolver = $resolver;
     }

@@ -7,10 +7,10 @@ namespace Simtabi\Laranail\AuthKit\Providers;
 use Laravel\Fortify\Fortify;
 use Laravel\Passkeys\Passkeys;
 use Simtabi\Laranail\AuthKit\Actions;
-use Simtabi\Laranail\AuthKit\Contracts;
-use Simtabi\Laranail\AuthKit\Models\Passkey;
 use Simtabi\Laranail\AuthKit\Services;
+use Simtabi\Laranail\AuthKit\Contracts;
 use Simtabi\Laranail\Package\Tools\Package;
+use Simtabi\Laranail\AuthKit\Models\Passkey;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 
 class AuthKitServiceProvider extends PackageServiceProvider

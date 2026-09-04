@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Contracts;
 
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 interface ListBrowserSessionsInterface
 {

@@ -26,9 +26,10 @@ class UserValidationService
     /**
      * Validate input, throwing Illuminate\Validation\ValidationException on failure.
      *
-     * @param  array<string, mixed>  $input
-     * @param  array<string, array<int, mixed>>  $rules
-     * @param  array<string, string>  $messages
+     * @param array<string, mixed> $input
+     * @param array<string, array<int, mixed>> $rules
+     * @param array<string, string> $messages
+     *
      * @return array<string, mixed> the validated subset
      */
     public function validate(array $input, array $rules, array $messages = [], ?string $errorBag = null): array

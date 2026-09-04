@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Http\Controllers\Api;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\AuthKit\Http\Controllers\AbstractCheckEmailExistsController;
 
 class CheckEmailExistsController extends AbstractCheckEmailExistsController

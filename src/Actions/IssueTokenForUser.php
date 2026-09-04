@@ -6,8 +6,8 @@ namespace Simtabi\Laranail\AuthKit\Actions;
 
 use DateTimeInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Simtabi\Laranail\AuthKit\Contracts\IssueTokenForUserInterface;
 use Simtabi\Laranail\AuthKit\Support\TokenResult;
+use Simtabi\Laranail\AuthKit\Contracts\IssueTokenForUserInterface;
 
 class IssueTokenForUser implements IssueTokenForUserInterface
 {
@@ -24,8 +24,8 @@ class IssueTokenForUser implements IssueTokenForUserInterface
      * never stops working. Sanctum's own `sanctum.expiration` is null by default, so nothing
      * downstream supplied the missing lifetime either.
      *
-     * @param  array<int, string>|null  $abilities  null takes the configured default scope
-     * @param  DateTimeInterface|null  $expiresAt  null takes the configured lifetime
+     * @param array<int, string>|null $abilities null takes the configured default scope
+     * @param DateTimeInterface|null $expiresAt null takes the configured lifetime
      */
     public function execute(
         Authenticatable $user,
