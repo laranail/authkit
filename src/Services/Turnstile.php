@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Services;
 
-use Illuminate\Support\Facades\Http;
 use Throwable;
+use Illuminate\Support\Facades\Http;
 
 class Turnstile
 {
@@ -28,7 +28,7 @@ class Turnstile
                     url: $this->url,
                     data: [
                         'response' => $token,
-                        'secret' => $this->secretKey,
+                        'secret'   => $this->secretKey,
                     ],
                 );
         } catch (Throwable) {
