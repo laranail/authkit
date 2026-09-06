@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Simtabi\Laranail\AuthKit\Actions\LoginUser;
 use Workbench\App\Models\User;
+use Simtabi\Laranail\AuthKit\Actions\LoginUser;
 
 it(description: 'logs the user into the guard', closure: function () {
     $user = User::factory()->create();

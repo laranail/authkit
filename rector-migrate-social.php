@@ -41,7 +41,7 @@ $moved = [
 
 $renames = [];
 foreach ($moved as $class) {
-    $renames[$old.$class] = $new.$class;
+    $renames[$old . $class] = $new . $class;
 }
 
 return RectorConfig::configure()

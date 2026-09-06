@@ -31,12 +31,12 @@ use Simtabi\Laranail\AuthKit\Contracts\SocialIdentityProviderInterface;
 final readonly class IdentityProvider implements SocialIdentityProviderInterface
 {
     /**
-     * @param  string  $slug  the route value, e.g. 'okta'
-     * @param  string  $label  human-readable name
-     * @param  bool  $assertsEmailVerified  whether this provider verifies the address it returns
-     * @param  (Closure(array<string, mixed>): bool)|null  $verifiedEmailResolver  reads this provider's own claim
-     * @param  string|null  $driver  Socialite driver key, when it differs from the slug
-     * @param  string|null  $driverClass  Socialite provider class to register for that key
+     * @param string $slug the route value, e.g. 'okta'
+     * @param string $label human-readable name
+     * @param bool $assertsEmailVerified whether this provider verifies the address it returns
+     * @param (Closure(array<string, mixed>): bool)|null $verifiedEmailResolver reads this provider's own claim
+     * @param string|null $driver Socialite driver key, when it differs from the slug
+     * @param string|null $driverClass Socialite provider class to register for that key
      */
     public function __construct(
         public string $slug,
@@ -69,7 +69,7 @@ final readonly class IdentityProvider implements SocialIdentityProviderInterface
      * A provider that asserts nothing answers false whatever the payload claims, so a forged
      * `email_verified` cannot promote it.
      *
-     * @param  array<string, mixed>  $rawUser
+     * @param array<string, mixed> $rawUser
      */
     public function hasVerifiedEmail(array $rawUser): bool
     {

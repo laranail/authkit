@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
+use Workbench\App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Simtabi\Laranail\AuthKit\Services\BrowserSessionService;
 use Simtabi\Laranail\AuthKit\Contracts\ListBrowserSessionsInterface;
 use Simtabi\Laranail\AuthKit\Contracts\LogoutOtherBrowserSessionsInterface;
-use Simtabi\Laranail\AuthKit\Services\BrowserSessionService;
-use Workbench\App\Models\User;
 
 function seedSession(string $id, ?int $userId, string $agent = 'Other/1.0'): void
 {
     DB::table('sessions')->insert([
-        'id' => $id,
-        'user_id' => $userId,
-        'ip_address' => '10.0.0.1',
-        'user_agent' => $agent,
-        'payload' => '',
+        'id'            => $id,
+        'user_id'       => $userId,
+        'ip_address'    => '10.0.0.1',
+        'user_agent'    => $agent,
+        'payload'       => '',
         'last_activity' => time(),
     ]);
 }

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
+use Laravel\Fortify\Features;
+use Laravel\Passkeys\Passkeys;
+use Workbench\App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Contracts\PasskeyUser;
-use Laravel\Fortify\Features;
-use Laravel\Passkeys\Http\Controllers\PasskeyConfirmationController;
-use Laravel\Passkeys\Http\Controllers\PasskeyLoginController;
-use Laravel\Passkeys\Http\Controllers\PasskeyRegistrationController;
-use Laravel\Passkeys\Passkeys;
 use Simtabi\Laranail\AuthKit\Models\Passkey;
+use Laravel\Passkeys\Http\Controllers\PasskeyLoginController;
 use Simtabi\Laranail\AuthKit\Providers\AuthKitServiceProvider;
-use Workbench\App\Models\User;
+use Laravel\Passkeys\Http\Controllers\PasskeyConfirmationController;
+use Laravel\Passkeys\Http\Controllers\PasskeyRegistrationController;
 
 it('enables Fortify passkeys and registers the canonical routes', function (): void {
     expect(config('fortify.features'))->toContain(Features::passkeys())
@@ -38,16 +38,16 @@ it('publishes the Auth Kit passkeys migration', function (): void {
     );
 
     expect(array_map('realpath', array_keys($paths)))
-        ->toContain(realpath(dirname(__DIR__, 2).'/database/migrations/passkeys'));
+        ->toContain(realpath(dirname(__DIR__, 2) . '/database/migrations/passkeys'));
 });
 
 it('delegates passkey routes to the laravel passkeys controllers', function (): void {
     expect(Route::getRoutes()->getByName('passkey.login')->getActionName())
-        ->toBe(PasskeyLoginController::class.'@store')
+        ->toBe(PasskeyLoginController::class . '@store')
         ->and(Route::getRoutes()->getByName('passkey.confirm')->getActionName())
-        ->toBe(PasskeyConfirmationController::class.'@store')
+        ->toBe(PasskeyConfirmationController::class . '@store')
         ->and(Route::getRoutes()->getByName('passkey.store')->getActionName())
-        ->toBe(PasskeyRegistrationController::class.'@store');
+        ->toBe(PasskeyRegistrationController::class . '@store');
 });
 
 it('applies Fortify passkey authentication and confirmation middleware', function (): void {
@@ -67,9 +67,9 @@ it('provides the passkey user contract and polymorphic relationship', function (
         ->and($user->hasPasskeysEnabled())->toBeFalse();
 
     $passkey = $user->passkeys()->create([
-        'name' => 'MacBook Pro',
+        'name'          => 'MacBook Pro',
         'credential_id' => 'credential-id',
-        'credential' => ['public-key' => 'credential'],
+        'credential'    => ['public-key' => 'credential'],
     ]);
 
     expect($user->fresh()->passkeys)->toHaveCount(1)

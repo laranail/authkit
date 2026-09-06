@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Http\Controllers\Api;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Simtabi\Laranail\AuthKit\Contracts\LogoutUserInterface;
 use Simtabi\Laranail\AuthKit\Http\Controllers\AbstractLogoutController;
-use Simtabi\Laranail\AuthKit\Support\AuthKit;
 
 class LogoutController extends AbstractLogoutController
 {

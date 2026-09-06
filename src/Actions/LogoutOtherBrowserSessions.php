@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Actions;
 
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
-use Simtabi\Laranail\AuthKit\Contracts\LogoutOtherBrowserSessionsInterface;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AuthKit\Services\BrowserSessionService;
+use Simtabi\Laranail\AuthKit\Contracts\LogoutOtherBrowserSessionsInterface;
 
 class LogoutOtherBrowserSessions implements LogoutOtherBrowserSessionsInterface
 {

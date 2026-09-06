@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AuthKit\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Simtabi\Laranail\AuthKit\Contracts\AttemptEmailPasswordLoginInterface;
-use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
-use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
-use Simtabi\Laranail\AuthKit\Http\Requests\AttemptEmailPasswordLoginRequest;
 use Simtabi\Laranail\AuthKit\Support\AuthKit;
+use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
 use Simtabi\Laranail\AuthKit\Support\AuthResult;
+use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
+use Simtabi\Laranail\AuthKit\Contracts\AttemptEmailPasswordLoginInterface;
+use Simtabi\Laranail\AuthKit\Http\Requests\AttemptEmailPasswordLoginRequest;
 
 abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthController
 {
@@ -26,15 +26,15 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
 
         if ($request->expectsJson()) {
             return match ($result->status) {
-                AuthStatus::Passed => $this->jsonResponse(status: 'passed', data: ['user' => $result->user]),
-                AuthStatus::Failed => $this->jsonResponse(status: 'failed', data: ['message' => 'Invalid credentials.'], code: 422),
+                AuthStatus::Passed    => $this->jsonResponse(status: 'passed', data: ['user' => $result->user]),
+                AuthStatus::Failed    => $this->jsonResponse(status: 'failed', data: ['message' => 'Invalid credentials.'], code: 422),
                 AuthStatus::Throttled => $this->jsonResponse(status: 'throttled', data: ['retry_after' => $result->retryAfterSeconds], code: 429),
             };
         }
 
         return match ($result->status) {
-            AuthStatus::Passed => $this->handlePassed(request: $request, result: $result, loginAction: $loginAction),
-            AuthStatus::Failed => $this->failed(request: $request, result: $result),
+            AuthStatus::Passed    => $this->handlePassed(request: $request, result: $result, loginAction: $loginAction),
+            AuthStatus::Failed    => $this->failed(request: $request, result: $result),
             AuthStatus::Throttled => $this->throttled(request: $request, result: $result),
         };
     }

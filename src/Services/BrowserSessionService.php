@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Services;
 
+use Illuminate\Support\Collection;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Config\Repository as Config;
-use Illuminate\Database\DatabaseManager;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Collection;
 
 /**
  * Reads and prunes the rows behind a user's signed-in browsers.
@@ -56,10 +56,10 @@ class BrowserSessionService
             ->orderByDesc('last_activity')
             ->get()
             ->map(fn (object $session): object => (object) [
-                'id' => $session->id,
-                'ip_address' => $session->ip_address ?? null,
-                'user_agent' => $session->user_agent ?? null,
-                'last_activity' => (int) $session->last_activity,
+                'id'                => $session->id,
+                'ip_address'        => $session->ip_address ?? null,
+                'user_agent'        => $session->user_agent ?? null,
+                'last_activity'     => (int) $session->last_activity,
                 'is_current_device' => $currentSessionId !== null && $session->id === $currentSessionId,
             ]);
     }

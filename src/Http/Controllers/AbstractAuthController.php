@@ -18,7 +18,7 @@ abstract class AbstractAuthController
     {
         return response()->json(data: [
             'status' => $status,
-            'data' => $data,
+            'data'   => $data,
         ], status: $code);
     }
 }

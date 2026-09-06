@@ -6,11 +6,11 @@ namespace Simtabi\Laranail\AuthKit\Actions;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
-use Simtabi\Laranail\AuthKit\Http\Requests\UpdatePasswordRequest;
 use Simtabi\Laranail\AuthKit\Services\BrowserSessionService;
 use Simtabi\Laranail\AuthKit\Services\UserValidationService;
-use Simtabi\Laranail\AuthKit\Support\AuthKit;
+use Simtabi\Laranail\AuthKit\Http\Requests\UpdatePasswordRequest;
 
 class UpdateUserPassword implements UpdatesUserPasswords
 {
@@ -26,7 +26,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
         );
 
         $user->forceFill(attributes: [
-            'password' => Hash::make(value: $input['password']),
+            'password'       => Hash::make(value: $input['password']),
             'remember_token' => null,
         ])->save();
 

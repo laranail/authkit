@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Simtabi\Laranail\AuthKit\Contracts\IdentityProviderRegistryInterface;
 use Simtabi\Laranail\AuthKit\Support\IdentityProvider;
+use Simtabi\Laranail\AuthKit\Contracts\IdentityProviderRegistryInterface;
 
 it('lets a sub-package contribute a provider without editing this package', function (): void {
     $registry = app(IdentityProviderRegistryInterface::class);
@@ -23,7 +23,9 @@ it('keeps registrations across resolutions', function (): void {
     // A fresh instance per resolution would drop whatever registered before it, so every
     // sub-package after the first would silently vanish.
     app(IdentityProviderRegistryInterface::class)->register(new IdentityProvider(
-        slug: 'okta', label: 'Okta', assertsEmailVerified: true,
+        slug: 'okta',
+        label: 'Okta',
+        assertsEmailVerified: true,
     ));
 
     expect(app(IdentityProviderRegistryInterface::class)->has('okta'))->toBeTrue();

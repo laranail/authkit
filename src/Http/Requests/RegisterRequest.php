@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Foundation\Http\FormRequest;
 use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
 
@@ -24,20 +24,20 @@ use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
 class RegisterRequest extends FormRequest
 {
     /** @return array<string, array<int, mixed>> */
-    public function rules(): array
-    {
-        return self::rulesFor();
-    }
-
-    /** @return array<string, array<int, mixed>> */
     public static function rulesFor(): array
     {
         return array_merge([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(table: UserModelResolver::resolve())],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', Rule::unique(table: UserModelResolver::resolve())],
             'password' => ['required', 'string', Password::default(), 'confirmed'],
         ], [
             config(key: 'laranail.authkit.turnstile.input', default: 'cf-turnstile-response') => AuthKit::turnstileRules(),
         ]);
+    }
+
+    /** @return array<string, array<int, mixed>> */
+    public function rules(): array
+    {
+        return self::rulesFor();
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Actions;
 
-use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Simtabi\Laranail\AuthKit\Contracts\CheckEmailExistsInterface;
 
 class CheckEmailExists implements CheckEmailExistsInterface

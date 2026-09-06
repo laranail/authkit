@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Laravel\Fortify\Contracts\PasskeyUser;
-use Laravel\Passkeys\PasskeyAuthenticatable as BasePasskeyAuthenticatable;
 use Laravel\Passkeys\Passkeys;
+use Laravel\Fortify\Contracts\PasskeyUser;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Simtabi\Laranail\AuthKit\Relations\PasskeyMorphMany;
+use Laravel\Passkeys\PasskeyAuthenticatable as BasePasskeyAuthenticatable;
 
 /**
  * @phpstan-require-implements PasskeyUser

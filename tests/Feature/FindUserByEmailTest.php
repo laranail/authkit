@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Simtabi\Laranail\AuthKit\Actions\FindUserByEmail;
 use Workbench\App\Models\User;
+use Simtabi\Laranail\AuthKit\Actions\FindUserByEmail;
 
 it(description: 'returns user when the email exists', closure: function (): void {
     $user = User::factory()->create([
