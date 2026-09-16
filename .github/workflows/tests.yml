@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths-ignore:
-      - '*.md'
+      - '**.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,17 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
-      fail-fast: true
+      # One cell failing must not cancel the others; which cells fail is the signal.
+      fail-fast: false
       matrix:
         php: [ 8.4, 8.5 ]
-        laravel: [ 13.* ]
         stability: [ prefer-stable ]
-        include:
-          - laravel: 13.*
-            testbench: 11.*
-            carbon: ^3.0
 
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }}
+    name: P${{ matrix.php }} - ${{ matrix.stability }}
 
     steps:
       - name: Checkout code
@@ -36,17 +32,41 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, sqlite3, pdo_sqlite, zip
-          coverage: pcov
+          # No driver: nothing consumed the report, and pcov instruments every
+          # file on every run. Restore with an upload or a --min gate.
+          coverage: none
 
       - name: Setup problem matchers
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
+      - name: Resolve composer cache directory
+        id: composer-cache
+        shell: bash
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore composer cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
+          restore-keys: composer-${{ runner.os }}-${{ matrix.php }}-
+
+      - name: Drop cached laranail archives
+        # laranail/* resolve through a single MOVING v0.1.0 tag, so composer's dist
+        # cache is keyed on a name whose contents change underneath it. A restored
+        # archive is then silently stale: the install reports success and unpacks
+        # whatever was cached the first time. Everything else is immutable per
+        # version and stays cached.
+        # POSIX command via bash: Windows runners default to PowerShell, where this
+        # would be a parse error rather than a no-op.
+        shell: bash
+        run: rm -rf "$(composer config cache-files-dir)/laranail"
+
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Execute tests
-        run: ./vendor/bin/pest --coverage
+        run: ./vendor/bin/pest
