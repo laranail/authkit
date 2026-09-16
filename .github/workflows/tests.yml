@@ -19,8 +19,10 @@ jobs:
       fail-fast: false
       matrix:
         php: [ 8.4, 8.5 ]
-        stability: [ prefer-stable ]
-
+        # prefer-lowest is what actually installs the floor composer.json declares.
+        # Without it nothing ever resolves the minimum this package tells consumers
+        # it supports, so a wrong floor can ship for months unnoticed.
+        stability: [prefer-lowest, prefer-stable]
     name: P${{ matrix.php }} - ${{ matrix.stability }}
 
     steps:
@@ -66,7 +68,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+          composer update --${{ matrix.stability }} --prefer-stable --prefer-dist --no-interaction
 
       - name: Execute tests
         run: ./vendor/bin/pest
