@@ -4,7 +4,7 @@
 [![Static analysis](https://img.shields.io/github/actions/workflow/status/laranail/authkit/static.yml?branch=main&label=static%20analysis&style=flat-square)](https://github.com/laranail/authkit/actions/workflows/static.yml)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-`laranail/authkit` is not published to Packagist, so there is no registry-version badge to show — see [Install](#install).
+`laranail/authkit` is not published to Packagist, so there is no registry-version badge to show: see [Install](#install).
 
 Headless authentication for Laravel 13+. Ships the REST API; no views and no web routes.
 
