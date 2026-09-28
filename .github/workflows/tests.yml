@@ -3,8 +3,8 @@ name: Tests
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - '**.md'
+    # No path filter: this workflow gates merges as a required status check, and a
+    # required check that never reports (a docs-only pull request) blocks it for good.
   workflow_dispatch:
 
 concurrency:
