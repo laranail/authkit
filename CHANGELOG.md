@@ -9,11 +9,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- **Breaking. Social login moved to `laranail/authkit-social`.** Fifteen classes, the `socials`
+- **Breaking. Social login moved to `laranail/authkit-social-login`.** Fifteen classes, the `socials`
   migration, its factory and the `social` config block left this package. See
   [UPGRADING.md](UPGRADING.md); `rector-migrate-social.php` codemods the class renames.
 
-  The config key moved from `laranail.authkit.social.*` to `laranail.authkit-social.*`, in the new
+  The config key moved from `laranail.authkit.social.*` to `laranail.authkit-social-login.*`, in the new
   package's own published file. **Provider env variable names are unchanged** — `AUTHKIT_GOOGLE_CLIENT_ID`
   and the rest keep working, because renaming them would break deployed `.env` files with
   credentials silently resolving to null.
@@ -22,9 +22,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   All three were used only by social code, so the core no longer pulls Socialite into applications
   that never touch social login.
 
-  The `laranail::authkit-social-migrations` publish tag is unchanged, but is now published by the
-  new package rather than this one. The migration filename is unchanged, so an application that has
+  The `laranail::authkit-social-login-migrations` publish tag is now published by the new package
+  rather than this one. The migration filename is unchanged, so an application that has
   already run it will not run it again.
+
+- Core documentation now describes social login as a separate package and points to its current
+  guide, config key, and publish tags. The core provider contracts are documented as extension
+  seams, not as shipped Socialite behavior.
 
 - `testbench.yaml` no longer declares `Workbench\Database\Seeders\DatabaseSeeder` or
   `workbench/database/migrations`. Neither existed. `composer.json` dropped the matching

@@ -9,11 +9,10 @@ use Simtabi\Laranail\AuthKit\Support\IdentityProvider;
 /**
  * The seam through which a sub-package adds an identity provider.
  *
- * laranail/authkit-sso and laranail/authkit-oauth need to contribute providers -- an Okta tenant,
- * a SAML IdP, a customer's OIDC endpoint -- without editing this package. The built-in social
- * providers stay a closed enum, because an exhaustive match is what forces an explicit decision
- * when one is added there; this registry is the equivalent forcing function for providers that
- * arrive from outside, since IdentityProvider requires its verification flag to be stated.
+ * Sibling packages contribute providers -- an Okta tenant, a SAML IdP, or a customer's OIDC endpoint --
+ * without editing this package. The social-login package supplies its own built-in provider enum;
+ * this registry handles providers contributed by packages or applications. IdentityProvider
+ * requires its email-verification behavior to be stated explicitly.
  */
 interface IdentityProviderRegistryInterface
 {

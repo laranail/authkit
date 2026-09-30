@@ -9,7 +9,7 @@ laranail/authkit           Simtabi\Laranail\AuthKit\           this package — 
 laranail/authkit-preset    Simtabi\Laranail\AuthKit\Preset\    Blade scaffolding
 laranail/authkit-sso       Simtabi\Laranail\AuthKit\Sso\       SAML and OIDC
 laranail/authkit-oauth     Simtabi\Laranail\AuthKit\OAuth\     OAuth server, apps and scopes
-laranail/authkit-social    Simtabi\Laranail\AuthKit\Social\    social login (Socialite)
+laranail/authkit-social-login Simtabi\Laranail\AuthKit\Social\ social login (Socialite)
 laranail/authkit-tenancy   Simtabi\Laranail\AuthKit\Tenancy\   multi-tenancy
 laranail/authkit-ldap      Simtabi\Laranail\AuthKit\Ldap\      LDAP and Active Directory
 ```
@@ -50,8 +50,8 @@ The sibling packages exist only if these are real. Each is a container-bound con
 
 | Seam | Purpose | Consumers |
 |---|---|---|
-| `ResolveIdentityInterface` | One linking-and-provisioning path for social, SAML, OIDC and directory sign-in, including the verified-identity guard | all |
-| `IdentityProviderRegistryInterface` | A registry a sibling pushes a provider into, replacing a closed enum as the universe of providers | oauth, sso |
+| `SocialIdentityProviderInterface` | Describes a social identity provider to the social-login package and provider registry | social-login |
+| `IdentityProviderRegistryInterface` | A registry a sibling pushes a provider into, replacing a closed enum as the universe of providers | social-login, oauth, sso |
 | `IssueTokenForUserInterface` | Token issuance, with ability scoping and expiry | all |
 | `TenantResolverInterface` | Resolves the active tenant; identity tables carry a nullable tenant key | tenancy |
 | `DirectoryResolverInterface` | Resolves and syncs a directory entry to a local user | ldap |
@@ -61,12 +61,9 @@ The sibling packages exist only if these are real. Each is a container-bound con
 first sibling is written. A sub-package that has to edit the core to do its job is not extending
 the core, it is forking it.
 
-## Why social login refuses an unverified email
-
-`ResolveSocialIdentity` will link an external identity to an existing local account only when the
-provider asserts the email is verified. Without that check, any provider returning an
-attacker-controlled address is an account-takeover path. The guard belongs in the shared resolution
-seam so SAML, OIDC and LDAP inherit it rather than each re-deriving it.
+Social-provider account linking and verified-email checks are implemented by
+[`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login). The core exposes
+the provider contract and registry that package uses; it does not implement Socialite flows.
 
 ---
 

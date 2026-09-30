@@ -2,16 +2,16 @@
 
 Breaking changes, and what to do about them. Versions not listed here need no action.
 
-## Social login moved to `laranail/authkit-social`
+## Social login moved to `laranail/authkit-social-login`
 
 Social login is no longer part of this package. Fifteen classes, the `socials` migration, the factory
 and the `social` config block now live in
-[`laranail/authkit-social`](https://github.com/laranail/authkit-social).
+[`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login).
 
 **Most of the mechanical part is a codemod:**
 
 ```bash
-composer require laranail/authkit-social
+composer require laranail/authkit-social-login
 vendor/bin/rector process app/ --config vendor/laranail/authkit/rector-migrate-social.php
 ```
 
@@ -24,19 +24,19 @@ the `require`:
 
 ```json
 "repositories": [
-    { "type": "vcs", "url": "https://github.com/laranail/authkit-social.git" }
+    { "type": "vcs", "url": "https://github.com/laranail/authkit-social-login.git" }
 ],
 "require": {
-    "laranail/authkit-social": "^0.1"
+    "laranail/authkit-social-login": "^0.1"
 }
 ```
 
 ### 2. The config key moved
 
-`laranail.authkit.social.*` → `laranail.authkit-social.*`, in its own published file.
+`laranail.authkit.social.*` → `laranail.authkit-social-login.*`, in its own published file.
 
 ```bash
-php artisan vendor:publish --tag=laranail::authkit-social-config
+php artisan vendor:publish --tag=laranail::authkit-social-login-config
 ```
 
 **Your `.env` does not change.** `AUTHKIT_GOOGLE_CLIENT_ID` and every other provider variable keep
@@ -47,8 +47,8 @@ If you published `config/laranail/authkit.php`, delete its `social` block; nothi
 
 ### 3. The migration publish tag now comes from the new package
 
-`laranail::authkit-social-migrations` is unchanged as a tag, but it is published by
-`laranail/authkit-social` rather than by the core. **The migration filename is unchanged**, so an
+`laranail::authkit-social-login-migrations` is published by `laranail/authkit-social-login` rather
+than by the core. **The migration filename is unchanged**, so an
 application that already ran it will not run it again.
 
 ### 4. Class names
@@ -79,4 +79,4 @@ and the file parses cleanly, so the failure only appears when the class is loade
 
 `laravel/socialite`, `socialiteproviders/manager` and `laranail/enumerator` are no longer required by
 this package. If your application used them directly, require them yourself — installing
-`laranail/authkit-social` also brings all three back transitively.
+`laranail/authkit-social-login` also brings all three back transitively.

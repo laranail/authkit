@@ -7,10 +7,9 @@ namespace Simtabi\Laranail\AuthKit\Contracts;
 /**
  * What identity resolution needs to know about a provider, whoever supplied it.
  *
- * The built-in social providers are a closed enum, because an exhaustive match is what forces an
- * explicit decision when one is added. Providers contributed by a sub-package arrive as
- * IdentityProvider objects instead. Both answer the same two questions, so the resolution path
- * takes this interface and does not care which it was handed.
+ * The social-login package supplies its built-in providers as an enum; other packages can
+ * contribute IdentityProvider objects. Both implement this contract so shared identity-provider
+ * tooling can use them without depending on either implementation.
  */
 interface SocialIdentityProviderInterface
 {
