@@ -13,7 +13,6 @@ Headless authentication for Laravel 13+. Ships the REST API; no views and no web
 
 - **Fortify-backed** — password reset, profile updates, password updates, email verification, passkeys, login throttling
 - **Sanctum-ready** — API token issuance via `IssueTokenForUser`
-- **Social login** — Google, Apple, X, LinkedIn, PayPal via Socialite
 - **Composable** — separate actions for credential check vs session login
 
 ## Requirements
@@ -54,7 +53,7 @@ Full documentation: <https://opensource.simtabi.com/documentation/laranail/authk
 
 - [Installation](docs/installation.md) — requirements, the repositories block, publishing config
 - [Getting started](docs/getting-started.md) — authenticate a user with the core alone
-- [Configuration](docs/configuration.md) — guard, rate limits, Fortify features, social credentials
+- [Configuration](docs/configuration.md) — guard, rate limits, and Fortify features
 - [Architecture](docs/architecture.md) — layering, what is delegated to Fortify, the extension seams
 - [Security](docs/security.md) — the guarantees this package makes and the ones it does not
 - [Release](docs/release.md) — versioning, tagging, and ordering across the family
@@ -65,7 +64,7 @@ Full documentation: <https://opensource.simtabi.com/documentation/laranail/authk
 - [Password reset](docs/password-reset.md) · [Password updates](docs/password-updates.md)
 - [Profile management](docs/profile-management.md) · [Email verification](docs/email-verification.md)
 - [Browser sessions](docs/browser-sessions.md) · [API routes](docs/api-routes.md) · [API tokens](docs/api-tokens.md)
-- [Social login](https://github.com/laranail/authkit-social/blob/main/docs/social-login.md) · [Passkeys](docs/passkeys.md) · [API tokens](docs/api-tokens.md)
+- [Social login](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md) · [Passkeys](docs/passkeys.md) · [API tokens](docs/api-tokens.md)
 
 ### Project
 
@@ -80,10 +79,6 @@ Full documentation: <https://opensource.simtabi.com/documentation/laranail/authk
 AUTHKIT_GUARD=web
 AUTHKIT_RATE_LIMIT_MAX_ATTEMPTS=5
 AUTHKIT_RATE_LIMIT_DECAY_MINUTES=1
-
-AUTHKIT_GOOGLE_CLIENT_ID=
-AUTHKIT_GOOGLE_CLIENT_SECRET=
-AUTHKIT_GOOGLE_REDIRECT=${APP_URL}/auth/google/callback
 ```
 
 `config/laranail/authkit.php`:
@@ -104,32 +99,12 @@ return [
 ];
 ```
 
-Social login moved to [`laranail/authkit-social`](https://github.com/laranail/authkit-social) and
-carries its own `laranail.authkit-social` config. The provider env variables are unchanged, so an
-existing `.env` keeps working:
-
-```php
-// config/laranail/authkit-social.php
-return [
-    'enabled' => (bool) env('AUTHKIT_SOCIAL_ENABLED', default: true),
-
-    'google' => [
-        'client_id'     => env('AUTHKIT_GOOGLE_CLIENT_ID'),
-        'client_secret' => env('AUTHKIT_GOOGLE_CLIENT_SECRET'),
-        'redirect'      => env('AUTHKIT_GOOGLE_REDIRECT'),
-        'scopes'        => ['openid', 'profile', 'email'],
-    ],
-    // apple, x, linkedin, paypal ...
-```
-
 Remove `passkeys` from `laranail.authkit.fortify.features` to disable Fortify's passkey routes. Auth Kit only enables and configures Fortify; passkey ceremonies, responses, and persistence remain provided by Fortify and `laravel/passkeys`.
 
 ### Security defaults
 
 - Two-factor authentication is not enabled by default. MFA is still work in progress.
-- Social sign-in only provisions or auto-links an account when the provider asserts it verified the address. Every shipped provider does, through its own claim: Google, Apple, LinkedIn, and PayPal return `email_verified`, X returns `confirmed_email`. Facebook is not shipped, because it asserts nothing.
 - Before production, configure HTTPS, secure session cookies, a working mail transport, and Turnstile keys when bot protection is enabled.
-- PayPal uses sandbox mode by default. Set `AUTHKIT_PAYPAL_SANDBOX_MODE=false` with production PayPal credentials before enabling it in production.
 
 ## Passkeys
 
@@ -191,10 +166,6 @@ The application client should use Fortify's `/passkeys/login/options`, `/passkey
 | `IssueTokenForUser`            | Issue Sanctum personal access token, returns `TokenResult`            |
 | `CheckEmailExists`             | Check if email is registered                                          |
 | `FindUserByEmail`              | Retrieve user by email                                                |
-| `ResolveSocialIdentity`        | Safe social identity → user resolution (verified-email check)         |
-| `SocialRedirectAction`         | Generate OAuth redirect URL, returns `SocialRedirectResult`           |
-| `SocialCallbackAction`         | Handle OAuth callback via `ResolveSocialIdentity`                     |
-| `CreateSocialAccountAction`    | Create social account record via polymorphic relation                 |
 
 ## Result types
 
@@ -214,12 +185,6 @@ Check with `$result->isPassed()` or match on `$result->status` (`AuthStatus::Pas
 new TokenResult(user: $user, token: $token)
 ```
 
-**`SocialRedirectResult`** — returned by `SocialRedirectAction`:
-
-```php
-new SocialRedirectResult(url: $url)
-```
-
 ## Abstract controllers
 
 Extend these to wire up your own routes. JSON responses are handled automatically.
@@ -230,38 +195,11 @@ Extend these to wire up your own routes. JSON responses are handled automaticall
 | `AbstractCheckEmailExistsController`          | `respond()`                           |
 | `AbstractLogoutController`                    | `loggedOut()`                         |
 | `AbstractRegisterController`                  | `registered()`                        |
-| `AbstractSocialRedirectController`            | `redirect()`                          |
-| `AbstractSocialCallbackController`            | `passed()`, `failed()`                |
-
 ## Social login
 
-`ResolveSocialIdentity` implements verified-email linking to prevent account takeover:
-
-1. Existing social account → returns user (updates tokens)
-2. Authenticated user → links social account
-3. Unverified email match → **returns null** (prevents takeover)
-4. Verified email match → auto-links
-5. No match → creates new user + social record
-
-### Social model
-
-Add to your `User` model:
-
-```php
-use Simtabi\Laranail\AuthKit\Social\Models\Social;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-
-public function socials(): MorphMany
-{
-    return $this->morphMany(Social::class, 'socialable');
-}
-```
-
-Publish the migration:
-
-```bash
-php artisan vendor:publish --tag=laranail::authkit-social-migrations
-```
+Social login is maintained in [`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login),
+which extends this package. See its [social login guide](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md)
+for installation, providers, routes, persistence, and account-linking behavior.
 
 ## Usage
 
@@ -295,30 +233,15 @@ return response()->json([
 ]);
 ```
 
-### Social redirect + callback
-
-```php
-$redirect = app(SocialRedirectAction::class)->execute(
-    request: $request,
-);
-
-return redirect($redirect->url);
-
-// Callback:
-$result = app(SocialCallbackAction::class)->execute(
-    request: $request,
-    guard: 'web',
-);
-```
-
 ## Sister packages
 
 | Package | Role |
 |---|---|
 | [`laranail/authkit`](https://github.com/laranail/authkit) | Headless core — actions, contracts, result objects, REST API |
 | [`laranail/authkit-preset`](https://github.com/laranail/authkit-preset) | Blade scaffolding on top of the core |
+| [`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login) | Social login through Socialite |
 | `laranail/authkit-sso` | SAML 2.0 and OIDC single sign-on |
-| `laranail/authkit-oauth` | OAuth and social identity |
+| `laranail/authkit-oauth` | OAuth server, apps and scopes |
 | `laranail/authkit-tenancy` | Multi-tenancy |
 | `laranail/authkit-ldap` | LDAP and Active Directory |
 

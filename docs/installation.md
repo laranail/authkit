@@ -39,10 +39,13 @@ key the package merges its defaults into.
 Publish only what the features you enable actually need:
 
 ```bash
-php artisan vendor:publish --tag=laranail::authkit-social-migrations
 php artisan vendor:publish --tag=laranail::authkit-passkey-migrations
 php artisan migrate
 ```
+
+Social account migrations are published by [`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login),
+not by this package. Install that package and follow its [installation guide](https://github.com/laranail/authkit-social-login/blob/main/docs/installation.md)
+if your application enables social login.
 
 ## For a Blade UI
 
