@@ -26,6 +26,10 @@ class AuthKitServiceProvider extends PackageServiceProvider
             ->publish(
                 paths: ['database/migrations/passkeys' => database_path(path: 'migrations')],
                 tag: 'laranail::authkit-passkey-migrations',
+            )
+            ->publish(
+                paths: ['database/migrations/two-factor' => database_path(path: 'migrations')],
+                tag: 'laranail::authkit-two-factor-migrations',
             );
     }
 
@@ -41,6 +45,7 @@ class AuthKitServiceProvider extends PackageServiceProvider
                 secretKey: (string) config(key: 'laranail.authkit.turnstile.secret_key'),
             );
         });
+        $this->app->singleton(Services\TwoFactorAuthentication::class);
 
         $this->app->bind(abstract: Contracts\AttemptEmailPasswordLoginInterface::class, concrete: Actions\AttemptEmailPasswordLogin::class);
         $this->app->bind(abstract: Contracts\CheckEmailExistsInterface::class, concrete: Actions\CheckEmailExists::class);
@@ -62,6 +67,11 @@ class AuthKitServiceProvider extends PackageServiceProvider
         // this package alone gets it. A frontend package that would rather mount its own sets
         // laranail.authkit.api.enabled to false.
         $this->loadRoutesFrom($this->packagePath('routes/api.php'));
+
+        $this->app->make('router')->aliasMiddleware(
+            'two-factor',
+            \Simtabi\Laranail\AuthKit\Http\Middleware\RequireTwoFactorAuthentication::class,
+        );
 
         $this->configureFortify();
     }

@@ -20,5 +20,6 @@ interface IssueTokenForUserInterface
         ?string $name = null,
         ?array $abilities = null,
         ?DateTimeInterface $expiresAt = null,
+        bool $twoFactorVerified = false,
     ): TokenResult;
 }

@@ -10,6 +10,7 @@ use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
 use Simtabi\Laranail\AuthKit\Support\AuthResult;
 use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
+use Simtabi\Laranail\AuthKit\Services\TwoFactorAuthentication;
 use Simtabi\Laranail\AuthKit\Contracts\IssueTokenForUserInterface;
 use Simtabi\Laranail\AuthKit\Contracts\AttemptEmailPasswordLoginInterface;
 use Simtabi\Laranail\AuthKit\Http\Requests\AttemptEmailPasswordLoginRequest;
@@ -45,6 +46,20 @@ class LoginController extends AbstractAttemptEmailPasswordLoginController
 
     protected function apiPassed(AuthResult $result): JsonResponse
     {
+        if (AuthKit::twoFactorEnabled() && app(TwoFactorAuthentication::class)->enabled($result->user)) {
+            $challenge = bin2hex(random_bytes(32));
+            cache()->put(
+                'authkit:two-factor:challenge:' . hash('sha256', $challenge),
+                ['user_id' => $result->user->getAuthIdentifier(), 'guard' => $this->guard()],
+                now()->addMinutes((int) config('laranail.authkit.two_factor.challenge_expiration_minutes', 5)),
+            );
+
+            return $this->jsonResponse(status: 'mfa_required', data: [
+                'challenge_token' => $challenge,
+                'expires_in'      => (int) config('laranail.authkit.two_factor.challenge_expiration_minutes', 5) * 60,
+            ], code: 202)->header('Cache-Control', 'no-store');
+        }
+
         $tokenResult = $this->issuer->execute(
             user: $result->user,
             name: 'api-login',
@@ -53,7 +68,7 @@ class LoginController extends AbstractAttemptEmailPasswordLoginController
         return $this->jsonResponse(status: 'success', data: [
             'token' => $tokenResult->token,
             'user'  => $tokenResult->user,
-        ]);
+        ])->header('Cache-Control', 'no-store');
     }
 
     protected function passed(Request $request, AuthResult $result): JsonResponse

@@ -32,10 +32,17 @@ class IssueTokenForUser implements IssueTokenForUserInterface
         ?string $name = null,
         ?array $abilities = null,
         ?DateTimeInterface $expiresAt = null,
+        bool $twoFactorVerified = false,
     ): TokenResult {
+        $tokenAbilities = $abilities ?? $this->defaultAbilities();
+
+        if ($twoFactorVerified && ! in_array('two-factor:verified', $tokenAbilities, true)) {
+            $tokenAbilities[] = 'two-factor:verified';
+        }
+
         $token = $user->createToken(
             name: $name ?? 'api-token',
-            abilities: $abilities ?? $this->defaultAbilities(),
+            abilities: $tokenAbilities,
             expiresAt: $expiresAt ?? $this->defaultExpiry(),
         );
 
