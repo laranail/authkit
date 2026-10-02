@@ -39,6 +39,20 @@ Route::prefix(AuthKit::apiPrefix())
             ->middleware('throttle:10,1')
             ->name('login');
 
+        if (AuthKit::twoFactorEnabled()) {
+            Route::post('/two-factor/challenge', Api\TwoFactorChallengeController::class)
+                ->middleware('throttle:5,1')
+                ->name('two-factor.challenge');
+
+            Route::middleware(['auth:sanctum', 'throttle:10,1'])->group(function (): void {
+                Route::get('/user/two-factor', [Api\TwoFactorManagementController::class, 'show'])->name('user-two-factor.show');
+                Route::post('/user/two-factor', [Api\TwoFactorManagementController::class, 'begin'])->name('user-two-factor.begin');
+                Route::post('/user/two-factor/confirm', [Api\TwoFactorManagementController::class, 'confirm'])->name('user-two-factor.confirm');
+                Route::post('/user/two-factor/disable', [Api\TwoFactorManagementController::class, 'disable'])->name('user-two-factor.disable');
+                Route::post('/user/two-factor/recovery-codes', [Api\TwoFactorManagementController::class, 'regenerateRecoveryCodes'])->name('user-two-factor.recovery-codes');
+            });
+        }
+
         Route::post('/logout', Api\LogoutController::class)
             ->middleware('auth:sanctum')
             ->name('logout');

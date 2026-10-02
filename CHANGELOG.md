@@ -7,14 +7,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Opt-in TOTP two-factor authentication for API clients.** Login can return a short-lived MFA challenge; clients can verify TOTP or recovery codes, manage enrollment and recovery codes, and protect routes with the `two-factor` middleware. Verified API tokens receive a `two-factor:verified` ability. The `two_factor_method` field defaults to `none` and is ready for future methods.
+
 ### Changed
 
 - **Breaking. Social login moved to `laranail/authkit-social-login`.** Fifteen classes, the `socials`
   migration, its factory and the `social` config block left this package. See
   [UPGRADING.md](UPGRADING.md); `rector-migrate-social.php` codemods the class renames.
 
-  The config key moved from `laranail.authkit.social.*` to `laranail.authkit-social-login.*`, in the new
-  package's own published file. **Provider env variable names are unchanged** — `AUTHKIT_GOOGLE_CLIENT_ID`
+  The config key moved from `laranail.authkit.social.*` to `authkit-social-login.*`, in the new
+  package's own `config/authkit-social-login.php` file. **Provider env variable names are unchanged** — `AUTHKIT_GOOGLE_CLIENT_ID`
   and the rest keep working, because renaming them would break deployed `.env` files with
   credentials silently resolving to null.
 

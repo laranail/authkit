@@ -64,6 +64,7 @@ Full documentation: <https://opensource.simtabi.com/documentation/laranail/authk
 - [Password reset](docs/password-reset.md) · [Password updates](docs/password-updates.md)
 - [Profile management](docs/profile-management.md) · [Email verification](docs/email-verification.md)
 - [Browser sessions](docs/browser-sessions.md) · [API routes](docs/api-routes.md) · [API tokens](docs/api-tokens.md)
+- [Two-factor authentication](docs/two-factor-authentication.md)
 - [Social login](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md) · [Passkeys](docs/passkeys.md) · [API tokens](docs/api-tokens.md)
 
 ### Project
@@ -103,7 +104,7 @@ Remove `passkeys` from `laranail.authkit.fortify.features` to disable Fortify's 
 
 ### Security defaults
 
-- Two-factor authentication is not enabled by default. MFA is still work in progress.
+- TOTP two-factor authentication is opt-in. See the [TOTP setup and API flow](docs/two-factor-authentication.md).
 - Before production, configure HTTPS, secure session cookies, a working mail transport, and Turnstile keys when bot protection is enabled.
 
 ## Passkeys

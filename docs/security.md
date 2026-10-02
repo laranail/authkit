@@ -14,7 +14,7 @@ TURNSTILE_SECRET_KEY=
 
 The configured challenge input is `cf-turnstile-response`. The rule is applied during Auth Kit user creation; attach `ValidateTurnstile` or `TurnstileRule` deliberately to other application-owned endpoints. Protect only routes where a challenge is appropriate, verify the callback server-side, and never treat the browser response as sufficient on its own.
 
-Two-factor authentication is not enabled by default; MFA remains work in progress. Review the [passkey origin requirements](passkeys.md#relying-party-and-browser-client) before deploying passkeys. See [configuration](configuration.md) for feature and guard settings, and [testing](testing.md) for validation guidance.
+TOTP two-factor authentication is opt-in. It encrypts TOTP and recovery secrets, rate-limits challenges, consumes recovery codes once, and relies on Fortify's replay-aware provider. Review the [TOTP guide](two-factor-authentication.md) before enabling it. Also review the [passkey origin requirements](passkeys.md#relying-party-and-browser-client) before deploying passkeys. See [configuration](configuration.md) for feature and guard settings, and [testing](testing.md) for validation guidance.
 
 ---
 

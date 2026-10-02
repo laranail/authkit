@@ -55,6 +55,11 @@ class AuthKit
         return (bool) config(key: 'laranail.authkit.api.enabled', default: true);
     }
 
+    public static function twoFactorEnabled(): bool
+    {
+        return (bool) config(key: 'laranail.authkit.two_factor.enabled', default: false);
+    }
+
     public static function apiPrefix(): string
     {
         return (string) config(key: 'laranail.authkit.api.prefix', default: 'api/auth');
