@@ -32,6 +32,12 @@ return [
         ],
     ],
 
+    'two_factor' => [
+        'enabled'                      => (bool) env('AUTHKIT_TWO_FACTOR_ENABLED', false),
+        'table'                        => env('AUTHKIT_TWO_FACTOR_TABLE', 'users'),
+        'challenge_expiration_minutes' => (int) env('AUTHKIT_TWO_FACTOR_CHALLENGE_EXPIRATION_MINUTES', 5),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | API tokens
