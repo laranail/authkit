@@ -45,6 +45,28 @@ php artisan vendor:publish --tag=laranail::authkit-config
 
 See [installation](docs/installation.md) for the full walkthrough.
 
+## Quick start
+
+```php
+use Illuminate\Http\Request;
+use Simtabi\Laranail\AuthKit\Contracts\AttemptEmailPasswordLoginInterface;
+use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
+use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
+
+public function store(Request $request, AttemptEmailPasswordLoginInterface $attempt, LoginUserInterface $login)
+{
+    $result = $attempt->execute(request: $request, guard: 'web');
+
+    return match ($result->status) {
+        AuthStatus::Passed    => tap(redirect()->intended('/dashboard'), fn () => $login->execute($result->user, 'web')),
+        AuthStatus::Failed    => back()->withErrors(['email' => 'Invalid credentials.']),
+        AuthStatus::Throttled => abort(429),
+    };
+}
+```
+
+The full walkthrough is in [Getting started](docs/getting-started.md); everything else is in the [documentation index](#documentation).
+
 ## <a name="documentation"></a>Documentation
 
 Full documentation: <https://opensource.simtabi.com/documentation/laranail/authkit/>
