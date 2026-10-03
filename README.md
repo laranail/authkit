@@ -45,7 +45,25 @@ php artisan vendor:publish --tag=laranail::authkit-config
 
 See [installation](docs/installation.md) for the full walkthrough.
 
-## Quick start
+## Quick start guide and usage
+
+### Getting started
+
+1. The guard defaults to `web`. To use another one, set it in `.env`:
+
+   ```env
+   AUTHKIT_GUARD=web
+   ```
+
+2. Publish and run only the migrations for the features you enable:
+
+   ```bash
+   php artisan vendor:publish --tag=laranail::authkit-passkey-migrations
+   php artisan vendor:publish --tag=laranail::authkit-two-factor-migrations
+   php artisan migrate
+   ```
+
+### Usage
 
 ```php
 use Illuminate\Http\Request;
@@ -63,6 +81,15 @@ public function store(Request $request, AttemptEmailPasswordLoginInterface $atte
         AuthStatus::Throttled => abort(429),
     };
 }
+```
+
+Issue an API token instead of a session:
+
+```php
+use Simtabi\Laranail\AuthKit\Contracts\IssueTokenForUserInterface;
+
+$token = app(IssueTokenForUserInterface::class)->execute($user, name: 'mobile');
+// $token->token — the plain-text token, shown once
 ```
 
 The full walkthrough is in [Getting started](docs/getting-started.md); everything else is in the [documentation index](#documentation).
@@ -224,7 +251,7 @@ Social login is maintained in [`laranail/authkit-social-login`](https://github.c
 which extends this package. See its [social login guide](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md)
 for installation, providers, routes, persistence, and account-linking behavior.
 
-## Usage
+## <a name="usage-reference"></a>Usage
 
 ### Session login (web)
 
