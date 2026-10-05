@@ -1,0 +1,63 @@
+name: Code style
+
+on:
+  pull_request:
+    branches: [main]
+    # No path filter: this workflow gates merges as a required status check, and a
+    # required check that never reports (a docs-only pull request) blocks it for good.
+  workflow_dispatch:
+
+concurrency:
+  group: code-style-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# The laranail siblings resolve through git rather than Packagist, so the install
+# hits the GitHub API to enumerate their refs. The token is the built-in one; no
+# secret to configure.
+env:
+  COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
+
+jobs:
+  pint:
+    name: Pint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.5'
+          coverage: none
+
+      - name: Resolve composer cache directory
+        id: composer-cache
+        shell: bash
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore composer cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-8.5-${{ hashFiles('**/composer.json') }}
+          restore-keys: composer-${{ runner.os }}-8.5-
+
+      - name: Drop cached laranail archives
+        # laranail/* resolve through a single MOVING v0.1.0 tag, so composer's dist
+        # cache is keyed on a name whose contents change underneath it. A restored
+        # archive is then silently stale.
+        shell: bash
+        run: rm -rf "$(composer config cache-files-dir)/laranail"
+
+      - name: Install dependencies
+        run: composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+
+      - name: Check formatting
+        # The repository's own lint script: vendor/bin/laranail-pint --test, which runs
+        # Pint against the shared laranail/package-tools config and never rewrites files.
+        run: composer pint

@@ -9,9 +9,27 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- The two-factor middleware is registered under the vendor-scoped alias `laranail-authkit-two-factor`
+  (`AuthKitServiceProvider::TWO_FACTOR_MIDDLEWARE`). `NamingConventionTest` asserts it, and that no
+  other bare alias is registered, against the live router.
+
 - **Opt-in TOTP two-factor authentication for API clients.** Login can return a short-lived MFA challenge; clients can verify TOTP or recovery codes, manage enrollment and recovery codes, and protect routes with the `two-factor` middleware. Verified API tokens receive a `two-factor:verified` ability. The `two_factor_method` field defaults to `none` and is ready for future methods.
 
+- A `NamingConventionTest` that asserts the public names against the **live registries** on a booted
+  application, rather than the provider source, so the guard survives a refactor.
+
 ### Changed
+
+- Pull requests run `composer pint` (Pint with the shared laranail config, check-only) in a new
+  *Code style* workflow.
+
+- The `vcs` repository entries for `laranail/captcha`, `console`, `db-tools` and `enumerator` are gone. Nothing in this package's
+  `require` or `require-dev` closure pulls them in (`composer why` finds none of them installed),
+  so they only told Composer to clone repositories it never used. The Packagist exclusion for
+  `laranail/*` stays.
+
+- `composer.json` `authors` email is `opensource@simtabi.com`, the community metadata address,
+  replacing `hello@simtabi.com`.
 
 - **Breaking. Social login moved to `laranail/authkit-social-login`.** Fifteen classes, the `socials`
   migration, its factory and the `social` config block left this package. See
@@ -60,19 +78,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `dev-main`. A `dev-` constraint in `require` propagates dev stability to every consumer,
   and the org convention states no laranail package carries one.
 
+### Deprecated
 
-### Added
-
-- A `NamingConventionTest` that asserts the public names against the **live registries** on a booted
-  application, rather than the provider source, so the guard survives a refactor.
-
-
-### Fixed
-
-- The user-model exception named the old package.
+- **The bare `two-factor` middleware alias.** Middleware aliases share one flat map, so a bare name
+  collides with any application or package alias of the same name. It still enforces the same
+  checks, through `DeprecatedTwoFactorAlias`, and logs one warning per process naming
+  `laranail-authkit-two-factor`. The earliest release that could remove it is the next minor after 0.1.
 
 ### Removed
 
 - `composer.lock` is no longer tracked. A library's lock records a resolution consumers never use.
+
+### Fixed
+
+- The user-model exception named the old package.
 
 [Unreleased]: https://github.com/laranail/authkit/compare/v0.1.0...HEAD

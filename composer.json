@@ -13,7 +13,7 @@
     "authors": [
         {
             "name": "Simtabi",
-            "email": "hello@simtabi.com"
+            "email": "opensource@simtabi.com"
         }
     ],
     "require": {
@@ -54,23 +54,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/laranail/console.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/laranail/enumerator.git"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/laranail/package-tools.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/laranail/captcha.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/laranail/db-tools.git"
         },
         {
             "type": "composer",

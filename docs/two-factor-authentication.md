@@ -19,13 +19,18 @@ The migration adds `two_factor_method` (`none` or `totp`, default `none`), the e
 
 The preset provides account setup at `/auth/user/two-factor` and gates password sign-in with an authenticator or recovery-code challenge for accounts whose method is `totp`. Setup secrets remain inactive until a valid code confirms enrollment. Recovery codes are shown once and each can be used once.
 
-Apply the `two-factor` middleware to routes that must require an enabled factor and successful verification in the current browser session:
+Apply the `laranail-authkit-two-factor` middleware to routes that must require an enabled factor and successful verification in the current browser session:
 
 ```php
-Route::middleware(['auth', 'two-factor'])->group(function () {
+Route::middleware(['auth', 'laranail-authkit-two-factor'])->group(function () {
     // Sensitive routes
 });
 ```
+
+> The bare `two-factor` alias is a deprecated alias of `laranail-authkit-two-factor`. It enforces
+> the same checks and logs one warning per process naming the replacement. Middleware aliases live
+> in one flat map, so a bare name collides with any other package or application alias of the same
+> name. The earliest release that could remove it is the next minor after 0.1.
 
 ## API flow
 
@@ -33,6 +38,6 @@ When the core setting is enabled and the account method is `totp`, `POST /api/au
 
 Authenticated clients can inspect `GET /api/auth/user/two-factor`, start enrollment with `POST /api/auth/user/two-factor` (send the current `password`), confirm with `POST /api/auth/user/two-factor/confirm`, disable with `POST /api/auth/user/two-factor/disable`, and replace recovery codes with `POST /api/auth/user/two-factor/recovery-codes`. Enrollment confirmation returns the recovery codes once; disable and recovery-code replacement require a current TOTP or unused recovery code.
 
-API tokens issued after the challenge carry the `two-factor:verified` ability. The `two-factor` middleware checks this exact ability (not wildcard ability matching) and confirms that TOTP remains enabled. Accounts with method `none` retain the existing password-only login response.
+API tokens issued after the challenge carry the `two-factor:verified` ability. The `laranail-authkit-two-factor` middleware checks this exact ability (not wildcard ability matching) and confirms that TOTP remains enabled. Accounts with method `none` retain the existing password-only login response.
 
 TOTP verification delegates to Fortify's provider, which applies its configured verification window and replay cache. Keep the application encryption key secure and stable because it protects stored TOTP and recovery secrets.
