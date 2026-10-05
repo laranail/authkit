@@ -15,6 +15,9 @@ use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 
 class AuthKitServiceProvider extends PackageServiceProvider
 {
+    /** The vendor-scoped middleware alias that requires verified two-factor authentication. */
+    public const string TWO_FACTOR_MIDDLEWARE = 'laranail-authkit-two-factor';
+
     public function configurePackage(Package $package): void
     {
         $package
@@ -68,9 +71,18 @@ class AuthKitServiceProvider extends PackageServiceProvider
         // laranail.authkit.api.enabled to false.
         $this->loadRoutesFrom($this->packagePath('routes/api.php'));
 
-        $this->app->make('router')->aliasMiddleware(
-            'two-factor',
+        $router = $this->app->make('router');
+
+        $router->aliasMiddleware(
+            self::TWO_FACTOR_MIDDLEWARE,
             \Simtabi\Laranail\AuthKit\Http\Middleware\RequireTwoFactorAuthentication::class,
+        );
+
+        // Deprecated bare alias, kept so routes written against it keep enforcing two-factor.
+        // It logs once per process naming the scoped alias above.
+        $router->aliasMiddleware(
+            \Simtabi\Laranail\AuthKit\Http\Middleware\DeprecatedTwoFactorAlias::ALIAS,
+            \Simtabi\Laranail\AuthKit\Http\Middleware\DeprecatedTwoFactorAlias::class,
         );
 
         $this->configureFortify();
