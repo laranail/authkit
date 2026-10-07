@@ -44,7 +44,7 @@ Route::prefix(AuthKit::apiPrefix())
                 ->middleware('throttle:5,1')
                 ->name('two-factor.challenge');
 
-            Route::middleware(['auth:sanctum', 'throttle:10,1'])->group(function (): void {
+            Route::middleware([AuthKit::apiTokenMiddleware(), 'throttle:10,1'])->group(function (): void {
                 Route::get('/user/two-factor', [Api\TwoFactorManagementController::class, 'show'])->name('user-two-factor.show');
                 Route::post('/user/two-factor', [Api\TwoFactorManagementController::class, 'begin'])->name('user-two-factor.begin');
                 Route::post('/user/two-factor/confirm', [Api\TwoFactorManagementController::class, 'confirm'])->name('user-two-factor.confirm');
@@ -54,7 +54,7 @@ Route::prefix(AuthKit::apiPrefix())
         }
 
         Route::post('/logout', Api\LogoutController::class)
-            ->middleware('auth:sanctum')
+            ->middleware(AuthKit::apiTokenMiddleware())
             ->name('logout');
 
         // CheckEmailExistsController ships with no route, exactly as it did before this move.
@@ -63,11 +63,11 @@ Route::prefix(AuthKit::apiPrefix())
 
         if (AuthKit::hasFeature('email-verification')) {
             Route::post('/email/verification-notification', [Api\EmailVerificationNotificationController::class, 'store'])
-                ->middleware(['auth:sanctum', 'throttle:6,1'])
+                ->middleware([AuthKit::apiTokenMiddleware(), 'throttle:6,1'])
                 ->name('verification.send');
 
             Route::get('/email/verify/{id}/{hash}', Api\VerifyEmailController::class)
-                ->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])
+                ->middleware([AuthKit::apiTokenMiddleware(), 'signed', 'throttle:6,1'])
                 ->name('verification.verify');
         }
 
@@ -83,13 +83,13 @@ Route::prefix(AuthKit::apiPrefix())
 
         if (AuthKit::hasFeature('update-passwords')) {
             Route::put('/user/password', [Api\UpdatePasswordController::class, 'update'])
-                ->middleware('auth:sanctum')
+                ->middleware(AuthKit::apiTokenMiddleware())
                 ->name('user-password.update');
         }
 
         if (AuthKit::hasFeature('update-profile-information')) {
             Route::put('/user/profile-information', [Api\UpdateProfileInformationController::class, 'update'])
-                ->middleware('auth:sanctum')
+                ->middleware(AuthKit::apiTokenMiddleware())
                 ->name('user-profile-information.update');
         }
     });

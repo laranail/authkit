@@ -12,6 +12,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - The two-factor middleware is registered under the vendor-scoped alias `laranail-authkit-two-factor`
   (`AuthKitServiceProvider::TWO_FACTOR_MIDDLEWARE`). `NamingConventionTest` asserts it, and that no
   other bare alias is registered, against the live router.
+- A configurable token issuer registry with Sanctum as the default, allowing integration packages
+  such as AuthKit OAuth to add token drivers without replacing AuthKit's existing issuer.
 
 - **Opt-in TOTP two-factor authentication for API clients.** Login can return a short-lived MFA challenge; clients can verify TOTP or recovery codes, manage enrollment and recovery codes, and protect routes with the `two-factor` middleware. Verified API tokens receive a `two-factor:verified` ability. The `two_factor_method` field defaults to `none` and is ready for future methods.
 
@@ -30,6 +32,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - `composer.json` `authors` email is `opensource@simtabi.com`, the community metadata address,
   replacing `hello@simtabi.com`.
+- Password updates, password resets, and API logout now revoke tokens through the registered token
+  issuers, so integrations can revoke their tokens through the same AuthKit actions.
 
 - **Breaking. Social login moved to `laranail/authkit-social-login`.** Fifteen classes, the `socials`
   migration, its factory and the `social` config block left this package. See

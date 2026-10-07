@@ -3,8 +3,10 @@
 These routes ship with `laranail/authkit`, so an API-only or Filament consumer installs the core
 alone and has them — no Blade scaffolding required.
 
-The consuming model must use Sanctum's `HasApiTokens` trait and the `personal_access_tokens`
-migration must be installed; `laranail/authkit-preset`'s installer does both if you are using it.
+With the default Sanctum token driver, the consuming model must use Sanctum's `HasApiTokens` trait
+and the `personal_access_tokens` migration must be installed; `laranail/authkit-preset`'s installer
+does both if you are using it. An OAuth package can register another guard and issuer; AuthKit OAuth
+adds Passport as an accepted bearer-token guard without changing the Sanctum default.
 The routes are registered when `laranail.authkit.api.enabled` is true; their default prefix is
 `/api/auth` and middleware is `api` plus `throttle:60,1`. The API routes do not render preset Blade views, create a browser session, run the preset CAPTCHA middleware, or replace a client application's authorization policy.
 
@@ -14,13 +16,13 @@ The routes are registered when `laranail.authkit.api.enabled` is true; their def
 |--------------------------------------------------|--------------------|----------------------------------------|----------------------------------------------------------------------------------------|
 | `POST /api/auth/register`                        | Registration       | Guest; `throttle:10,1`                 | `201` with `status`, `data.token`, and `data.user`.                                    |
 | `POST /api/auth/login`                           | Login              | Guest; `throttle:10,1`                 | `200` with token and user; invalid credentials return `422`, throttling returns `429`. |
-| `POST /api/auth/logout`                          | Logout             | `auth:sanctum`                         | Deletes the current access token.                                                      |
-| `POST /api/auth/email/verification-notification` | Email verification | `auth:sanctum`, `throttle:6,1`         | Sends a verification notification.                                                     |
-| `GET /api/auth/email/verify/{id}/{hash}`         | Email verification | `auth:sanctum`, signed, `throttle:6,1` | Completes verification.                                                                |
+| `POST /api/auth/logout`                          | Logout             | configured token guards               | Revokes the current token.                                                             |
+| `POST /api/auth/email/verification-notification` | Email verification | configured token guards, `throttle:6,1` | Sends a verification notification.                                                   |
+| `GET /api/auth/email/verify/{id}/{hash}`         | Email verification | configured token guards, signed, `throttle:6,1` | Completes verification.                                                       |
 | `POST /api/auth/forgot-password`                 | Password reset     | Guest; `throttle:10,1`                 | Sends a reset link through Laravel's password broker.                                  |
 | `POST /api/auth/reset-password`                  | Password reset     | Guest; `throttle:10,1`                 | Validates the token and resets the password.                                           |
-| `PUT /api/auth/user/password`                    | Password updates   | `auth:sanctum`                         | Uses authkit's password-update action.                                                |
-| `PUT /api/auth/user/profile-information`         | Profile management | `auth:sanctum`                         | Uses authkit's profile-update action.                                                 |
+| `PUT /api/auth/user/password`                    | Password updates   | configured token guards               | Uses AuthKit's password-update action.                                                |
+| `PUT /api/auth/user/profile-information`         | Profile management | configured token guards               | Uses AuthKit's profile-update action.                                                 |
 
 Register, login and logout are always present when the API is enabled; the rest follow the Fortify-style feature list in `laranail.authkit.fortify.features`, so removing `reset-passwords` removes the two password endpoints. `POST /register` and `POST /login` have both the API group's `throttle:60,1` and their endpoint `throttle:10,1` middleware. Authentication failures from the login action return `422`; rate-limit responses return `429`.
 

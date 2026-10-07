@@ -11,6 +11,7 @@ use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 use Simtabi\Laranail\AuthKit\Services\BrowserSessionService;
 use Simtabi\Laranail\AuthKit\Services\UserValidationService;
 use Simtabi\Laranail\AuthKit\Http\Requests\UpdatePasswordRequest;
+use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerRegistryInterface;
 
 class UpdateUserPassword implements UpdatesUserPasswords
 {
@@ -30,9 +31,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
             'remember_token' => null,
         ])->save();
 
-        if (method_exists($user, 'tokens')) {
-            $user->tokens()->delete();
-        }
+        app(TokenIssuerRegistryInterface::class)->revokeAll($user);
 
         $guardInstance = auth()->guard($guard);
 

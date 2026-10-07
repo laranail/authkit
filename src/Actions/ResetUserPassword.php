@@ -7,6 +7,7 @@ namespace Simtabi\Laranail\AuthKit\Actions;
 use Illuminate\Support\Facades\Hash;
 use Simtabi\Laranail\AuthKit\Services\UserValidationService;
 use Simtabi\Laranail\AuthKit\Http\Requests\ResetPasswordRequest;
+use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerRegistryInterface;
 use Laravel\Fortify\Contracts\ResetsUserPasswords as FortifyResetUserPassword;
 
 class ResetUserPassword implements FortifyResetUserPassword
@@ -23,8 +24,6 @@ class ResetUserPassword implements FortifyResetUserPassword
             'remember_token' => null,
         ])->save();
 
-        if (method_exists($user, 'tokens')) {
-            $user->tokens()->delete();
-        }
+        app(TokenIssuerRegistryInterface::class)->revokeAll($user);
     }
 }

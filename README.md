@@ -12,7 +12,7 @@ Headless authentication for Laravel 13+. Ships the REST API; no views and no web
 > This package is still in development. Breaking changes are imminent; use it in production at your own risk.
 
 - **Fortify-backed** — password reset, profile updates, password updates, email verification, passkeys, login throttling
-- **Sanctum-ready** — API token issuance via `IssueTokenForUser`
+- **Extensible API tokens** — Sanctum is the default `IssueTokenForUser` backend; optional packages can register additional token issuers
 - **Composable** — separate actions for credential check vs session login
 
 ## Requirements
@@ -213,7 +213,7 @@ The application client should use Fortify's `/passkeys/login/options`, `/passkey
 | `ResetUserPassword`            | Validate and reset password (Fortify `ResetsUserPasswords`)           |
 | `UpdateUserProfileInformation` | Validate and update profile (Fortify `UpdatesUserProfileInformation`) |
 | `UpdateUserPassword`           | Validate and update password (Fortify `UpdatesUserPasswords`)         |
-| `IssueTokenForUser`            | Issue Sanctum personal access token, returns `TokenResult`            |
+| `IssueTokenForUser`            | Issue a token using the configured backend, returns `TokenResult`      |
 | `CheckEmailExists`             | Check if email is registered                                          |
 | `FindUserByEmail`              | Retrieve user by email                                                |
 
