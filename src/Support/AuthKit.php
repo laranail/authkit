@@ -82,6 +82,24 @@ class AuthKit
         return (array) config(key: 'laranail.authkit.api.middleware', default: ['api']);
     }
 
+    /**
+     * Authentication middleware for API endpoints that accept AuthKit-issued bearer tokens.
+     * Multiple guards let Sanctum and Passport coexist without changing the default issuer.
+     */
+    public static function apiTokenMiddleware(): string
+    {
+        $guards = array_values(array_filter(
+            (array) config(key: 'laranail.authkit.api.token_guards', default: ['sanctum']),
+            is_string(...),
+        ));
+
+        if (config(key: 'laranail.authkit-oauth.enabled', default: false)) {
+            $guards[] = (string) config(key: 'laranail.authkit-oauth.passport.guard', default: 'passport');
+        }
+
+        return 'auth:' . implode(',', array_unique($guards ?: ['sanctum']));
+    }
+
     public static function redirect(string $key, string $default = '/'): string
     {
         if (static::$redirectResolver !== null) {

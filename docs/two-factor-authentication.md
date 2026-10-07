@@ -34,10 +34,13 @@ Route::middleware(['auth', 'laranail-authkit-two-factor'])->group(function () {
 
 ## API flow
 
-When the core setting is enabled and the account method is `totp`, `POST /api/auth/login` returns HTTP 202 with `status: mfa_required`, a short-lived `challenge_token`, and `expires_in`. Submit that token with the user's TOTP or recovery code to `POST /api/auth/two-factor/challenge`; only a successful challenge returns a Sanctum bearer token. Failed attempts are throttled, and challenges expire after five minutes by default.
+When the core setting is enabled and the account method is `totp`, `POST /api/auth/login` returns HTTP 202 with `status: mfa_required`, a short-lived `challenge_token`, and `expires_in`. Submit that token with the user's TOTP or recovery code to `POST /api/auth/two-factor/challenge`; only a successful challenge returns a bearer token from the configured issuer (Sanctum by default). Failed attempts are throttled, and challenges expire after five minutes by default.
 
 Authenticated clients can inspect `GET /api/auth/user/two-factor`, start enrollment with `POST /api/auth/user/two-factor` (send the current `password`), confirm with `POST /api/auth/user/two-factor/confirm`, disable with `POST /api/auth/user/two-factor/disable`, and replace recovery codes with `POST /api/auth/user/two-factor/recovery-codes`. Enrollment confirmation returns the recovery codes once; disable and recovery-code replacement require a current TOTP or unused recovery code.
 
-API tokens issued after the challenge carry the `two-factor:verified` ability. The `laranail-authkit-two-factor` middleware checks this exact ability (not wildcard ability matching) and confirms that TOTP remains enabled. Accounts with method `none` retain the existing password-only login response.
+API tokens issued after the challenge carry the `two-factor:verified` ability or scope. The
+`laranail-authkit-two-factor` middleware checks this exact ability or scope (not wildcard matching)
+and confirms that TOTP remains enabled. Accounts with method `none` retain the existing
+password-only login response.
 
 TOTP verification delegates to Fortify's provider, which applies its configured verification window and replay cache. Keep the application encryption key secure and stable because it protects stored TOTP and recovery secrets.

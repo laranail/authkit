@@ -24,7 +24,7 @@ final class RequireTwoFactorAuthentication
         $token = method_exists($user, 'currentAccessToken') ? $user->currentAccessToken() : null;
 
         if ($token !== null) {
-            $abilities = $token->abilities ?? [];
+            $abilities = $token->abilities ?? $token->oauth_scopes ?? $token->scopes ?? [];
             abort_unless(is_array($abilities) && in_array('two-factor:verified', $abilities, true), 403, 'MFA verification is required.');
         } else {
             abort_unless($request->hasSession(), 403, 'MFA verification is required.');

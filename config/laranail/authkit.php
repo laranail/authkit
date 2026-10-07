@@ -57,6 +57,8 @@ return [
     */
 
     'tokens' => [
+        'driver' => env(key: 'AUTHKIT_TOKEN_DRIVER', default: 'sanctum'),
+
         'abilities' => [
             'user:read',
             'user:update-profile',
@@ -93,6 +95,7 @@ return [
          */
         'name_prefix' => env(key: 'AUTHKIT_API_ROUTE_NAME_PREFIX', default: 'laranail-auth-api.'),
         'middleware'  => ['api', 'throttle:60,1'],
+        'token_guards' => ['sanctum'],
     ],
 
 ];
