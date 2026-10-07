@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AuthKit\Actions;
 
 use DateTimeInterface;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
-use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
-use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerInterface;
+use InvalidArgumentException;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AuthKit\Support\TokenResult;
+use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerInterface;
+use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 
 class SanctumTokenIssuer implements TokenIssuerInterface
 {
@@ -28,7 +29,7 @@ class SanctumTokenIssuer implements TokenIssuerInterface
         }
 
         if (! method_exists($user, 'createToken')) {
-            throw new \InvalidArgumentException('The configured AuthKit user model cannot create Sanctum tokens.');
+            throw new InvalidArgumentException('The configured AuthKit user model cannot create Sanctum tokens.');
         }
 
         $token = $user->createToken(

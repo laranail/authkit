@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AuthKit\Services;
 
 use DateTimeInterface;
-use Illuminate\Contracts\Auth\Authenticatable;
 use InvalidArgumentException;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Simtabi\Laranail\AuthKit\Support\TokenResult;
 use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerInterface;
 use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerRegistryInterface;
-use Simtabi\Laranail\AuthKit\Support\TokenResult;
 
 class TokenIssuerRegistry implements TokenIssuerRegistryInterface
 {

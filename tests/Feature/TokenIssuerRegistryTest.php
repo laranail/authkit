@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerInterface;
-use Simtabi\Laranail\AuthKit\Services\TokenIssuerRegistry;
 use Simtabi\Laranail\AuthKit\Support\TokenResult;
+use Simtabi\Laranail\AuthKit\Services\TokenIssuerRegistry;
+use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerInterface;
 
 it('dispatches issuance to the configured token issuer', function (): void {
     $user = Mockery::mock(Authenticatable::class);

@@ -7,8 +7,8 @@ namespace Simtabi\Laranail\AuthKit\Actions;
 use Illuminate\Support\Facades\Hash;
 use Simtabi\Laranail\AuthKit\Services\UserValidationService;
 use Simtabi\Laranail\AuthKit\Http\Requests\ResetPasswordRequest;
-use Laravel\Fortify\Contracts\ResetsUserPasswords as FortifyResetUserPassword;
 use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerRegistryInterface;
+use Laravel\Fortify\Contracts\ResetsUserPasswords as FortifyResetUserPassword;
 
 class ResetUserPassword implements FortifyResetUserPassword
 {

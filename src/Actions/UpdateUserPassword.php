@@ -10,8 +10,8 @@ use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 use Simtabi\Laranail\AuthKit\Services\BrowserSessionService;
 use Simtabi\Laranail\AuthKit\Services\UserValidationService;
-use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerRegistryInterface;
 use Simtabi\Laranail\AuthKit\Http\Requests\UpdatePasswordRequest;
+use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerRegistryInterface;
 
 class UpdateUserPassword implements UpdatesUserPasswords
 {
