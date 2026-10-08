@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AuthKit\Actions;
 
 use DateTimeInterface;
-use Laravel\Sanctum\Sanctum;
 use InvalidArgumentException;
-use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AuthKit\Support\TokenResult;
 use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerInterface;
@@ -50,27 +49,32 @@ class SanctumTokenIssuer implements TokenIssuerInterface
         }
     }
 
+    /**
+     * Revoke every Sanctum token the given user holds, through the user's own `tokens()` relation.
+     *
+     * Only a model that uses Sanctum's `HasApiTokens` can hold one. Querying the token table by a
+     * morph type taken from configuration instead deleted another model's tokens whenever ids
+     * collided (an Admin with id 5 revoked User 5's tokens and kept its own), and a model without
+     * the trait made every password reset hit a token table the application may not have.
+     */
     public function revokeAll(Authenticatable $user): void
     {
-        if (! $user instanceof Model) {
+        if (! in_array(HasApiTokens::class, class_uses_recursive($user), true)) {
             return;
         }
 
-        $model = Sanctum::$personalAccessTokenModel;
-        $morphType = $user->getMorphClass();
-        $userModel = config('laranail.authkit.user_model') ?? config('auth.providers.users.model');
-
-        if (is_string($userModel) && class_exists($userModel) && is_subclass_of($userModel, Model::class)) {
-            $morphType = (new $userModel)->getMorphClass();
-        }
-
-        $model::query()
-            ->where('tokenable_type', $morphType)
-            ->where('tokenable_id', $user->getAuthIdentifier())
-            ->delete();
+        $user->tokens()->delete();
     }
 
-    /** @return array<int, string> */
+    /**
+     * Both defaults come from configuration rather than being fixed here, because both were once
+     * fixed here in the least safe way available: every token was minted with the wildcard ability
+     * `*` and no expiry. A wildcard token can do anything its owner can, so a leaked one is a full
+     * account compromise; a token with no expiry recovered from a log or an old backup never stops
+     * working, and Sanctum's own `sanctum.expiration` is null by default.
+     *
+     * @return array<int, string>
+     */
     private function defaultAbilities(): array
     {
         $abilities = config('laranail.authkit.tokens.abilities', ['*']);
@@ -82,6 +86,10 @@ class SanctumTokenIssuer implements TokenIssuerInterface
         return array_values(array_filter($abilities, is_string(...)));
     }
 
+    /**
+     * A null lifetime defers to Sanctum's own `sanctum.expiration`, which is the only way to opt out
+     * of expiry deliberately rather than silently inherit none.
+     */
     private function defaultExpiry(): ?DateTimeInterface
     {
         $minutes = config('laranail.authkit.tokens.expires_after_minutes');
