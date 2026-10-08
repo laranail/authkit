@@ -95,6 +95,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **Revoking all of a user's tokens could delete another user's.** With the token issuer registry, `SanctumTokenIssuer::revokeAll()` (called on every password reset and update) queried the token table by a morph type taken from configuration rather than the user's own, so a second token-bearing model with a colliding id (an Admin with id 5) revoked User 5's tokens and kept its own. It also queried that table for user models that hold no Sanctum tokens, failing the reset where the table does not exist. It now revokes through the user's own `tokens()` relation, and only for models that use Sanctum's `HasApiTokens`, as before the registry.
 - The user-model exception named the old package.
 
 [Unreleased]: https://github.com/laranail/authkit/compare/v0.1.0...HEAD
