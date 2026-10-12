@@ -4,13 +4,26 @@ updates:
   - package-ecosystem: "composer"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    groups:
+      composer-minor-and-patch:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
     groups:
       # codeql-action/init and /analyze MUST move together: CodeQL fails with
       # "Loaded a configuration file for version X, but running version Y" when
