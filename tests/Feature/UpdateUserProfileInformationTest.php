@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Workbench\App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Validation\ValidationException;
+use Simtabi\Laranail\Package\Tools\Testing\TestCredentials;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 use Simtabi\Laranail\AuthKit\Actions\UpdateUserProfileInformation;
 
@@ -106,7 +107,7 @@ it('resets email verification when a verified user changes their email', functio
     $user = new ProfileVerifiableUser([
         'name'              => 'Ada Lovelace',
         'email'             => 'ada@example.com',
-        'password'          => 'password',
+        'password'          => TestCredentials::password('profile'),
         'email_verified_at' => now(),
     ]);
     $user->save();
