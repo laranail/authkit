@@ -7,17 +7,18 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Simtabi\Laranail\AuthKit\Actions\CreateNewUser;
+use Simtabi\Laranail\Package\Tools\Testing\TestCredentials;
 
 it(description: 'creates a user with a hashed password', closure: function (): void {
     $user = app(abstract: CreateNewUser::class)->create(input: [
         'name'                  => 'Ada Lovelace',
         'email'                 => 'ADA@EXAMPLE.COM',
-        'password'              => 'password',
-        'password_confirmation' => 'password',
+        'password'              => TestCredentials::password('registrant'),
+        'password_confirmation' => TestCredentials::password('registrant'),
     ]);
 
     expect(value: $user->email)->toBe(expected: 'ada@example.com')
-        ->and(value: $user->password)->not->toBe(expected: 'password');
+        ->and(value: $user->password)->not->toBe(expected: TestCredentials::password('registrant'));
 });
 
 it(description: 'fails validation for duplicate email addresses', closure: function (): void {
@@ -26,8 +27,8 @@ it(description: 'fails validation for duplicate email addresses', closure: funct
     $validator = Validator::make(data: [
         'name'                  => 'Ada Lovelace',
         'email'                 => 'ada@example.com',
-        'password'              => 'password',
-        'password_confirmation' => 'password',
+        'password'              => TestCredentials::password('registrant'),
+        'password_confirmation' => TestCredentials::password('registrant'),
     ], rules: [
         'email' => ['required', 'string', 'email', 'max:255', Rule::unique(table: User::class)],
     ]);
@@ -37,11 +38,13 @@ it(description: 'fails validation for duplicate email addresses', closure: funct
 });
 
 it(description: 'fails validation when password confirmation does not match', closure: function (): void {
+    expect(TestCredentials::password('different'))->not->toBe(TestCredentials::password('registrant'));
+
     $validator = Validator::make(data: [
         'name'                  => 'Ada Lovelace',
         'email'                 => 'ada@example.com',
-        'password'              => 'password',
-        'password_confirmation' => 'different',
+        'password'              => TestCredentials::password('registrant'),
+        'password_confirmation' => TestCredentials::password('different'),
     ], rules: [
         'password' => ['required', 'string', Password::default(), 'confirmed'],
     ]);
@@ -54,8 +57,8 @@ it(description: 'fails validation when name is missing', closure: function (): v
     $validator = Validator::make(data: [
         'name'                  => '',
         'email'                 => 'ada@example.com',
-        'password'              => 'password',
-        'password_confirmation' => 'password',
+        'password'              => TestCredentials::password('registrant'),
+        'password_confirmation' => TestCredentials::password('registrant'),
     ], rules: [
         'name' => ['required', 'string', 'max:255'],
     ]);
@@ -68,8 +71,8 @@ it(description: 'fails validation when email is invalid', closure: function (): 
     $validator = Validator::make(data: [
         'name'                  => 'Ada Lovelace',
         'email'                 => 'not-an-email',
-        'password'              => 'password',
-        'password_confirmation' => 'password',
+        'password'              => TestCredentials::password('registrant'),
+        'password_confirmation' => TestCredentials::password('registrant'),
     ], rules: [
         'email' => ['required', 'string', 'email', 'max:255'],
     ]);
@@ -97,8 +100,8 @@ it(description: 'resolves model from guard config when user_model is not set', c
     $user = app(abstract: CreateNewUser::class)->create(input: [
         'name'                  => 'Ada Lovelace',
         'email'                 => 'ada@example.com',
-        'password'              => 'password',
-        'password_confirmation' => 'password',
+        'password'              => TestCredentials::password('registrant'),
+        'password_confirmation' => TestCredentials::password('registrant'),
     ]);
 
     expect(value: $user)->toBeInstanceOf(class: User::class);
@@ -110,8 +113,8 @@ it(description: 'resolves model from explicit user_model config', closure: funct
     $user = app(abstract: CreateNewUser::class)->create(input: [
         'name'                  => 'Ada Lovelace',
         'email'                 => 'ada2@example.com',
-        'password'              => 'password',
-        'password_confirmation' => 'password',
+        'password'              => TestCredentials::password('registrant'),
+        'password_confirmation' => TestCredentials::password('registrant'),
     ]);
 
     expect(value: $user)->toBeInstanceOf(class: User::class);

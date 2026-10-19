@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use Simtabi\Laranail\AuthKit\Support\AuthKit;
 use Simtabi\Laranail\AuthKit\Rules\TurnstileRule;
+use Simtabi\Laranail\Package\Tools\Testing\TestCredentials;
 
 function useTurnstileRoute(string $middleware): void
 {
@@ -20,7 +21,7 @@ function useTurnstileRoute(string $middleware): void
 
 beforeEach(function (): void {
     config()->set('laranail.authkit.turnstile.enabled', true);
-    config()->set('laranail.authkit.turnstile.secret_key', 'secret-key');
+    config()->set('laranail.authkit.turnstile.secret_key', TestCredentials::secret('turnstile'));
 });
 
 it('accepts a valid token on web requests', function (): void {

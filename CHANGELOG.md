@@ -22,6 +22,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- **Test credentials are generated at run time.** Passwords, secrets and tokens in the tests and the
+  workbench factory come from package-tools' `TestCredentials`, so no literal reaches the repository
+  for a secret scanner to report. `tests/Architecture/NoLiteralCredentialsTest.php` fails the suite
+  on any literal left behind. The `laranail/package-tools` floor is now `^0.1.10`, the first release
+  that also ships `assertCredentialPurposesAreWordsIn()`: a second test keeps every
+  `TestCredentials` purpose a single plain lowercase word, since a secret scanner reads a compound
+  purpose as the password.
+
 - Pull requests run `composer pint` (Pint with the shared laranail config, check-only) in a new
   *Code style* workflow.
 

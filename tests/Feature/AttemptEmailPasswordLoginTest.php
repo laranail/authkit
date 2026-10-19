@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Workbench\App\Models\User;
 use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
+use Simtabi\Laranail\Package\Tools\Testing\TestCredentials;
 use Simtabi\Laranail\AuthKit\Actions\AttemptEmailPasswordLogin;
 
 function loginRequest(array $data = [], ?string $ip = null): Request
@@ -58,6 +59,8 @@ it('validates credentials without logging the user into the session', function (
 it('returns failed when credentials are wrong', function (): void {
     $password = Str::random(16);
 
+    expect(TestCredentials::password('wrong'))->not->toBe($password);
+
     User::factory()->create([
         'email'    => 'ada@example.com',
         'password' => bcrypt($password),
@@ -66,7 +69,7 @@ it('returns failed when credentials are wrong', function (): void {
     $action = app(AttemptEmailPasswordLogin::class);
 
     $result = $action->execute(
-        request: loginRequest(['email' => 'ada@example.com', 'password' => 'wrong-password']),
+        request: loginRequest(['email' => 'ada@example.com', 'password' => TestCredentials::password('wrong')]),
         guard: 'web',
     );
 
@@ -82,7 +85,7 @@ it('throttles repeated failed credentials', function (): void {
     ]);
 
     $action = app(AttemptEmailPasswordLogin::class);
-    $request = loginRequest(['email' => 'ada@example.com', 'password' => 'wrong-password']);
+    $request = loginRequest(['email' => 'ada@example.com', 'password' => TestCredentials::password('wrong')]);
 
     $action->execute(request: $request, guard: 'web');
     $result = $action->execute(request: $request, guard: 'web');
@@ -101,12 +104,12 @@ it('throttles per ip address', function (): void {
     $action = app(AttemptEmailPasswordLogin::class);
 
     $action->execute(
-        request: loginRequest(['email' => 'ada@example.com', 'password' => 'wrong-password'], ip: '10.0.0.1'),
+        request: loginRequest(['email' => 'ada@example.com', 'password' => TestCredentials::password('wrong')], ip: '10.0.0.1'),
         guard: 'web',
     );
 
     $result = $action->execute(
-        request: loginRequest(['email' => 'ada@example.com', 'password' => 'wrong-password'], ip: '10.0.0.2'),
+        request: loginRequest(['email' => 'ada@example.com', 'password' => TestCredentials::password('wrong')], ip: '10.0.0.2'),
         guard: 'web',
     );
 
@@ -125,12 +128,12 @@ it('throttles same ip with same email', function (): void {
     $action = app(AttemptEmailPasswordLogin::class);
 
     $action->execute(
-        request: loginRequest(['email' => 'ada@example.com', 'password' => 'wrong-password'], ip: '10.0.0.1'),
+        request: loginRequest(['email' => 'ada@example.com', 'password' => TestCredentials::password('wrong')], ip: '10.0.0.1'),
         guard: 'web',
     );
 
     $result = $action->execute(
-        request: loginRequest(['email' => 'ada@example.com', 'password' => 'wrong-password'], ip: '10.0.0.1'),
+        request: loginRequest(['email' => 'ada@example.com', 'password' => TestCredentials::password('wrong')], ip: '10.0.0.1'),
         guard: 'web',
     );
 
@@ -149,8 +152,10 @@ it('clears the throttle limit on successful login', function (): void {
 
     $action = app(AttemptEmailPasswordLogin::class);
 
+    expect(TestCredentials::password('wrong'))->not->toBe($password);
+
     $action->execute(
-        request: loginRequest(['email' => 'ada@example.com', 'password' => 'wrong-password']),
+        request: loginRequest(['email' => 'ada@example.com', 'password' => TestCredentials::password('wrong')]),
         guard: 'web',
     );
 
@@ -162,7 +167,7 @@ it('clears the throttle limit on successful login', function (): void {
     expect($result->isPassed())->toBeTrue();
 
     $afterResult = $action->execute(
-        request: loginRequest(['email' => 'ada@example.com', 'password' => 'wrong-password']),
+        request: loginRequest(['email' => 'ada@example.com', 'password' => TestCredentials::password('wrong')]),
         guard: 'web',
     );
 
