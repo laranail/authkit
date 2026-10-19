@@ -21,7 +21,7 @@
         "laravel/fortify": "^1.38",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
-        "laranail/package-tools": "^0.1.9"
+        "laranail/package-tools": "^0.1.10"
     },
     "require-dev": {
         "pestphp/pest": "^4.0",
