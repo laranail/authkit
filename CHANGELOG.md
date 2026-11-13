@@ -9,6 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Username-based password login.** `laranail.authkit.login.identifiers` names the user columns an
+  identifier is matched against, in order, and `laranail.authkit.login.field` names the request input
+  it arrives in. Both default to email, so existing forms, API clients and validation are unchanged
+  until a second identifier is configured. Validation is derived from the list rather than configured
+  separately, so it cannot describe a mode the lookup does not implement. The application owns the
+  `username` column, its uniqueness constraint and its registration validation — AuthKit does not own
+  the users table and ships no migration for it. See `docs/login.md`. Closes
+  [#65](https://github.com/laranail/authkit/issues/65).
 - **Explicit, secure identity linking.** `IdentityLinkingInterface` lets a provider package attach a
   sign-in method to an already authenticated user without that path ever being able to sign anyone
   in. A link attempt requires a recently confirmed credential, carries a single-use token bound to
