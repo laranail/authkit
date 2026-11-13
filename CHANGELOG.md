@@ -9,6 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Username-based password login.** `laranail.authkit.login.identifiers` names the user columns an
+  identifier is matched against, in order, and `laranail.authkit.login.field` names the request input
+  it arrives in. Both default to email, so existing forms, API clients and validation are unchanged
+  until a second identifier is configured. Validation is derived from the list rather than configured
+  separately, so it cannot describe a mode the lookup does not implement. The application owns the
+  `username` column, its uniqueness constraint and its registration validation — AuthKit does not own
+  the users table and ships no migration for it. See `docs/login.md`. Closes
+  [#65](https://github.com/laranail/authkit/issues/65).
 - The two-factor middleware is registered under the vendor-scoped alias `laranail-authkit-two-factor`
   (`AuthKitServiceProvider::TWO_FACTOR_MIDDLEWARE`). `NamingConventionTest` asserts it, and that no
   other bare alias is registered, against the live router.
