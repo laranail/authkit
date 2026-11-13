@@ -7,6 +7,16 @@ return [
 
     'user_model' => env(key: 'AUTHKIT_USER_MODEL'),
 
+    'identity_linking' => [
+        /*
+         * How long a link attempt stays valid.
+         *
+         * It spans one redirect to an external provider and back, so minutes rather than hours.
+         * The attempt is single-use regardless; this bounds how long an unused one lingers.
+         */
+        'intent_ttl_minutes' => (int) env(key: 'AUTHKIT_LINK_INTENT_TTL_MINUTES', default: 10),
+    ],
+
     'rate_limit' => [
         'max_attempts'  => (int) env(key: 'AUTHKIT_RATE_LIMIT_MAX_ATTEMPTS', default: 5),
         'decay_minutes' => (int) env(key: 'AUTHKIT_RATE_LIMIT_DECAY_MINUTES', default: 1),
