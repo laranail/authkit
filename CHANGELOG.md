@@ -17,6 +17,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `username` column, its uniqueness constraint and its registration validation — AuthKit does not own
   the users table and ships no migration for it. See `docs/login.md`. Closes
   [#65](https://github.com/laranail/authkit/issues/65).
+- **Explicit, secure identity linking.** `IdentityLinkingInterface` lets a provider package attach a
+  sign-in method to an already authenticated user without that path ever being able to sign anyone
+  in. A link attempt requires a recently confirmed credential, carries a single-use token bound to
+  the initiating user, guard, provider and authentication context, and refuses an external identity
+  owned by another account — never switching the current user and never transferring the identity.
+  The surface accepts no email address at all, so a matching address cannot become authorisation.
+  See `docs/identity-linking.md`. Closes [#64](https://github.com/laranail/authkit/issues/64).
 - The two-factor middleware is registered under the vendor-scoped alias `laranail-authkit-two-factor`
   (`AuthKitServiceProvider::TWO_FACTOR_MIDDLEWARE`). `NamingConventionTest` asserts it, and that no
   other bare alias is registered, against the live router.

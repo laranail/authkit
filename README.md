@@ -114,6 +114,7 @@ Full documentation: <https://opensource.simtabi.com/documentation/laranail/authk
 - [Profile management](docs/profile-management.md) · [Email verification](docs/email-verification.md)
 - [Browser sessions](docs/browser-sessions.md) · [API routes](docs/api-routes.md) · [API tokens](docs/api-tokens.md)
 - [Two-factor authentication](docs/two-factor-authentication.md)
+- [Identity linking](docs/identity-linking.md)
 - [Social login](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md) · [Passkeys](docs/passkeys.md) · [API tokens](docs/api-tokens.md)
 
 ### Project
