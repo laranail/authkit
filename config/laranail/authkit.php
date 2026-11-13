@@ -26,6 +26,8 @@ return [
          * table, so it ships no migration for it. See docs/login.md.
          */
         'identifiers' => ['email'],
+    ],
+
     'identity_linking' => [
         /*
          * How long a link attempt stays valid.
