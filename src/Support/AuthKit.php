@@ -22,6 +22,54 @@ class AuthKit
     }
 
     /**
+     * The request input a password login reads its identifier from.
+     *
+     * Defaults to `email`, so a form or API client written against this package before usernames
+     * existed keeps working untouched.
+     */
+    public static function loginField(): string
+    {
+        $field = config(key: 'laranail.authkit.login.field', default: 'email');
+
+        return is_string($field) && $field !== '' ? $field : 'email';
+    }
+
+    /**
+     * The user columns a login identifier is looked up against, in the order they are tried.
+     *
+     * Email only by default. The list is the single source for both the lookup and the validation
+     * rules, so a rule cannot describe a mode the lookup does not implement.
+     *
+     * @return list<string>
+     */
+    public static function loginIdentifiers(): array
+    {
+        $identifiers = config(key: 'laranail.authkit.login.identifiers', default: ['email']);
+
+        if (! is_array($identifiers)) {
+            return ['email'];
+        }
+
+        $identifiers = array_values(array_filter(
+            $identifiers,
+            static fn (mixed $column): bool => is_string($column) && $column !== '',
+        ));
+
+        return $identifiers === [] ? ['email'] : $identifiers;
+    }
+
+    /**
+     * Whether the only identifier configured is an email address.
+     *
+     * The discriminator for validation: an address can be validated as one, and anything wider
+     * cannot, because a username is not an address.
+     */
+    public static function loginIsEmailOnly(): bool
+    {
+        return self::loginIdentifiers() === ['email'];
+    }
+
+    /**
      * Let a frontend package own the redirect targets.
      *
      * A package that ships the routes and views -- laranail/authkit-preset, or an application's

@@ -55,11 +55,17 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
         return redirect()->intended(default: AuthKit::afterLoginRedirect());
     }
 
+    /**
+     * Repopulate and report the error against the field the identifier was posted in, so a form
+     * configured for usernames does not lose its input and show its error on an absent `email`.
+     */
     protected function failed(Request $request, AuthResult $result): mixed
     {
+        $field = AuthKit::loginField();
+
         return redirect()->back()
-            ->withInput(input: $request->only(keys: ['email', 'remember']))
-            ->withErrors(provider: ['email' => 'Invalid credentials.']);
+            ->withInput(input: $request->only(keys: [$field, 'remember']))
+            ->withErrors(provider: [$field => 'Invalid credentials.']);
     }
 
     protected function throttled(Request $request, AuthResult $result): mixed

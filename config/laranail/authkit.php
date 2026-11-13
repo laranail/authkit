@@ -7,6 +7,27 @@ return [
 
     'user_model' => env(key: 'AUTHKIT_USER_MODEL'),
 
+    'login' => [
+        /*
+         * The request input the identifier arrives in.
+         *
+         * Existing forms and API clients post `email`, so that stays the default and nothing about
+         * them changes. Set it to something neutral -- `login` -- when the form accepts either an
+         * address or a username, so the field name stops claiming to be an address.
+         */
+        'field' => env(key: 'AUTHKIT_LOGIN_FIELD', default: 'email'),
+
+        /*
+         * The user columns an identifier is looked up against, tried in this order.
+         *
+         * Email only by default, which is the behaviour this package has always had. Add
+         * 'username' to accept either. The application owns that column, its uniqueness
+         * constraint and its registration validation -- this package does not own the users
+         * table, so it ships no migration for it. See docs/login.md.
+         */
+        'identifiers' => ['email'],
+    ],
+
     'rate_limit' => [
         'max_attempts'  => (int) env(key: 'AUTHKIT_RATE_LIMIT_MAX_ATTEMPTS', default: 5),
         'decay_minutes' => (int) env(key: 'AUTHKIT_RATE_LIMIT_DECAY_MINUTES', default: 1),
