@@ -27,10 +27,10 @@ enum IdentityLinkFailure: string
     public function message(): string
     {
         return match ($this) {
-            self::RecentAuthenticationRequired => 'Confirm your password before adding a sign-in method.',
+            self::RecentAuthenticationRequired => __('laranail/authkit::messages.recent_authentication_required'),
             self::IntentInvalid,
-            self::IntentMismatch             => 'This linking request is no longer valid. Start again.',
-            self::IdentityOwnedByAnotherUser => 'That account is already connected to a different user.',
+            self::IntentMismatch             => __('laranail/authkit::messages.link_request_invalid'),
+            self::IdentityOwnedByAnotherUser => __('laranail/authkit::messages.identity_already_linked'),
         };
     }
 }

@@ -22,7 +22,7 @@ class LogoutController extends AbstractLogoutController
         }
 
         return $this->jsonResponse(status: 'success', data: [
-            'message' => 'Logged out successfully.',
+            'message' => __('laranail/authkit::messages.logged_out'),
         ]);
     }
 

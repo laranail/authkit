@@ -23,7 +23,7 @@ class UpdatePasswordRequest extends FormRequest
     public static function messagesFor(): array
     {
         return [
-            'current_password.current_password' => __(key: 'The provided password does not match your current password.'),
+            'current_password.current_password' => __('laranail/authkit::messages.current_password_mismatch'),
         ];
     }
 

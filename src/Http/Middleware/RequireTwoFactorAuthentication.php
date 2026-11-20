@@ -19,16 +19,16 @@ final class RequireTwoFactorAuthentication
             abort(401);
         }
 
-        abort_unless(app(TwoFactorAuthentication::class)->enabled($user), 403, 'Two-factor authentication must be enabled.');
+        abort_unless(app(TwoFactorAuthentication::class)->enabled($user), 403, __('laranail/authkit::messages.two_factor_required'));
 
         $token = method_exists($user, 'currentAccessToken') ? $user->currentAccessToken() : null;
 
         if ($token !== null) {
             $abilities = $token->abilities ?? $token->oauth_scopes ?? $token->scopes ?? [];
-            abort_unless(is_array($abilities) && in_array('two-factor:verified', $abilities, true), 403, 'MFA verification is required.');
+            abort_unless(is_array($abilities) && in_array('two-factor:verified', $abilities, true), 403, __('laranail/authkit::messages.mfa_required'));
         } else {
-            abort_unless($request->hasSession(), 403, 'MFA verification is required.');
-            abort_unless($request->session()->get('authkit.two_factor_verified') === true, 403, 'MFA verification is required.');
+            abort_unless($request->hasSession(), 403, __('laranail/authkit::messages.mfa_required'));
+            abort_unless($request->session()->get('authkit.two_factor_verified') === true, 403, __('laranail/authkit::messages.mfa_required'));
         }
 
         return $next($request);

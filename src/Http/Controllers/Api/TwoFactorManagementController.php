@@ -33,11 +33,11 @@ final class TwoFactorManagementController
         $user = $request->user();
 
         if (! Hash::check($validated['password'], $user->getAuthPassword())) {
-            throw ValidationException::withMessages(['password' => 'The password is incorrect.']);
+            throw ValidationException::withMessages(['password' => __('laranail/authkit::messages.incorrect_password')]);
         }
 
         if ($twoFactor->enabled($user)) {
-            abort(409, 'Two-factor authentication is already enabled.');
+            abort(409, __('laranail/authkit::messages.two_factor_already_enabled'));
         }
 
         $setup = $twoFactor->begin($user);
@@ -51,7 +51,7 @@ final class TwoFactorManagementController
         $codes = $twoFactor->confirm($request->user(), $validated['code']);
 
         if ($codes === null) {
-            throw ValidationException::withMessages(['code' => 'The authenticator code is invalid.']);
+            throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.invalid_authenticator_code')]);
         }
 
         return response()->json([
@@ -66,7 +66,7 @@ final class TwoFactorManagementController
         $user = $request->user();
 
         if (! $twoFactor->verify($user, $validated['code'])) {
-            throw ValidationException::withMessages(['code' => 'The authenticator or recovery code is invalid.']);
+            throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.invalid_authenticator_or_recovery_code')]);
         }
 
         $twoFactor->disable($user);
@@ -80,7 +80,7 @@ final class TwoFactorManagementController
         $user = $request->user();
 
         if (! $twoFactor->verify($user, $validated['code'])) {
-            throw ValidationException::withMessages(['code' => 'The authenticator or recovery code is invalid.']);
+            throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.invalid_authenticator_or_recovery_code')]);
         }
 
         return response()->json([

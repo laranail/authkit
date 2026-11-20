@@ -306,3 +306,16 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Report security issues privately — [SE
 ## License
 
 MIT
+
+## Localization
+
+English package messages ship in `lang/en/messages.php` under `laranail/authkit::messages`.
+Laravel uses the current application locale and its configured fallback locale.
+Publish the language files to customize messages or add locales:
+
+```sh
+php artisan vendor:publish --tag=laranail::authkit-translations
+```
+
+Edit `lang/vendor/laranail/authkit/en/messages.php`, or add another locale directory there.
+You can override individual keys; the remaining messages keep their package defaults.

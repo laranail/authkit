@@ -27,7 +27,7 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
         if ($request->expectsJson()) {
             return match ($result->status) {
                 AuthStatus::Passed    => $this->jsonResponse(status: 'passed', data: ['user' => $result->user]),
-                AuthStatus::Failed    => $this->jsonResponse(status: 'failed', data: ['message' => 'Invalid credentials.'], code: 422),
+                AuthStatus::Failed    => $this->jsonResponse(status: 'failed', data: ['message' => __('laranail/authkit::messages.invalid_credentials')], code: 422),
                 AuthStatus::Throttled => $this->jsonResponse(status: 'throttled', data: ['retry_after' => $result->retryAfterSeconds], code: 429),
             };
         }
@@ -65,11 +65,11 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
 
         return redirect()->back()
             ->withInput(input: $request->only(keys: [$field, 'remember']))
-            ->withErrors(provider: [$field => 'Invalid credentials.']);
+            ->withErrors(provider: [$field => __('laranail/authkit::messages.invalid_credentials')]);
     }
 
     protected function throttled(Request $request, AuthResult $result): mixed
     {
-        abort(code: 429, message: 'Too many attempts.');
+        abort(code: 429, message: __('laranail/authkit::messages.too_many_attempts'));
     }
 }

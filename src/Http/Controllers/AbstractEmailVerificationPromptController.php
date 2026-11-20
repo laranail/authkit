@@ -16,7 +16,7 @@ abstract class AbstractEmailVerificationPromptController extends AbstractAuthCon
         }
 
         if ($request->expectsJson()) {
-            return $this->jsonResponse(status: 'failed', data: ['message' => 'Email not verified.'], code: 403);
+            return $this->jsonResponse(status: 'failed', data: ['message' => __('laranail/authkit::messages.email_not_verified')], code: 403);
         }
 
         return $this->prompt($request);

@@ -26,7 +26,7 @@ abstract class AbstractVerifyEmailController extends AbstractAuthController
     protected function verifiedResponse(VerifyEmailRequest $request, bool $alreadyVerified): mixed
     {
         if ($request->expectsJson()) {
-            return $this->jsonResponse(status: 'passed', data: ['message' => 'Email verified.']);
+            return $this->jsonResponse(status: 'passed', data: ['message' => __('laranail/authkit::messages.email_verified')]);
         }
 
         return redirect()->intended(AuthKit::afterEmailVerificationRedirect());
