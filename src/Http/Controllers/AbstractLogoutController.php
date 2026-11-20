@@ -15,7 +15,7 @@ abstract class AbstractLogoutController extends AbstractAuthController
         $action->execute(guard: $this->guard());
 
         if ($request->expectsJson()) {
-            return $this->jsonResponse(status: 'passed', data: ['message' => 'Logged out successfully.']);
+            return $this->jsonResponse(status: 'passed', data: ['message' => __('laranail/authkit::messages.logged_out')]);
         }
 
         return $this->loggedOut(request: $request);

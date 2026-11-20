@@ -18,7 +18,7 @@ abstract class AbstractEmailVerificationNotificationController extends AbstractA
         $request->user()->sendEmailVerificationNotification();
 
         if ($request->expectsJson()) {
-            return $this->jsonResponse(status: 'passed', data: ['message' => 'Verification link sent.']);
+            return $this->jsonResponse(status: 'passed', data: ['message' => __('laranail/authkit::messages.verification_link_sent')]);
         }
 
         return $this->sent($request);
@@ -32,7 +32,7 @@ abstract class AbstractEmailVerificationNotificationController extends AbstractA
     protected function verifiedResponse(Request $request): mixed
     {
         if ($request->expectsJson()) {
-            return $this->jsonResponse(status: 'passed', data: ['message' => 'Email already verified.']);
+            return $this->jsonResponse(status: 'passed', data: ['message' => __('laranail/authkit::messages.email_already_verified')]);
         }
 
         return redirect()->intended(AuthKit::afterLoginRedirect());

@@ -32,14 +32,14 @@ final class TwoFactorChallengeController
                 $challenge = Cache::get($key);
 
                 if (! is_array($challenge) || ! isset($challenge['user_id'], $challenge['guard'])) {
-                    throw ValidationException::withMessages(['code' => 'The challenge is invalid or expired.']);
+                    throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.challenge_expired')]);
                 }
 
                 $model = UserModelResolver::resolve($challenge['guard']);
                 $user = $model::query()->find($challenge['user_id']);
 
                 if ($user === null || ! $twoFactor->verify($user, $validated['code'])) {
-                    throw ValidationException::withMessages(['code' => 'The verification code is invalid.']);
+                    throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.invalid_verification_code')]);
                 }
 
                 Cache::forget($key);
@@ -51,7 +51,7 @@ final class TwoFactorChallengeController
                 ])->header('Cache-Control', 'no-store');
             });
         } catch (LockTimeoutException) {
-            throw ValidationException::withMessages(['code' => 'The challenge is already being processed.']);
+            throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.challenge_processing')]);
         }
     }
 }

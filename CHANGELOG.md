@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Publishable English translations for package-owned messages and application language overrides.
+
 ### Fixed
 
 - Accept full 21-character recovery codes for two-factor challenges, disabling two-factor

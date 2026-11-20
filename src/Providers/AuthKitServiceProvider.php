@@ -23,6 +23,10 @@ class AuthKitServiceProvider extends PackageServiceProvider
         $package
             ->name('laranail/authkit')
             ->publish(
+                paths: ['lang' => lang_path('vendor/laranail/authkit')],
+                tag: 'laranail::authkit-translations',
+            )
+            ->publish(
                 paths: ['config/laranail/authkit.php' => config_path(path: 'laranail/authkit.php')],
                 tag: 'laranail::authkit-config',
             )
@@ -73,6 +77,8 @@ class AuthKitServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        $this->loadTranslationsFrom($this->packagePath('lang'), 'laranail/authkit');
+
         // The REST API ships with the core, so an API-only or Filament consumer that installs
         // this package alone gets it. A frontend package that would rather mount its own sets
         // laranail.authkit.api.enabled to false.

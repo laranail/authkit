@@ -30,7 +30,7 @@ final class TwoFactorAuthentication
     public function begin(Authenticatable $user): array
     {
         if ($this->enabled($user)) {
-            throw new LogicException('Two-factor authentication is already enabled.');
+            throw new LogicException(__('laranail/authkit::messages.two_factor_already_enabled'));
         }
 
         $stored = $this->value($user, 'two_factor_secret');

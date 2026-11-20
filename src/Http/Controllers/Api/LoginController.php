@@ -34,7 +34,7 @@ class LoginController extends AbstractAttemptEmailPasswordLoginController
 
         return match ($result->status) {
             AuthStatus::Passed    => $this->apiPassed(result: $result),
-            AuthStatus::Failed    => $this->jsonResponse(status: 'failed', data: ['message' => 'Invalid credentials.'], code: 422),
+            AuthStatus::Failed    => $this->jsonResponse(status: 'failed', data: ['message' => __('laranail/authkit::messages.invalid_credentials')], code: 422),
             AuthStatus::Throttled => $this->jsonResponse(status: 'throttled', data: ['retry_after' => $result->retryAfterSeconds], code: 429),
         };
     }
@@ -88,7 +88,7 @@ class LoginController extends AbstractAttemptEmailPasswordLoginController
     {
         return response()->json([
             'status'  => 'failed',
-            'message' => 'Invalid credentials.',
+            'message' => __('laranail/authkit::messages.invalid_credentials'),
         ], 422);
     }
 
@@ -96,7 +96,7 @@ class LoginController extends AbstractAttemptEmailPasswordLoginController
     {
         return response()->json([
             'status'              => 'throttled',
-            'message'             => 'Too many attempts.',
+            'message'             => __('laranail/authkit::messages.too_many_attempts'),
             'retry_after_seconds' => $result->retryAfterSeconds,
         ], 429);
     }
