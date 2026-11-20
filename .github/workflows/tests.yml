@@ -32,57 +32,57 @@ jobs:
       test-command: 'vendor/bin/pest --colors=never --parallel'
 
   database:
-    name: PHP 8.5 · ${{ matrix.database.name }}
+    name: PHP 8.5 · ${{ matrix.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        database:
+        include:
           - name: MySQL
-            driver: mysql
+            db: mysql
             image: mysql:8.4
             port: 3306
             user: root
-            options: >-
-              --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
-              --health-interval=10s --health-timeout=5s --health-retries=5
+            health: >-
+              --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -psecret"
+              --health-interval=10s --health-timeout=5s --health-retries=10
           - name: MariaDB
-            driver: mysql
+            db: mariadb
             image: mariadb:11.4
             port: 3306
             user: root
-            options: >-
+            health: >-
               --health-cmd="healthcheck.sh --connect --innodb_initialized"
-              --health-interval=10s --health-timeout=5s --health-retries=5
+              --health-interval=10s --health-timeout=5s --health-retries=10
           - name: PostgreSQL
-            driver: pgsql
+            db: pgsql
             image: postgres:17
             port: 5432
             user: postgres
-            options: >-
-              --health-cmd="pg_isready -U postgres"
-              --health-interval=10s --health-timeout=5s --health-retries=5
+            health: >-
+              --health-cmd="pg_isready -U postgres -d authkit_test"
+              --health-interval=10s --health-timeout=5s --health-retries=10
     services:
       database:
-        image: ${{ matrix.database.image }}
+        image: ${{ matrix.image }}
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: authkit
-          MARIADB_ROOT_PASSWORD: root
-          MARIADB_DATABASE: authkit
-          POSTGRES_PASSWORD: root
-          POSTGRES_DB: authkit
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_DATABASE: authkit_test
+          MARIADB_ROOT_PASSWORD: secret
+          MARIADB_DATABASE: authkit_test
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: authkit_test
         ports:
-          - ${{ matrix.database.port }}:${{ matrix.database.port }}
-        options: ${{ matrix.database.options }}
+          - ${{ matrix.port }}:${{ matrix.port }}
+        options: ${{ matrix.health }}
     env:
-      DB_CONNECTION: ${{ matrix.database.driver }}
+      DB_CONNECTION: ${{ matrix.db }}
       DB_HOST: 127.0.0.1
-      DB_PORT: ${{ matrix.database.port }}
-      DB_DATABASE: authkit
-      DB_USERNAME: ${{ matrix.database.user }}
-      DB_PASSWORD: root
+      DB_PORT: ${{ matrix.port }}
+      DB_DATABASE: authkit_test
+      DB_USERNAME: ${{ matrix.user }}
+      DB_PASSWORD: secret
       COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
     steps:
       - uses: actions/checkout@v7
@@ -91,8 +91,9 @@ jobs:
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.5'
-          extensions: dom, curl, libxml, mbstring, pdo_mysql, pdo_pgsql, zip
+          extensions: dom, curl, libxml, mbstring, pcntl, pdo, sqlite, pdo_sqlite, pdo_mysql, pdo_pgsql, zip
           tools: composer:v2
+          coverage: none
 
       - name: Install dependencies
         run: composer update --prefer-stable --no-interaction --no-progress
