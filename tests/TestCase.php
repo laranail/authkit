@@ -46,7 +46,6 @@ abstract class TestCase extends BaseTestCase
         $this->loadMigrationsFrom(dirname(__DIR__) . '/vendor/orchestra/testbench-core/laravel/migrations');
         $this->loadMigrationsFrom(dirname(__DIR__) . '/vendor/laravel/fortify/database/migrations');
         $this->loadMigrationsFrom(dirname(__DIR__) . '/database/migrations/passkeys');
-        $this->loadMigrationsFrom(dirname(__DIR__) . '/database/migrations/two-factor');
         $this->loadMigrationsFrom(dirname(__DIR__) . '/vendor/laravel/sanctum/database/migrations');
         $this->loadMigrationsFrom(dirname(__DIR__) . '/workbench/database/migrations');
     }
