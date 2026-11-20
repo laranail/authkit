@@ -62,7 +62,7 @@ final class TwoFactorManagementController
 
     public function disable(Request $request, TwoFactorAuthentication $twoFactor): JsonResponse
     {
-        $validated = $request->validate(['code' => ['required', 'string', 'min:6', 'max:20']]);
+        $validated = $request->validate(['code' => ['required', 'string', 'min:6', 'max:21']]);
         $user = $request->user();
 
         if (! $twoFactor->verify($user, $validated['code'])) {
@@ -76,7 +76,7 @@ final class TwoFactorManagementController
 
     public function regenerateRecoveryCodes(Request $request, TwoFactorAuthentication $twoFactor): JsonResponse
     {
-        $validated = $request->validate(['code' => ['required', 'string', 'min:6', 'max:20']]);
+        $validated = $request->validate(['code' => ['required', 'string', 'min:6', 'max:21']]);
         $user = $request->user();
 
         if (! $twoFactor->verify($user, $validated['code'])) {
