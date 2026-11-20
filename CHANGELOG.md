@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Accept full 21-character recovery codes for two-factor challenges, disabling two-factor
+  authentication, and regenerating recovery codes.
+
 ### Changed
 
 - CI now runs the package test suite on PHP 8.5 against MySQL, MariaDB, and PostgreSQL in addition

@@ -22,7 +22,7 @@ final class TwoFactorChallengeController
     ): JsonResponse {
         $validated = $request->validate([
             'challenge_token' => ['required', 'string', 'size:64'],
-            'code'            => ['required', 'string', 'min:6', 'max:20'],
+            'code'            => ['required', 'string', 'min:6', 'max:21'],
         ]);
 
         $key = 'authkit:two-factor:challenge:' . hash('sha256', $validated['challenge_token']);
