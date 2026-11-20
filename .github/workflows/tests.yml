@@ -107,4 +107,4 @@ jobs:
           DB_DATABASE: authkit_test
           DB_USERNAME: authkit
           DB_PASSWORD: secret
-        run: timeout 180 vendor/bin/pest --colors=never --no-coverage --debug
+        run: vendor/bin/pest --colors=never --no-coverage
