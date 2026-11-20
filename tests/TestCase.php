@@ -43,10 +43,12 @@ abstract class TestCase extends BaseTestCase
 
     protected function defineDatabaseMigrations(): void
     {
-        $this->loadMigrationsFrom(dirname(__DIR__) . '/vendor/orchestra/testbench-core/laravel/migrations');
-        $this->loadMigrationsFrom(dirname(__DIR__) . '/vendor/laravel/fortify/database/migrations');
-        $this->loadMigrationsFrom(dirname(__DIR__) . '/database/migrations/passkeys');
-        $this->loadMigrationsFrom(dirname(__DIR__) . '/vendor/laravel/sanctum/database/migrations');
-        $this->loadMigrationsFrom(dirname(__DIR__) . '/workbench/database/migrations');
+        \Orchestra\Testbench\load_migration_paths($this->app, [
+            dirname(__DIR__) . '/vendor/orchestra/testbench-core/laravel/migrations',
+            dirname(__DIR__) . '/vendor/laravel/fortify/database/migrations',
+            dirname(__DIR__) . '/database/migrations/passkeys',
+            dirname(__DIR__) . '/vendor/laravel/sanctum/database/migrations',
+            dirname(__DIR__) . '/workbench/database/migrations',
+        ]);
     }
 }
