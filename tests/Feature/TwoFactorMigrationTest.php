@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 
 it('adds and removes the two-factor fields on the configured user table', function (): void {
     $table = 'authkit_two_factor_migration_users';
