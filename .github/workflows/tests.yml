@@ -98,5 +98,27 @@ jobs:
       - name: Install dependencies
         run: composer update --prefer-stable --no-interaction --no-progress
 
+      - name: Create parallel test databases
+        run: |
+          php <<'PHP'
+          <?php
+
+          $driver = getenv('DB_CONNECTION');
+          $host = getenv('DB_HOST');
+          $port = getenv('DB_PORT');
+          $username = getenv('DB_USERNAME');
+          $password = getenv('DB_PASSWORD');
+          $dsn = $driver === 'pgsql'
+              ? "pgsql:host={$host};port={$port};dbname=postgres"
+              : "mysql:host={$host};port={$port}";
+          $pdo = new PDO($dsn, $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+
+          for ($token = 1; $token <= 4; $token++) {
+              $database = getenv('DB_DATABASE') . "_{$token}";
+              $identifier = $driver === 'pgsql' ? "\"{$database}\"" : "`{$database}`";
+              $pdo->exec("CREATE DATABASE {$identifier}");
+          }
+          PHP
+
       - name: Run tests
-        run: vendor/bin/pest --colors=never --parallel
+        run: vendor/bin/pest --colors=never --parallel --processes=4
