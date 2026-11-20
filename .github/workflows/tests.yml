@@ -7,6 +7,9 @@ on:
     # required check that never reports (a docs-only pull request) blocks it for good.
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -26,3 +29,82 @@ jobs:
       # line only once that default is ["*"].
       laravel-versions: '["*"]'
       php-extensions: 'dom, curl, libxml, mbstring, sqlite3, pdo_sqlite, zip'
+      test-command: 'vendor/bin/pest --colors=never'
+
+  database:
+    name: PHP 8.5 · ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: MySQL
+            db: mysql
+            image: mysql:8.4
+            port: 3306
+            health: >-
+              --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -psecret"
+              --health-interval=10s --health-timeout=5s --health-retries=10
+          - name: MariaDB
+            db: mariadb
+            image: mariadb:11.4
+            port: 3306
+            health: >-
+              --health-cmd="healthcheck.sh --connect --innodb_initialized"
+              --health-interval=10s --health-timeout=5s --health-retries=10
+          - name: PostgreSQL
+            db: pgsql
+            image: postgres:17
+            port: 5432
+            health: >-
+              --health-cmd="pg_isready -U authkit -d authkit_test"
+              --health-interval=10s --health-timeout=5s --health-retries=10
+    services:
+      database:
+        image: ${{ matrix.image }}
+        env:
+          MYSQL_USER: authkit
+          MYSQL_PASSWORD: secret
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_DATABASE: authkit_test
+          MARIADB_USER: authkit
+          MARIADB_PASSWORD: secret
+          MARIADB_ROOT_PASSWORD: secret
+          MARIADB_DATABASE: authkit_test
+          POSTGRES_USER: authkit
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: authkit_test
+        ports:
+          - ${{ matrix.port }}:${{ matrix.port }}
+        options: ${{ matrix.health }}
+    env:
+      COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up PHP 8.5
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: dom, curl, libxml, mbstring, pcntl, pdo, sqlite, pdo_sqlite, pdo_mysql, pdo_pgsql, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup problem matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Install dependencies
+        run: composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+
+      - name: Run tests
+        env:
+          DB_CONNECTION: ${{ matrix.db }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.port }}
+          DB_DATABASE: authkit_test
+          DB_USERNAME: authkit
+          DB_PASSWORD: secret
+        run: vendor/bin/pest --colors=never --no-coverage

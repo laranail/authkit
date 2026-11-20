@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- CI now runs the package test suite on PHP 8.5 against MySQL, MariaDB, and PostgreSQL in addition
+  to SQLite. The passkeys migration runs with the workbench, and a focused schema test covers the
+  two-factor migration on every database driver.
+
 ## [0.1.1] - 2026-11-13
 
 ### Added
