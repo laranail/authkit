@@ -26,3 +26,72 @@ jobs:
       # line only once that default is ["*"].
       laravel-versions: '["*"]'
       php-extensions: 'dom, curl, libxml, mbstring, sqlite3, pdo_sqlite, zip'
+
+  database:
+    name: PHP 8.5 · ${{ matrix.database.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        database:
+          - name: MySQL
+            driver: mysql
+            image: mysql:8.4
+            port: 3306
+            user: root
+            options: >-
+              --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+              --health-interval=10s --health-timeout=5s --health-retries=5
+          - name: MariaDB
+            driver: mysql
+            image: mariadb:11.4
+            port: 3306
+            user: root
+            options: >-
+              --health-cmd="healthcheck.sh --connect --innodb_initialized"
+              --health-interval=10s --health-timeout=5s --health-retries=5
+          - name: PostgreSQL
+            driver: pgsql
+            image: postgres:17
+            port: 5432
+            user: postgres
+            options: >-
+              --health-cmd="pg_isready -U postgres"
+              --health-interval=10s --health-timeout=5s --health-retries=5
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: authkit
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: authkit
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: authkit
+        ports:
+          - ${{ matrix.database.port }}:${{ matrix.database.port }}
+        options: ${{ matrix.database.options }}
+    env:
+      DB_CONNECTION: ${{ matrix.database.driver }}
+      DB_HOST: 127.0.0.1
+      DB_PORT: ${{ matrix.database.port }}
+      DB_DATABASE: authkit
+      DB_USERNAME: ${{ matrix.database.user }}
+      DB_PASSWORD: root
+      COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up PHP 8.5
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: dom, curl, libxml, mbstring, pdo_mysql, pdo_pgsql, zip
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer update --prefer-stable --no-interaction --no-progress
+
+      - name: Run tests
+        run: vendor/bin/pest --colors=never
