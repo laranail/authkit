@@ -29,7 +29,7 @@ jobs:
       # line only once that default is ["*"].
       laravel-versions: '["*"]'
       php-extensions: 'dom, curl, libxml, mbstring, sqlite3, pdo_sqlite, zip'
-      test-command: 'vendor/bin/pest --colors=never --parallel'
+      test-command: 'vendor/bin/pest --colors=never'
 
   database:
     name: PHP 8.5 · ${{ matrix.name }}
@@ -43,7 +43,6 @@ jobs:
             db: mysql
             image: mysql:8.4
             port: 3306
-            user: root
             health: >-
               --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -psecret"
               --health-interval=10s --health-timeout=5s --health-retries=10
@@ -51,7 +50,6 @@ jobs:
             db: mariadb
             image: mariadb:11.4
             port: 3306
-            user: root
             health: >-
               --health-cmd="healthcheck.sh --connect --innodb_initialized"
               --health-interval=10s --health-timeout=5s --health-retries=10
@@ -59,30 +57,28 @@ jobs:
             db: pgsql
             image: postgres:17
             port: 5432
-            user: postgres
             health: >-
-              --health-cmd="pg_isready -U postgres -d authkit_test"
+              --health-cmd="pg_isready -U authkit -d authkit_test"
               --health-interval=10s --health-timeout=5s --health-retries=10
     services:
       database:
         image: ${{ matrix.image }}
         env:
+          MYSQL_USER: authkit
+          MYSQL_PASSWORD: secret
           MYSQL_ROOT_PASSWORD: secret
           MYSQL_DATABASE: authkit_test
+          MARIADB_USER: authkit
+          MARIADB_PASSWORD: secret
           MARIADB_ROOT_PASSWORD: secret
           MARIADB_DATABASE: authkit_test
+          POSTGRES_USER: authkit
           POSTGRES_PASSWORD: secret
           POSTGRES_DB: authkit_test
         ports:
           - ${{ matrix.port }}:${{ matrix.port }}
         options: ${{ matrix.health }}
     env:
-      DB_CONNECTION: ${{ matrix.db }}
-      DB_HOST: 127.0.0.1
-      DB_PORT: ${{ matrix.port }}
-      DB_DATABASE: authkit_test
-      DB_USERNAME: ${{ matrix.user }}
-      DB_PASSWORD: secret
       COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
     steps:
       - uses: actions/checkout@v7
@@ -95,30 +91,20 @@ jobs:
           tools: composer:v2
           coverage: none
 
-      - name: Install dependencies
-        run: composer update --prefer-stable --no-interaction --no-progress
-
-      - name: Create parallel test databases
+      - name: Setup problem matchers
         run: |
-          php <<'PHP'
-          <?php
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-          $driver = getenv('DB_CONNECTION');
-          $host = getenv('DB_HOST');
-          $port = getenv('DB_PORT');
-          $username = getenv('DB_USERNAME');
-          $password = getenv('DB_PASSWORD');
-          $dsn = $driver === 'pgsql'
-              ? "pgsql:host={$host};port={$port};dbname=postgres"
-              : "mysql:host={$host};port={$port}";
-          $pdo = new PDO($dsn, $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-
-          for ($token = 1; $token <= 4; $token++) {
-              $database = getenv('DB_DATABASE') . "_{$token}";
-              $identifier = $driver === 'pgsql' ? "\"{$database}\"" : "`{$database}`";
-              $pdo->exec("CREATE DATABASE {$identifier}");
-          }
-          PHP
+      - name: Install dependencies
+        run: composer update --prefer-stable --prefer-dist --no-interaction --no-progress
 
       - name: Run tests
-        run: vendor/bin/pest --colors=never --parallel --processes=4
+        env:
+          DB_CONNECTION: ${{ matrix.db }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.port }}
+          DB_DATABASE: authkit_test
+          DB_USERNAME: authkit
+          DB_PASSWORD: secret
+        run: vendor/bin/pest --colors=never

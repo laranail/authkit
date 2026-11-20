@@ -34,8 +34,6 @@ abstract class TestCase extends BaseTestCase
             $connection['database'] = getenv('DB_DATABASE') ?: ':memory:';
             $connection['prefix'] = '';
             $connection['foreign_key_constraints'] = true;
-        } elseif (($token = getenv('TEST_TOKEN')) !== false && $token !== '') {
-            $connection['database'] .= "_{$token}";
         }
 
         $app['config']->set('database.connections.testing', $connection);
