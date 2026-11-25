@@ -24,14 +24,13 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
             guard: $this->guard(),
         );
 
-        if ($request->expectsJson()) {
-            return match ($result->status) {
-                AuthStatus::Passed    => $this->jsonResponse(status: 'passed', data: ['user' => $result->user]),
-                AuthStatus::Failed    => $this->jsonResponse(status: 'failed', data: ['message' => __('laranail/authkit::messages.invalid_credentials')], code: 422),
-                AuthStatus::Throttled => $this->jsonResponse(status: 'throttled', data: ['retry_after' => $result->retryAfterSeconds], code: 429),
-            };
-        }
-
+        // One pipeline, whatever the caller accepts. The representation is chosen in `passed()`,
+        // `failed()` and `throttled()`, after the attempt has been acted on -- never before it.
+        // Negotiating first is how this controller came to answer `200 passed` to a JSON caller
+        // without establishing a session or reaching the subclass hook that gates two-factor.
+        // Laravel's own Fortify has the same shape: `AuthenticatedSessionController::store()` runs
+        // the whole login pipeline and only then returns `app(LoginResponse::class)`, whose
+        // `toResponse()` is the single place that asks `wantsJson()`.
         return match ($result->status) {
             AuthStatus::Passed    => $this->handlePassed(request: $request, result: $result, loginAction: $loginAction),
             AuthStatus::Failed    => $this->failed(request: $request, result: $result),
@@ -52,6 +51,10 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
 
     protected function passed(Request $request, AuthResult $result): mixed
     {
+        if ($request->expectsJson()) {
+            return $this->jsonResponse(status: 'passed', data: ['user' => $result->user]);
+        }
+
         return redirect()->intended(default: AuthKit::afterLoginRedirect());
     }
 
@@ -61,6 +64,15 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
      */
     protected function failed(Request $request, AuthResult $result): mixed
     {
+        if ($request->expectsJson()) {
+            return $this->jsonResponse(
+                status: 'failed',
+                data: ['message' => __('laranail/authkit::messages.invalid_credentials')],
+                code: 422,
+            );
+        }
+
+        // Read after the JSON return, which does not use it.
         $field = AuthKit::loginField();
 
         return redirect()->back()
@@ -70,6 +82,14 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
 
     protected function throttled(Request $request, AuthResult $result): mixed
     {
+        if ($request->expectsJson()) {
+            return $this->jsonResponse(
+                status: 'throttled',
+                data: ['retry_after' => $result->retryAfterSeconds],
+                code: 429,
+            );
+        }
+
         abort(code: 429, message: __('laranail/authkit::messages.too_many_attempts'));
     }
 }
