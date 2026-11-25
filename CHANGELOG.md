@@ -36,6 +36,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   a lock. Three of the stores Laravel ships are not lock providers: `apc`, `session` and `storage`.
 
 ### Changed
+- A tag-driven release workflow: it builds the GitHub release body from this file's matching
+  section, marks any `-` suffix as a pre-release, and attaches a CycloneDX SBOM. The package had
+  none, which is why it has tags and no GitHub releases.
+- CI gained a weekly scheduled run on the default branch. Nothing ran on a merge, so drift on
+  `main` was invisible until an unrelated pull request went red.
+- The architecture test suite now runs. `phpunit.xml` declared `Feature` and `Unit` only, so
+  `tests/Architecture` — the credential-literal guard — was collected by nothing and had never
+  executed.
+- `laranail/package-tools` floor raised to `^0.1.13`, the first release carrying
+  `AssertsNoFacadeCalls` and `AssertsNoStateLeak`. The constraint now states what the code needs.
+- The test harness generates its `app.key` per run. A placeholder literal is indistinguishable from
+  a real key to a scanner, and it blocked any commit touching that file.
 
 - CI now runs the package test suite on PHP 8.5 against MySQL, MariaDB, and PostgreSQL in addition
   to SQLite. The passkeys migration runs with the workbench, and a focused schema test covers the
@@ -159,3 +171,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]: https://github.com/laranail/authkit/compare/v0.1.1...HEAD
 [0.1.1]: https://github.com/laranail/authkit/compare/v0.1.0...v0.1.1
+
+## [0.1.0] - 2026-10-19
+
+### Added
+
+- The headless core: credential login with throttling by identifier, IP and guard; session
+  regeneration and invalidation; Sanctum token issuance behind a registry; two-factor enrolment,
+  challenge and recovery codes; passkey wiring; browser-session management; Turnstile support; the
+  API surface under `laranail.authkit.api`; and Fortify's user-creation, profile, password and
+  reset actions bound to AuthKit's own.
