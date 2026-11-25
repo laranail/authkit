@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      # Both forms, so a pre-release tag starts this too (releases.md).
+      - 'v*.*.*'
+      - 'v*.*.*-*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Never cancel a release in flight: a half-finished one can leave a tag published with no assets.
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish GitHub release + SBOM
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: dom, curl, libxml, mbstring, zip, fileinfo
+          coverage: none
+
+      - name: Install runtime dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress
+
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: authkit.cdx.json
+          upload-artifact: false
+          upload-release-assets: false   # the release step below attaches it (avoids a duplicate)
+
+      - name: Extract this version's CHANGELOG section
+        id: changelog
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          # A pre-release (vX.Y.Z-rc.N, -beta.N, -alpha.N) takes the notes of the X.Y.Z it previews.
+          section="${version%%-*}"
+          notes=$(awk -v v="$section" '
+            $0 ~ "^## \\[" v "\\]" { f=1; next }
+            f && /^## \[/ { exit }
+            f { print }
+          ' CHANGELOG.md)
+          {
+            echo "body<<__CHANGELOG_EOF__"
+            if [ -n "$notes" ]; then printf '%s\n' "$notes"; else
+              echo "See [CHANGELOG.md](https://github.com/laranail/authkit/blob/main/CHANGELOG.md)."
+            fi
+            echo
+            echo "Full history: [CHANGELOG.md](https://github.com/laranail/authkit/blob/main/CHANGELOG.md)."
+            echo "__CHANGELOG_EOF__"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          generate_release_notes: true
+          body: ${{ steps.changelog.outputs.body }}
+          # Any `-` suffix is a pre-release and never becomes "Latest" (releases.md).
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          make_latest: ${{ !contains(github.ref_name, '-') }}
+          files: authkit.cdx.json
