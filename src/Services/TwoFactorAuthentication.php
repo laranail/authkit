@@ -204,8 +204,11 @@ final class TwoFactorAuthentication
         $store = Cache::getStore();
 
         // Three of the stores Laravel ships are not LockProviders -- apc, session and storage --
-        // and Cache::lock() on one of them throws BadMethodCallException, surfacing as a 500 on
-        // the challenge. IdentityLinking::spend() already degrades exactly this way.
+        // and Cache::lock() on one of them fails with PHP's Error: Call to undefined method,
+        // surfacing as a 500 on the challenge. Not BadMethodCallException, as this comment said
+        // until it was checked: none of those stores declares lock() or __call, and
+        // Repository::__call forwards straight to the store, so nothing translates the call into
+        // an exception type. IdentityLinking::spend() already degrades exactly this way.
         if (! $store instanceof LockProvider) {
             return $callback();
         }

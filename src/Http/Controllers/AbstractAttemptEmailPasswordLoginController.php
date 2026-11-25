@@ -64,8 +64,6 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
      */
     protected function failed(Request $request, AuthResult $result): mixed
     {
-        $field = AuthKit::loginField();
-
         if ($request->expectsJson()) {
             return $this->jsonResponse(
                 status: 'failed',
@@ -73,6 +71,9 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
                 code: 422,
             );
         }
+
+        // Read after the JSON return, which does not use it.
+        $field = AuthKit::loginField();
 
         return redirect()->back()
             ->withInput(input: $request->only(keys: [$field, 'remember']))

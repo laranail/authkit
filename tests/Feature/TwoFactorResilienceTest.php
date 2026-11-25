@@ -35,7 +35,10 @@ beforeEach(function (): void {
 /**
  * A cache store that is not a `LockProvider`. Three of the twelve stores Laravel ships are in this
  * category — `ApcStore`, `SessionStore` and `StorageStore` — and `Cache::lock()` on any of them
- * throws `BadMethodCallException`, which surfaces as a 500 on the two-factor challenge.
+ * fails with PHP's `Error: Call to undefined method`, which surfaces as a 500 on the two-factor
+ * challenge. Not `BadMethodCallException`, as an earlier revision of this comment said: none of
+ * those stores declares `lock()` or `__call`, and `Repository::__call` forwards straight to the
+ * store, so nothing is left to translate the call into an exception type.
  */
 function withoutLockSupport(): void
 {
@@ -56,7 +59,7 @@ function withoutLockSupport(): void
                 $out[$k] = $this->get($k);
             }
 
-return $out;
+            return $out;
         }
 
         public function put($key, $value, $seconds)
@@ -72,7 +75,7 @@ return $out;
                 $this->put($k, $v, $seconds);
             }
 
-return true;
+            return true;
         }
 
         public function increment($key, $value = 1)
@@ -165,5 +168,13 @@ it('verifies without a lock when the cache store cannot provide one', function (
     $setup = $twoFactor->begin($this->user);
     $twoFactor->confirm($this->user, (new PragmaRX\Google2FA\Google2FA)->getCurrentOtp($setup['secret']));
 
-    expect($twoFactor->verify($this->user->fresh(), '000000'))->toBeFalse();
+    // The positive case is the one that carries the behaviour this test is named for. Asserting
+    // only that a wrong code fails passes just as well when the lock-less branch denies
+    // everything: measured by making it `return false;`, all three tests in this file stayed
+    // green. A correct code has to verify.
+    cache()->flush();
+    $otp = (new PragmaRX\Google2FA\Google2FA)->getCurrentOtp($setup['secret']);
+
+    expect($twoFactor->verify($this->user->fresh(), $otp))->toBeTrue()
+        ->and($twoFactor->verify($this->user->fresh(), '000000'))->toBeFalse();
 });

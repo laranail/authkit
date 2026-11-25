@@ -128,6 +128,19 @@ class AuthKit
         return (bool) config(key: 'laranail.authkit.api.enabled', default: true);
     }
 
+    /**
+     * The two-factor feature switch, kept as public API with no caller inside these packages.
+     *
+     * It used to be half of the API login's challenge condition, which made a config flag able to
+     * waive a second factor a user had already enrolled -- and since its default is `false`, a
+     * core-only install waived it always. `Api\LoginController` now asks
+     * `TwoFactorAuthentication::enabled()` and nothing else, the way the preset's browser login
+     * always has.
+     *
+     * The two-factor routes have never been gated on this key, so nothing here reads it now.
+     * Retained because an application may; what it ought to gate is a decision for its owner, not
+     * something to settle by deleting the method.
+     */
     public static function twoFactorEnabled(): bool
     {
         return (bool) config(key: 'laranail.authkit.two_factor.enabled', default: false);

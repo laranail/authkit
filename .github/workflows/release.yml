@@ -3,27 +3,84 @@ name: Release
 on:
   push:
     tags:
-      # Both forms, so a pre-release tag starts this too (releases.md).
+      # One pattern covers both: GitHub's `*` matches `.` and `-`, so this already starts on
+      # `v0.1.0-rc.1`. The exact shapes are checked in the job, not here.
       - 'v*.*.*'
-      - 'v*.*.*-*'
+  # A release tag is spent the moment it is pushed and can never be moved or reused
+  # (releases.md), so a run that dies at `composer install` or in the SBOM step must be
+  # recoverable. This re-runs the whole job against a tag that already exists; it never
+  # creates one. `/opensource/CLAUDE.md` requires the dispatch for exactly this reason.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'An existing tag to publish, e.g. v0.1.1'
+        required: true
+        type: string
+      latest:
+        description: "Mark as the repository's Latest release (`false` for a patch to an older line)"
+        required: false
+        type: choice
+        default: auto
+        options: [auto, 'false']
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ inputs.tag || github.ref_name }}
   # Never cancel a release in flight: a half-finished one can leave a tag published with no assets.
   cancel-in-progress: false
 
+# Read-only at the top and widened per job, so a job added later starts with no write access.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   release:
     name: Publish GitHub release + SBOM
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write   # create the release and attach the SBOM
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          # The tag's own tree, so a dispatch publishes that version rather than whatever
+          # `main` holds now. On a tag push this is the tag that triggered the run.
+          ref: ${{ inputs.tag || github.ref_name }}
+
+      - name: Resolve the release
+        id: rel
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_LATEST: ${{ inputs.latest }}
+        run: |
+          set -euo pipefail
+          tag="${INPUT_TAG:-$GITHUB_REF_NAME}"
+
+          # The shapes releases.md admits, and no others: `rc1` without the dot, `-pre.N`,
+          # `-preview`, `-dev` and `-nightly` are refused here rather than published, because
+          # a published tag cannot be withdrawn from the proxies that cache it.
+          if ! printf '%s' "$tag" | grep -qE '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(alpha|beta|rc)\.(0|[1-9][0-9]*))?$'; then
+            echo "::error::'$tag' is not a release tag this project publishes." \
+                 "Use vX.Y.Z, or vX.Y.Z-alpha.N / -beta.N / -rc.N (releases.md)."
+            exit 1
+          fi
+
+          case "$tag" in *-*) prerelease=true ;; *) prerelease=false ;; esac
+
+          # A pre-release never becomes "Latest". Nor does a patch to an older line, which is
+          # dispatched with latest=false so a security fix for 0.1.x cannot demote 0.2.x.
+          latest=false
+          if [ "$prerelease" = false ] && [ "${INPUT_LATEST:-auto}" = auto ]; then
+            latest=true
+          fi
+
+          {
+            echo "tag=$tag"
+            echo "version=${tag#v}"
+            echo "prerelease=$prerelease"
+            echo "latest=$latest"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Setup PHP
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
@@ -46,14 +103,20 @@ jobs:
 
       - name: Extract this version's CHANGELOG section
         id: changelog
+        env:
+          VERSION: ${{ steps.rel.outputs.version }}
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          set -euo pipefail
           # A pre-release (vX.Y.Z-rc.N, -beta.N, -alpha.N) takes the notes of the X.Y.Z it previews.
-          section="${version%%-*}"
+          section="${VERSION%%-*}"
           notes=$(awk -v v="$section" '
-            $0 ~ "^## \\[" v "\\]" { f=1; next }
-            f && /^## \[/ { exit }
-            f { print }
+            $0 ~ "^## \\[" v "\\]"     { f = 1; next }
+            f && /^## \[/              { exit }
+            # Keep a Changelog puts its link-reference definitions at the end of the file, so the
+            # LAST version section has no heading after it to stop at. Without this the extractor
+            # runs to EOF and the release body ends in `[0.1.1]: https://...` lines.
+            f && /^\[[^]]+\]: https?:/ { exit }
+            f                          { print }
           ' CHANGELOG.md)
           {
             echo "body<<__CHANGELOG_EOF__"
@@ -68,9 +131,11 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
+          # Named explicitly: on a dispatch the ref is a branch, so the action would otherwise
+          # tag the release after that branch instead of the version being published.
+          tag_name: ${{ steps.rel.outputs.tag }}
           generate_release_notes: true
           body: ${{ steps.changelog.outputs.body }}
-          # Any `-` suffix is a pre-release and never becomes "Latest" (releases.md).
-          prerelease: ${{ contains(github.ref_name, '-') }}
-          make_latest: ${{ !contains(github.ref_name, '-') }}
+          prerelease: ${{ steps.rel.outputs.prerelease }}
+          make_latest: ${{ steps.rel.outputs.latest }}
           files: authkit.cdx.json

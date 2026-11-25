@@ -46,7 +46,14 @@ class LoginController extends AbstractAttemptEmailPasswordLoginController
 
     protected function apiPassed(AuthResult $result): JsonResponse
     {
-        if (AuthKit::twoFactorEnabled() && app(TwoFactorAuthentication::class)->enabled($result->user)) {
+        // Enrolment is the authority, not a config flag. `laranail.authkit.two_factor.enabled`
+        // is written by the preset at register time from Fortify's feature list, so its value
+        // depends on provider registration order -- and with it in this condition a user with
+        // TOTP enrolled and confirmed was issued a token on the password alone whenever that
+        // ordering came out false. `authkit-preset`'s browser login has always asked the service
+        // and nothing else; this matches it. The flag still gates the enrolment and challenge
+        // endpoints, which is what a feature switch should do.
+        if (app(TwoFactorAuthentication::class)->enabled($result->user)) {
             $challenge = bin2hex(random_bytes(32));
             cache()->put(
                 'authkit:two-factor:challenge:' . hash('sha256', $challenge),

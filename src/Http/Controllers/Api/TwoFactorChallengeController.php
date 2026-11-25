@@ -54,7 +54,9 @@ final class TwoFactorChallengeController
         $store = Cache::getStore();
 
         // Not every cache store can lock -- apc, session and storage cannot -- and Cache::lock()
-        // on one of them throws BadMethodCallException, surfacing as a 500 on the challenge.
+        // on one of them fails with PHP's Error: Call to undefined method (not
+        // BadMethodCallException: the store declares no lock() and Repository::__call forwards
+        // straight to it), surfacing as a 500 on the challenge.
         // Unlocked, the challenge is still spent exactly once by the Cache::forget() above; only
         // the narrow double-submit race is unguarded, the same trade IdentityLinking::spend()
         // already makes.
