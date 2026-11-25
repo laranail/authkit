@@ -5,6 +5,11 @@ on:
     branches: [main]
     # No path filter: this workflow gates merges as a required status check, and a
     # required check that never reports (a docs-only pull request) blocks it for good.
+  # Nothing runs on a merge, so one weekly run on the default branch is what makes
+  # drift visible -- an unpinned dependency, two green PRs that interact, a
+  # formatter change. Staggered across the family to avoid one burst.
+  schedule:
+    - cron: '13 4 * * 1'
   workflow_dispatch:
 
 permissions:

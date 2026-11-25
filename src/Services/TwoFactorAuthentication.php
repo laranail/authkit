@@ -11,6 +11,7 @@ use Laravel\Fortify\RecoveryCode;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Cache\LockTimeoutException;
+use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AuthKit\Enums\TwoFactorMethod;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
@@ -36,7 +37,11 @@ final class TwoFactorAuthentication
         $stored = $this->value($user, 'two_factor_secret');
         $confirmed = $this->value($user, 'two_factor_confirmed_at');
 
-        if ($stored === null || $confirmed !== null) {
+        $secret = $stored === null || $confirmed !== null
+            ? null
+            : $this->decrypt((string) $stored);
+
+        if ($secret === null) {
             $secret = $this->provider->generateSecretKey(32);
             $this->fill($user, [
                 'two_factor_method'         => TwoFactorMethod::NONE->value,
@@ -44,8 +49,6 @@ final class TwoFactorAuthentication
                 'two_factor_recovery_codes' => null,
                 'two_factor_confirmed_at'   => null,
             ]);
-        } else {
-            $secret = $this->decrypt((string) $stored);
         }
 
         $label = (string) ($this->value($user, 'email') ?? $user->getAuthIdentifier());
@@ -113,7 +116,9 @@ final class TwoFactorAuthentication
             return null;
         }
 
-        if (! $this->provider->verify($this->decrypt((string) $stored), $code)) {
+        $secret = $this->decrypt((string) $stored);
+
+        if ($secret === null || ! $this->provider->verify($secret, $code)) {
             return null;
         }
 
@@ -151,18 +156,27 @@ final class TwoFactorAuthentication
             return true;
         }
 
-        return $this->provider->verify(
-            $this->decrypt((string) $this->value($user, 'two_factor_secret')),
-            $code,
-        );
+        $secret = $this->decrypt((string) $this->value($user, 'two_factor_secret'));
+
+        return $secret !== null && $this->provider->verify($secret, $code);
     }
 
-    private function decrypt(string $secret): string
+    /**
+     * Null when the stored payload cannot be read, which in practice means a rotated or
+     * mismatched APP_KEY. Every caller then fails closed, the way `recoveryCodes()` already
+     * returns an empty list, instead of a DecryptException escaping as a 500 from the challenge.
+     */
+    private function decrypt(string $secret): ?string
     {
         try {
             return Crypt::decryptString($secret);
         } catch (Throwable) {
-            return (string) decrypt($secret);
+            // Back-compat: secrets written with encrypt() rather than encryptString().
+            try {
+                return (string) decrypt($secret);
+            } catch (Throwable) {
+                return null;
+            }
         }
     }
 
@@ -187,8 +201,20 @@ final class TwoFactorAuthentication
             $user::class . ':' . (string) $user->getAuthIdentifier(),
         );
 
+        $store = Cache::getStore();
+
+        // Three of the stores Laravel ships are not LockProviders -- apc, session and storage --
+        // and Cache::lock() on one of them fails with PHP's Error: Call to undefined method,
+        // surfacing as a 500 on the challenge. Not BadMethodCallException, as this comment said
+        // until it was checked: none of those stores declares lock() or __call, and
+        // Repository::__call forwards straight to the store, so nothing translates the call into
+        // an exception type. IdentityLinking::spend() already degrades exactly this way.
+        if (! $store instanceof LockProvider) {
+            return $callback();
+        }
+
         try {
-            return Cache::lock($lockKey, 10)->block(5, $callback);
+            return $store->lock($lockKey, 10)->block(5, $callback);
         } catch (LockTimeoutException) {
             return false;
         }

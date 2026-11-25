@@ -23,7 +23,9 @@ abstract class TestCase extends BaseTestCase
 
     protected function defineEnvironment($app): void
     {
-        $app['config']->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+        // Generated per run rather than a literal: a scanner cannot tell a placeholder key from a
+        // real one, and this line blocks any commit that touches this file.
+        $app['config']->set('app.key', 'base64:' . base64_encode(random_bytes(32)));
         $app['config']->set('database.default', 'testing');
 
         $driver = getenv('DB_CONNECTION') ?: 'sqlite';

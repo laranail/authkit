@@ -14,6 +14,8 @@ TURNSTILE_SECRET_KEY=
 
 The configured challenge input is `cf-turnstile-response`. The rule is applied during Auth Kit user creation; attach `ValidateTurnstile` or `TurnstileRule` deliberately to other application-owned endpoints. Protect only routes where a challenge is appropriate, verify the callback server-side, and never treat the browser response as sufficient on its own.
 
+**The challenge applies to browser routes only, and that includes leaving the API registration endpoint unprotected.** `AuthKit::turnstileRules()` returns no rules unless the current route's middleware contains `web`, because Turnstile is a browser widget an API client cannot solve — challenging `POST {prefix}/register` would reject every legitimate API registration. Enabling Turnstile therefore does **not** put a challenge on the API surface. If that surface is reachable by bots, protect it by other means: keep the API disabled (`laranail.authkit.api.enabled`), tighten its rate limits, or require an application-issued credential before registration.
+
 TOTP two-factor authentication is opt-in. It encrypts TOTP and recovery secrets, rate-limits challenges, consumes recovery codes once, and relies on Fortify's replay-aware provider. Review the [TOTP guide](two-factor-authentication.md) before enabling it. Also review the [passkey origin requirements](passkeys.md#relying-party-and-browser-client) before deploying passkeys. See [configuration](configuration.md) for feature and guard settings, and [testing](testing.md) for validation guidance.
 
 ---
