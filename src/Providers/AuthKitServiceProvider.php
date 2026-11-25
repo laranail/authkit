@@ -44,6 +44,14 @@ class AuthKitServiceProvider extends PackageServiceProvider
     {
         $this->mergeConfigFrom(path: $this->packagePath('config/laranail/authkit.php'), key: 'laranail.authkit');
 
+        // At register time, not boot. Fortify reads fortify.features and fortify.views in its own
+        // boot() and mounts its routes there and then, so configuring them from a boot() made the
+        // application's route set depend on which provider booted first -- and discovery orders
+        // laranail/authkit before laravel/fortify, the opposite of what this suite used to test.
+        // Every register() runs before every boot(), so this lands first either way. The preset
+        // relies on the same property for Fortify::ignoreRoutes().
+        $this->configureFortify();
+
         Passkeys::usePasskeyModel(Passkey::class);
 
         $this->app->singleton(Services\Turnstile::class, function (): Services\Turnstile {
@@ -98,7 +106,6 @@ class AuthKitServiceProvider extends PackageServiceProvider
             \Simtabi\Laranail\AuthKit\Http\Middleware\DeprecatedTwoFactorAlias::class,
         );
 
-        $this->configureFortify();
     }
 
     private function configureFortify(): void

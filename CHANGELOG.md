@@ -15,6 +15,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Accept full 21-character recovery codes for two-factor challenges, disabling two-factor
   authentication, and regenerating recovery codes.
+- **Fortify's feature set no longer depends on provider boot order.** `fortify.guard`,
+  `fortify.views` and `fortify.features` are configured at register time rather than boot time.
+  Fortify reads them in its own `boot()` and mounts its routes there, so whichever provider booted
+  first decided the application's routes. Measured with the provider order as the only difference:
+  Fortify first mounted `register`, `two-factor.login` and `password.request`; AuthKit first
+  mounted none of them. Package discovery orders `laranail/authkit` before `laravel/fortify`, so an
+  installed application got the second, while the test suite exercised the first.
+  **This changes behaviour for anyone who was getting the first order:** Fortify no longer mounts
+  registration or two-factor routes, because `laranail.authkit.fortify.features` does not list
+  them. Add `'registration'` and `'two-factor-authentication'` to that key to keep those routes.
+- The two-factor challenge fails cleanly instead of returning 500 when the stored secret cannot be
+  decrypted (a rotated or mismatched `APP_KEY`), and when the configured cache store cannot provide
+  a lock. Three of the stores Laravel ships are not lock providers: `apc`, `session` and `storage`.
 
 ### Changed
 
