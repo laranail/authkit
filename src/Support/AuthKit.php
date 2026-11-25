@@ -10,6 +10,19 @@ use Simtabi\Laranail\AuthKit\Rules\TurnstileRule;
 class AuthKit
 {
     /**
+     * Social login, as a feature an application declares rather than a config flag it flips.
+     *
+     * It lives here rather than in `laranail/authkit-social-login` because the packages that need
+     * to agree on the name cannot see each other: the preset only *suggests* the social package,
+     * and the social package cannot reach into the preset's enum. This is the common base both
+     * require, which is the whole reason `hasFeature()` exists.
+     *
+     * Fortify receives this list verbatim and ignores a feature it does not know, so naming a
+     * non-Fortify concern here costs nothing at runtime.
+     */
+    public const SOCIAL_LOGIN = 'social-login';
+
+    /**
      * Resolves a redirect target ahead of this package's own config, or null to defer.
      *
      * @var (Closure(string): ?string)|null
@@ -96,6 +109,18 @@ class AuthKit
     public static function hasFeature(string $feature): bool
     {
         return in_array($feature, (array) config(key: 'laranail.authkit.fortify.features', default: []), strict: true);
+    }
+
+    /**
+     * The single switch for social login's user-facing surface: its buttons and its web routes.
+     *
+     * `laranail/authkit-social-login` reads this instead of a `web.enabled` flag of its own, so an
+     * application declares the capability once, in the same list as every other AuthKit feature,
+     * rather than in a second place that could disagree with the first.
+     */
+    public static function socialLoginEnabled(): bool
+    {
+        return self::hasFeature(self::SOCIAL_LOGIN);
     }
 
     public static function apiEnabled(): bool

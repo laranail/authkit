@@ -10,6 +10,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Publishable English translations for package-owned messages and application language overrides.
+- `AuthKit::SOCIAL_LOGIN` and `AuthKit::socialLoginEnabled()`. Social login's browser surface is a
+  feature an application declares on `laranail.authkit.fortify.features`, rather than a flag inside
+  `laranail/authkit-social-login`. The identifier lives here because the packages that must agree
+  on it cannot see each other — the preset only suggests the social package, and the social package
+  cannot reach the preset's enum — which is the problem `hasFeature()` was written for. Fortify
+  receives the list verbatim and ignores a feature it does not know.
 
 ### Fixed
 
