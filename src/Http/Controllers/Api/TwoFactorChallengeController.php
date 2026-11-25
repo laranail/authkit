@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Cache\LockTimeoutException;
+use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Validation\ValidationException;
 use Simtabi\Laranail\AuthKit\Support\UserModelResolver;
 use Simtabi\Laranail\AuthKit\Services\TwoFactorAuthentication;
@@ -27,29 +28,42 @@ final class TwoFactorChallengeController
 
         $key = 'authkit:two-factor:challenge:' . hash('sha256', $validated['challenge_token']);
 
+        $consume = function () use ($key, $validated, $twoFactor, $issuer): JsonResponse {
+            $challenge = Cache::get($key);
+
+            if (! is_array($challenge) || ! isset($challenge['user_id'], $challenge['guard'])) {
+                throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.challenge_expired')]);
+            }
+
+            $model = UserModelResolver::resolve($challenge['guard']);
+            $user = $model::query()->find($challenge['user_id']);
+
+            if ($user === null || ! $twoFactor->verify($user, $validated['code'])) {
+                throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.invalid_verification_code')]);
+            }
+
+            Cache::forget($key);
+            $token = $issuer->execute(user: $user, name: 'api-login', twoFactorVerified: true);
+
+            return response()->json([
+                'status' => 'success',
+                'data'   => ['token' => $token->token, 'user' => $token->user],
+            ])->header('Cache-Control', 'no-store');
+        };
+
+        $store = Cache::getStore();
+
+        // Not every cache store can lock -- apc, session and storage cannot -- and Cache::lock()
+        // on one of them throws BadMethodCallException, surfacing as a 500 on the challenge.
+        // Unlocked, the challenge is still spent exactly once by the Cache::forget() above; only
+        // the narrow double-submit race is unguarded, the same trade IdentityLinking::spend()
+        // already makes.
+        if (! $store instanceof LockProvider) {
+            return $consume();
+        }
+
         try {
-            return Cache::lock($key . ':lock', 10)->block(5, function () use ($key, $validated, $twoFactor, $issuer): JsonResponse {
-                $challenge = Cache::get($key);
-
-                if (! is_array($challenge) || ! isset($challenge['user_id'], $challenge['guard'])) {
-                    throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.challenge_expired')]);
-                }
-
-                $model = UserModelResolver::resolve($challenge['guard']);
-                $user = $model::query()->find($challenge['user_id']);
-
-                if ($user === null || ! $twoFactor->verify($user, $validated['code'])) {
-                    throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.invalid_verification_code')]);
-                }
-
-                Cache::forget($key);
-                $token = $issuer->execute(user: $user, name: 'api-login', twoFactorVerified: true);
-
-                return response()->json([
-                    'status' => 'success',
-                    'data'   => ['token' => $token->token, 'user' => $token->user],
-                ])->header('Cache-Control', 'no-store');
-            });
+            return $store->lock($key . ':lock', 10)->block(5, $consume);
         } catch (LockTimeoutException) {
             throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.challenge_processing')]);
         }
