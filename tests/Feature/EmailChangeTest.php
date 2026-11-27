@@ -138,24 +138,14 @@ it('preserves the active address when the profile API requests a change', functi
 
 it('isolates pending records for accounts on different tables with the same identifier', function (): void {
     $user = User::factory()->create();
-    $connection = $user->getConnection();
-    $connection->getSchemaBuilder()->create('email_change_other_users', function ($table): void {
-        $table->id();
-        $table->string('email')->unique();
-        $table->timestamps();
-    });
-    try {
-        $other = new User;
-        $other->setTable('email_change_other_users');
-        $other->forceFill(['id' => $user->getKey(), 'email' => 'other@example.test'])->save();
-        $changes = app(EmailChange::class);
-        $changes->request($user, 'new@example.test');
-        expect($changes->pending($other))->toBeNull();
-        expect(fn () => $changes->confirm($other, emailChangeProof()))->toThrow(ValidationException::class);
-        expect($other->fresh()->email)->toBe('other@example.test');
-    } finally {
-        $connection->getSchemaBuilder()->dropIfExists('email_change_other_users');
-    }
+    $other = new User;
+    $other->setTable('email_change_other_users');
+    $other->forceFill(['id' => $user->getKey(), 'email' => 'other@example.test'])->save();
+    $changes = app(EmailChange::class);
+    $changes->request($user, 'new@example.test');
+    expect($changes->pending($other))->toBeNull();
+    expect(fn () => $changes->confirm($other, emailChangeProof()))->toThrow(ValidationException::class);
+    expect($other->fresh()->email)->toBe('other@example.test');
 });
 
 it('invalidates pending requests when the encryption key changes', function (): void {
