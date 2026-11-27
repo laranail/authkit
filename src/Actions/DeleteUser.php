@@ -34,6 +34,7 @@ final class DeleteUser implements DeleteUserInterface
         private TokenIssuerRegistryInterface $issuers,
         private BrowserSessionService $sessions,
         private EmailChange $emailChanges,
+        private \Simtabi\Laranail\AuthKit\Services\AccountLockout $lockout,
     ) {}
 
     public function execute(Model&Authenticatable $user, string $password): void
@@ -83,6 +84,7 @@ final class DeleteUser implements DeleteUserInterface
             if (! $current->delete()) {
                 throw new RuntimeException('Account deletion was refused.');
             }
+            $this->lockout->forget($current, (string) $this->config->get('laranail.authkit.guard', 'web'));
         });
 
         $this->events->dispatch(new AccountDeleted($user::class, (string) $user->getAuthIdentifier()));

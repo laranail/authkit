@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 return [
+    'account_locked'                         => 'This account is temporarily locked. Try again in :seconds seconds.',
     'email_change_same_address'              => 'Choose a different email address.',
     'email_change_invalid'                   => 'This email change link is invalid or expired. Request a new link.',
     'email_change_subject'                   => 'Verify your new email address',

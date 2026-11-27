@@ -30,6 +30,11 @@ class AuthResult
         return new self(status: AuthStatus::Throttled, retryAfterSeconds: $retryAfterSeconds);
     }
 
+    public static function locked(int $retryAfterSeconds): self
+    {
+        return new self(status: AuthStatus::Locked, retryAfterSeconds: $retryAfterSeconds);
+    }
+
     public function isPassed(): bool
     {
         return $this->status === AuthStatus::Passed;

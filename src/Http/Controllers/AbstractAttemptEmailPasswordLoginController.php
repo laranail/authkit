@@ -35,6 +35,7 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
             AuthStatus::Passed    => $this->handlePassed(request: $request, result: $result, loginAction: $loginAction),
             AuthStatus::Failed    => $this->failed(request: $request, result: $result),
             AuthStatus::Throttled => $this->throttled(request: $request, result: $result),
+            AuthStatus::Locked    => $this->locked(request: $request, result: $result),
         };
     }
 
@@ -78,6 +79,25 @@ abstract class AbstractAttemptEmailPasswordLoginController extends AbstractAuthC
         return redirect()->back()
             ->withInput(input: $request->only(keys: [$field, 'remember']))
             ->withErrors(provider: [$field => __('laranail/authkit::messages.invalid_credentials')]);
+    }
+
+    protected function locked(Request $request, AuthResult $result): mixed
+    {
+        if ($request->expectsJson()) {
+            return $this->lockedResponse($result);
+        }
+
+        abort(429, __('laranail/authkit::messages.account_locked', ['seconds' => $result->retryAfterSeconds]), [
+            'Retry-After' => (string) $result->retryAfterSeconds,
+        ]);
+    }
+
+    protected function lockedResponse(AuthResult $result): \Illuminate\Http\JsonResponse
+    {
+        return $this->jsonResponse(status: 'locked', data: [
+            'message'     => __('laranail/authkit::messages.account_locked', ['seconds' => $result->retryAfterSeconds]),
+            'retry_after' => $result->retryAfterSeconds,
+        ], code: 429)->header('Retry-After', (string) $result->retryAfterSeconds)->header('Cache-Control', 'no-store');
     }
 
     protected function throttled(Request $request, AuthResult $result): mixed

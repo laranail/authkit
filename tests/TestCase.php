@@ -49,6 +49,7 @@ abstract class TestCase extends BaseTestCase
             dirname(__DIR__) . '/vendor/orchestra/testbench-core/laravel/migrations',
             dirname(__DIR__) . '/vendor/laravel/fortify/database/migrations',
             dirname(__DIR__) . '/database/migrations/passkeys',
+            dirname(__DIR__) . '/database/migrations/lockout',
             dirname(__DIR__) . '/vendor/laravel/sanctum/database/migrations',
             dirname(__DIR__) . '/workbench/database/migrations',
         ]);

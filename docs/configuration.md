@@ -20,10 +20,15 @@ Laravel's `mergeConfigFrom` merge is shallow.
 | `email_change.expires_after_minutes` | `60` | Pending email-change proof lifetime in minutes. |
 | `email_change.verification_url` | `null` | Optional frontend URL containing `{token}`; defaults to the authenticated API verification URL. See [profile management](profile-management.md). |
 | `identity_linking.intent_ttl_minutes` | `10` | Lifetime of a single-use link attempt. |
+| `lockout.enabled` | `false` | Enable durable account lockout after installing its migration. |
+| `lockout.max_attempts` | `5` | Consecutive failed credential lookups before account lockout. |
+| `lockout.duration_minutes` | `15` | Active lock lifetime; attempts do not extend it. |
+| `lockout.connection` | `null` | Shared database connection for lockout records. |
+| `lockout.table` | `authkit_account_lockouts` | Lockout table, configured before migration. |
 | `rate_limit.max_attempts` | `5` | Credential failures allowed per throttle key. |
-| `rate_limit.decay_minutes` | `1` | Credential-throttle window. This is not account lockout. |
+| `rate_limit.decay_minutes` | `1` | Credential-throttle window. Independent of account lockout. |
 
-See [Login](login.md) and [Identity linking](identity-linking.md) for validation and session rules.
+See [Account lockout](account-lockout.md), [Login](login.md) and [Identity linking](identity-linking.md) for validation and session rules.
 
 ## Fortify and factors
 

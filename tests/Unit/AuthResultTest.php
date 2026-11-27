@@ -30,3 +30,9 @@ it(description: 'creates a throttled result with retry seconds', closure: functi
     expect(value: $result->status)->toBe(expected: AuthStatus::Throttled)
         ->and(value: $result->retryAfterSeconds)->toBe(expected: 30);
 });
+
+it('creates a locked result distinct from request throttling', function (): void {
+    $result = AuthResult::locked(120);
+    expect($result->status)->toBe(AuthStatus::Locked)->and($result->retryAfterSeconds)->toBe(120)
+        ->and($result->user)->toBeNull()->and($result->isPassed())->toBeFalse();
+});

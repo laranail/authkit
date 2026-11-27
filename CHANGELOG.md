@@ -9,6 +9,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Opt-in database-backed account lockout with configurable failure threshold/duration, automatic expiry, authorized clearing and lock/unlock audit events, independent of IP/credential throttling.
+- Locked-account responses for web/API login and enforcement for new tokens, pending API MFA and direct session sign-ins; publishable lockout migration and setup guide.
+
 - Authenticated, password-confirmed account deletion API and `DeleteUserInterface`, with token/passkey/reset/session cleanup, pending email cancellation, soft-delete credential clearing and `AccountDeleting`/`AccountDeleted` extension events.
 
 - Verified email changes with encrypted, expiring pending requests, single-use proofs sent to the new address, authenticated API management and lifecycle audit events.
