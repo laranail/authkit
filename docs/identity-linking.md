@@ -37,7 +37,7 @@ $token = app(IdentityLinkingInterface::class)->issueIntent(
     provider: 'github',
 );
 
-// 2. Carry $token through the provider redirect as your own state, and on the way back:
+// 2. Retain $token in the authenticated session (separate from OAuth state), then on return:
 $linking = app(IdentityLinkingInterface::class);
 
 try {
@@ -76,8 +76,13 @@ route that starts a link and this is satisfied before the service is reached.
 A token-authenticated client has no session to carry that, so it proves the credential on the
 request that starts the link:
 
-```php
-POST /api/auth/connections/github   { "password": "..." }
+The application owns this start endpoint; this is an illustrative request, not a core route:
+
+```text
+POST /api/auth/connections/github
+Content-Type: application/json
+
+{ "password": "CURRENT_PASSWORD" }
 ```
 
 The password is checked through the guard's own provider, so an application that has replaced its

@@ -2,6 +2,13 @@
 
 Authenticate a user with the core alone, without any UI.
 
+## Prepare the host
+
+Follow [Installation](installation.md) first: add the VCS repositories, configure the authenticatable
+model and Sanctum token table, then inspect `php artisan route:list --path=api/auth`. The REST API
+is enabled by default. Send JSON with `Accept: application/json`; its payloads and MFA responses
+are in [API routes](api-routes.md).
+
 ## The shape of the API
 
 Every capability is an action behind a contract, bound in the container. Inputs are typed, outputs
@@ -9,6 +16,7 @@ are result objects rather than booleans or nullable users — so a caller branch
 on a truthiness accident.
 
 ```php
+use Illuminate\Http\Request;
 use Simtabi\Laranail\AuthKit\Contracts\AttemptEmailPasswordLoginInterface;
 use Simtabi\Laranail\AuthKit\Contracts\LoginUserInterface;
 use Simtabi\Laranail\AuthKit\Enums\AuthStatus;
@@ -31,6 +39,11 @@ public function store(
 Credential verification and session issuance are separate actions on purpose. A flow that needs to
 check a password without logging anyone in — a re-authentication prompt, a token exchange — calls
 the first and not the second.
+
+Use these low-level actions inside a complete authentication pipeline. Calling `LoginUser` or a
+token issuer directly does not run an enrolled user's TOTP challenge; the shipped login controllers
+coordinate that check. Reuse those controllers for normal sign-in, or preserve all factor checks
+in an application-owned flow.
 
 ## Issuing an API token instead
 

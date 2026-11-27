@@ -4,6 +4,9 @@ Where this file is silent, the [laranail security policy](https://github.com/lar
 
 ## Reporting a vulnerability
 
+Use [GitHub private vulnerability reporting](https://github.com/laranail/authkit/security/advisories/new)
+when available, or the email address below.
+
 Report security issues privately to **security@simtabi.com**. Do not open a public issue.
 
 Include the affected version, the steps to reproduce, and the impact you believe it has. You will

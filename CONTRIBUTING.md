@@ -11,7 +11,8 @@ Thanks for helping improve `laranail/authkit`.
 
 ```bash
 composer install
-composer test
+XDEBUG_MODE=off vendor/bin/pest --colors=never --no-coverage
+composer pint
 ```
 
 ## What a change needs
@@ -65,9 +66,27 @@ alias hands back exactly the collision the namespaced name exists to prevent.
 
 The package test suite runs in an isolated Testbench app, which is not the same as a real one. A
 change to routing, publishing, the installer, or anything that interacts with Fortify should also
-be checked in the demo application at `laranail/demos/authkit`, which installs both packages the way
+be checked in the demo application at [`laranail/demo-apps-authkit`](https://github.com/laranail/demo-apps-authkit), which installs both packages the way
 a consumer does.
 
 ## Security
 
 Do not open a public issue for a security problem. See [SECURITY.md](SECURITY.md).
+
+## Documentation and pull requests
+
+Branch from `main` and use Conventional Commits. Keep the README to installation, a working quick
+start and the documentation index; put detailed guides in `docs/`. Link new pages from the index,
+include a return link, and verify commands, route names, config keys and supported features against
+the current implementation. Link sibling-package docs by GitHub URL so they work outside a monorepo.
+
+Before opening a PR, run the sequential test command above and `composer pint`. Database jobs in
+GitHub Actions cover MySQL, MariaDB and PostgreSQL; SQLite is the default local test database.
+No local server database installation is needed. `composer test` currently selects parallel mode;
+use the explicit command above to reproduce the sequential CI run.
+
+Keep PR descriptions concise, link the issue, list validation, and update `CHANGELOG.md` under
+`[Unreleased]`. For authentication behavior, include rejection and authorization cases. Never put
+real tokens, passwords or provider secrets in fixtures, logs or reports.
+
+Participation follows the [Laranail Code of Conduct](https://github.com/laranail/.github/blob/main/CODE_OF_CONDUCT.md).

@@ -33,7 +33,7 @@ the `require`:
 
 ### 2. The config key moved
 
-`laranail.authkit.social.*` → `authkit-social-login.*`, in `config/authkit-social-login.php`.
+`laranail.authkit.social.*` → `laranail.authkit-social-login.*`, in `config/laranail/authkit-social-login.php`. The bare `authkit-social-login` key is a deprecated fallback; migrate published configuration to the namespaced path.
 
 ```bash
 php artisan vendor:publish --tag=laranail::authkit-social-login-config

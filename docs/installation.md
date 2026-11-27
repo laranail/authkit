@@ -1,59 +1,75 @@
 # Installation
 
-Requirements, the repositories block, and publishing the config.
+Install the headless core to use its REST API and authentication actions. Add the Blade preset only
+when you want its browser UI.
 
 ## Requirements
 
-PHP 8.4 or 8.5, Laravel 13.
+- PHP `^8.4.1 || ^8.5`, Laravel `^13.0`.
+- Fortify `^1.38` and Sanctum `^4.0`, installed through Composer.
+- An Eloquent authenticatable model and its users table, owned by the application.
 
-## The repositories block
+## Point Composer at the repositories
 
-`laranail/*` packages resolve through git rather than Packagist, so Composer needs to be told where
-to find them. Composer ignores a dependency's own `repositories`, which is why this goes in the
-**application's** `composer.json` and lists the whole transitive closure:
+Add these entries to the application's `composer.json`, merging with existing entries. Composer
+ignores a dependency's repositories. AuthKit needs only `laranail/package-tools` from the Laranail
+family; console, captcha and database tools are not core requirements.
 
 ```json
 "repositories": [
-    { "type": "vcs", "url": "https://github.com/laranail/authkit.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/console.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/enumerator.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/package-tools.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/captcha.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/db-tools.git" }
+    {"type": "vcs", "url": "https://github.com/laranail/authkit.git"},
+    {"type": "vcs", "url": "https://github.com/laranail/package-tools.git"},
+    {"type": "composer", "url": "https://repo.packagist.org", "exclude": ["laranail/*"]},
+    {"packagist.org": false}
 ]
 ```
-
-## Require it
 
 ```bash
 composer require laranail/authkit
 php artisan vendor:publish --tag=laranail::authkit-config
 ```
 
-That writes `config/laranail/authkit.php`. The nested directory is deliberate: Laravel turns a
-nested config directory into a nested key, so the file is read as `laranail.authkit`, which is the
-key the package merges its defaults into.
+Laravel discovers `AuthKitServiceProvider` automatically. The config is published to
+`config/laranail/authkit.php` and read under `laranail.authkit`.
 
-## Optional migrations
+## Prepare API tokens
 
-Publish only what the features you enable actually need:
+With the default Sanctum issuer, add `Laravel\Sanctum\HasApiTokens` to the authenticatable model.
+Publish Sanctum's migration if the application does not already have `personal_access_tokens`:
 
 ```bash
-php artisan vendor:publish --tag=laranail::authkit-passkey-migrations
+php artisan vendor:publish --tag=sanctum-migrations
 php artisan migrate
 ```
 
-Social account migrations are published by [`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login),
-not by this package. Install that package and follow its [installation guide](https://github.com/laranail/authkit-social-login/blob/main/docs/installation.md)
-if your application enables social login.
+Do not add a second migration for an existing token table. The preset installer performs this setup
+when run with `--api`; core-only applications own it. See [API tokens](api-tokens.md).
 
-## For a Blade UI
+## Optional authentication features
 
-This package is headless by design: no views, no web routes, and no Blade layer. It does ship the
-REST API — routes and controllers under `/api/auth` — so an API-only or Filament consumer installs
-this package alone and has a login endpoint without pulling in scaffolding. For a browser interface
-interface use [`laranail/authkit-preset`](https://github.com/laranail/authkit-preset), which
-consumes these actions and adds the Blade layer.
+Publish only the migrations for the features you enable:
+
+```bash
+php artisan vendor:publish --tag=laranail::authkit-passkey-migrations
+php artisan vendor:publish --tag=laranail::authkit-two-factor-migrations
+php artisan migrate
+```
+
+Configure the model and browser client in [Passkeys](passkeys.md), or enable and configure
+[Two-factor authentication](two-factor-authentication.md). Publishing a migration alone does not
+configure either feature. Password reset and verification also need working mail delivery.
+
+## Verify
+
+```bash
+php artisan config:clear
+php artisan route:list --path=api/auth
+```
+
+The API is enabled by default. Its prefix and middleware are configurable; use the configured
+prefix in `route:list`. Follow [Getting started](getting-started.md) to register, sign in and use a
+bearer token. For browser pages install [authkit-preset](https://github.com/laranail/authkit-preset);
+for provider login install [authkit-social-login](https://github.com/laranail/authkit-social-login).
 
 ---
 
