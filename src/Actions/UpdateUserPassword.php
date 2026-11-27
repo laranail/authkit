@@ -21,6 +21,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
         private \Illuminate\Contracts\Auth\Factory $auth,
         private \Illuminate\Http\Request $request,
         private BrowserSessionService $sessions,
+        private \Illuminate\Contracts\Events\Dispatcher $events,
     ) {}
 
     public function update($user, array $input): void
@@ -55,5 +56,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
                 currentSessionId: $this->request->hasSession() ? $this->request->session()->getId() : null,
             );
         }
+
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\PasswordUpdated($user::class, (string) $user->getAuthIdentifier(), 'update'));
     }
 }

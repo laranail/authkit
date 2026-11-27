@@ -18,6 +18,7 @@ class TokenIssuerRegistry implements TokenIssuerRegistryInterface
 
     public function __construct(
         private \Illuminate\Contracts\Config\Repository $config,
+        private \Illuminate\Contracts\Events\Dispatcher $events,
     ) {}
 
     public function register(string $driver, TokenIssuerInterface $issuer): void
@@ -32,7 +33,11 @@ class TokenIssuerRegistry implements TokenIssuerRegistryInterface
         ?DateTimeInterface $expiresAt = null,
         bool $twoFactorVerified = false,
     ): TokenResult {
-        return $this->selectedIssuer()->issue($user, $name, $abilities, $expiresAt, $twoFactorVerified);
+        $driver = (string) $this->config->get('laranail.authkit.tokens.driver', 'sanctum');
+        $result = $this->selectedIssuer()->issue($user, $name, $abilities, $expiresAt, $twoFactorVerified);
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\TokenIssued($user::class, (string) $user->getAuthIdentifier(), $driver));
+
+        return $result;
     }
 
     public function revokeCurrent(Authenticatable $user): void
@@ -40,6 +45,8 @@ class TokenIssuerRegistry implements TokenIssuerRegistryInterface
         foreach ($this->issuers as $issuer) {
             $issuer->revokeCurrent($user);
         }
+
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\TokensRevoked($user::class, (string) $user->getAuthIdentifier(), 'current'));
     }
 
     public function revokeAll(Authenticatable $user): void
@@ -47,6 +54,8 @@ class TokenIssuerRegistry implements TokenIssuerRegistryInterface
         foreach ($this->issuers as $issuer) {
             $issuer->revokeAll($user);
         }
+
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\TokensRevoked($user::class, (string) $user->getAuthIdentifier(), 'all'));
     }
 
     private function selectedIssuer(): TokenIssuerInterface

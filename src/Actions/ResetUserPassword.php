@@ -15,6 +15,7 @@ class ResetUserPassword implements FortifyResetUserPassword
         private \Illuminate\Contracts\Hashing\Hasher $hasher,
         private UserValidationService $validation,
         private TokenIssuerRegistryInterface $issuers,
+        private \Illuminate\Contracts\Events\Dispatcher $events,
     ) {}
 
     public function reset($user, array $input): void
@@ -30,5 +31,6 @@ class ResetUserPassword implements FortifyResetUserPassword
         ])->save();
 
         $this->issuers->revokeAll($user);
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\PasswordUpdated($user::class, (string) $user->getAuthIdentifier(), 'reset'));
     }
 }

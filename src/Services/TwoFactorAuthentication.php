@@ -21,6 +21,7 @@ final class TwoFactorAuthentication
         private \Illuminate\Contracts\Config\Repository $config,
         private \Illuminate\Contracts\Cache\Repository $cache,
         private \Illuminate\Contracts\Encryption\Encrypter $encrypter,
+        private \Illuminate\Contracts\Events\Dispatcher $events,
     ) {}
 
     public function enabled(Authenticatable $user): bool
@@ -67,6 +68,10 @@ final class TwoFactorAuthentication
     {
         $codes = $this->withUserLock($user, fn (): ?array => $this->confirmLocked($user, $code));
 
+        if (is_array($codes)) {
+            $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\TwoFactorEnabled($user::class, (string) $user->getAuthIdentifier()));
+        }
+
         return is_array($codes) ? $codes : null;
     }
 
@@ -78,12 +83,17 @@ final class TwoFactorAuthentication
 
     public function disable(Authenticatable $user): void
     {
+        $wasEnabled = $this->enabled($user);
         $this->fill($user, [
             'two_factor_method'         => TwoFactorMethod::NONE->value,
             'two_factor_secret'         => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at'   => null,
         ]);
+
+        if ($wasEnabled) {
+            $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\TwoFactorDisabled($user::class, (string) $user->getAuthIdentifier()));
+        }
     }
 
     public function recoveryCodes(Authenticatable $user): array
@@ -107,6 +117,7 @@ final class TwoFactorAuthentication
     {
         $codes = array_map(static fn (): string => RecoveryCode::generate(), range(1, 8));
         $this->fill($user, ['two_factor_recovery_codes' => $this->encrypter->encryptString(json_encode($codes, JSON_THROW_ON_ERROR))]);
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\RecoveryCodesRegenerated($user::class, (string) $user->getAuthIdentifier()));
 
         return $codes;
     }

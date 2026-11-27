@@ -14,11 +14,13 @@ class LoginUser implements LoginUserInterface
     public function __construct(
         private AuthFactory $auth,
         private Session $session,
+        private \Illuminate\Contracts\Events\Dispatcher $events,
     ) {}
 
     public function execute(Authenticatable $user, string $guard, bool $remember = false): void
     {
         $this->auth->guard($guard)->login($user, $remember);
         $this->session->regenerate();
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\SessionAuthenticated($user::class, (string) $user->getAuthIdentifier(), $guard, $remember));
     }
 }
