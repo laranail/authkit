@@ -9,9 +9,11 @@ passwords, bearer/provider tokens, authorization codes, recovery values or clien
 
 | Event | Public payload | Dispatch point |
 | --- | --- | --- |
+| `AccountLocked` | `userType: string`, `userId: string`, `guard: string` | A failed credential lookup reaches the configured account threshold. Repeated blocked requests do not repeat this event. |
+| `AccountUnlocked` | `userType: string`, `userId: string`, `guard: string`, `reason: string` | An explicit clear removes an active lock (`manual`), or a counter update observes expiry (`expired`). Expiry itself needs no scheduled job. |
 | `AccountDeleting` | `userType: string`, `userId: string` | After current-password proof, before credential cleanup and deletion, inside the account transaction. Synchronous listeners can clean up dependent data or veto deletion. |
 | `AccountDeleted` | `userType: string`, `userId: string` | After the deletion action transaction succeeds. Does not fire when validation, cleanup or model deletion fails. |
-| `AuthenticationFailed` | `guard: string`, `reason: string` | A credential attempt is rejected or throttled. `reason` is `invalid_credentials` or `throttled`; no submitted identifier is included. |
+| `AuthenticationFailed` | `guard: string`, `reason: string` | A credential attempt is rejected or throttled. `reason` is `invalid_credentials`, `throttled` or `locked`; no submitted identifier is included. |
 | `PasswordUpdated` | `userType: string`, `userId: string`, `operation: string` | After password persistence and token revocation complete. `operation` is `reset` or `update`. |
 | `EmailChangeRequested` | `userType: string`, `userId: string` | After a pending change is stored and verification mail is sent to the new address. |
 | `EmailChanged` | `userType: string`, `userId: string` | After the new address is proved and saved. Invalid or replayed proofs do not emit this. |

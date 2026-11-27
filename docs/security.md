@@ -2,7 +2,7 @@
 
 Review the published `config/laranail/authkit.php` before production. Set the intended guard and user model, keep credential rate limits enabled, and configure HTTPS, secure session cookies, CSRF protection, trusted hosts/proxies, and a working mail transport in the consuming Laravel application.
 
-Auth Kit's implemented safeguards are credential throttling by email, IP, and guard; session regeneration on login; session invalidation and CSRF-token regeneration on logout; reset/password-change revocation of personal tokens; and password-change invalidation of other compatible guard sessions. They complement—not replace—Laravel's application and deployment security configuration. Social account-linking safeguards are provided by [`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login); see its [social login guide](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md).
+Auth Kit's implemented safeguards are credential throttling by email, IP, and guard; optional durable [account lockout](account-lockout.md); session regeneration on login; session invalidation and CSRF-token regeneration on logout; reset/password-change revocation of personal tokens; and password-change invalidation of other compatible guard sessions. They complement—not replace—Laravel's application and deployment security configuration. Social account-linking safeguards are provided by [`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login); see its [social login guide](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md).
 
 Turnstile support is opt-in:
 

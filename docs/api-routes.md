@@ -15,7 +15,7 @@ The routes are registered when `laranail.authkit.api.enabled` is true; their def
 | Method and path                                  | Feature            | Protection                             | Result                                                                                 |
 |--------------------------------------------------|--------------------|----------------------------------------|----------------------------------------------------------------------------------------|
 | `POST /api/auth/register`                        | Registration       | Guest; `throttle:10,1`                 | `201` with `status`, `data.token`, and `data.user`.                                    |
-| `POST /api/auth/login`                           | Login              | Guest; `throttle:10,1`                 | `200` with token and user; enrolled TOTP accounts receive `202` with a challenge, invalid credentials return `422`, throttling returns `429`. |
+| `POST /api/auth/login`                           | Login              | Guest; `throttle:10,1`                 | `200` with token and user; enrolled TOTP accounts receive `202` with a challenge, invalid credentials return `422`, throttling and enabled account lockout return `429`. |
 | `POST /api/auth/logout`                          | Logout             | configured token guards               | Revokes the current token.                                                             |
 | `POST /api/auth/email/verification-notification` | Email verification | configured token guards, `throttle:6,1` | Sends a verification notification.                                                   |
 | `GET /api/auth/email/verify/{id}/{hash}`         | Email verification | configured token guards, signed, `throttle:6,1` | Completes verification.                                                       |
@@ -24,6 +24,12 @@ The routes are registered when `laranail.authkit.api.enabled` is true; their def
 | `PUT /api/auth/user/password`                    | Password updates   | configured token guards               | Uses AuthKit's password-update action.                                                |
 | `DELETE /api/auth/user` | Account deletion | configured token guards, current password, `throttle:6,1` | `204`; deletes the authenticated account and cleans up authentication data. See [account deletion](account-deletion.md). |
 | `PUT /api/auth/user/profile-information`         | Profile management | configured token guards               | Uses AuthKit's profile-update action.                                                 |
+
+### Account lockout
+
+When enabled after migration, account lockout is enforced across login and new token issuance.
+JSON login returns `429`, `status: locked`, `data.retry_after` and `Retry-After`; this differs from
+request throttling. See [account lockout](account-lockout.md) for expiry and authorized clearing.
 
 ### Verified email change
 

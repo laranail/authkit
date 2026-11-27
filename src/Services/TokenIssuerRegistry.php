@@ -19,6 +19,7 @@ class TokenIssuerRegistry implements TokenIssuerRegistryInterface
     public function __construct(
         private \Illuminate\Contracts\Config\Repository $config,
         private \Illuminate\Contracts\Events\Dispatcher $events,
+        private AccountLockout $lockout,
     ) {}
 
     public function register(string $driver, TokenIssuerInterface $issuer): void
@@ -33,6 +34,7 @@ class TokenIssuerRegistry implements TokenIssuerRegistryInterface
         ?DateTimeInterface $expiresAt = null,
         bool $twoFactorVerified = false,
     ): TokenResult {
+        $this->lockout->assertUnlocked($user, (string) $this->config->get('laranail.authkit.guard', 'web'));
         $driver = (string) $this->config->get('laranail.authkit.tokens.driver', 'sanctum');
         $result = $this->selectedIssuer()->issue($user, $name, $abilities, $expiresAt, $twoFactorVerified);
         $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\TokenIssued($user::class, (string) $user->getAuthIdentifier(), $driver));

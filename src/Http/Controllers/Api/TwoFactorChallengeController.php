@@ -17,6 +17,7 @@ final class TwoFactorChallengeController
 {
     public function __construct(
         private \Illuminate\Contracts\Cache\Repository $cache,
+        private \Simtabi\Laranail\AuthKit\Services\AccountLockout $lockout,
     ) {}
 
     public function __invoke(
@@ -40,6 +41,9 @@ final class TwoFactorChallengeController
 
             $model = UserModelResolver::resolve($challenge['guard']);
             $user = $model::query()->find($challenge['user_id']);
+            if ($user !== null) {
+                $this->lockout->assertUnlocked($user, $challenge['guard']);
+            }
 
             if ($user === null || ! $twoFactor->verify($user, $validated['code'])) {
                 throw ValidationException::withMessages(['code' => __('laranail/authkit::messages.invalid_verification_code')]);

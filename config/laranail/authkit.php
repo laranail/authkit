@@ -44,6 +44,14 @@ return [
         'intent_ttl_minutes' => (int) env(key: 'AUTHKIT_LINK_INTENT_TTL_MINUTES', default: 10),
     ],
 
+    'lockout' => [
+        'enabled'          => (bool) env('AUTHKIT_LOCKOUT_ENABLED', false),
+        'max_attempts'     => (int) env('AUTHKIT_LOCKOUT_MAX_ATTEMPTS', 5),
+        'duration_minutes' => (int) env('AUTHKIT_LOCKOUT_DURATION_MINUTES', 15),
+        'connection'       => null,
+        'table'            => 'authkit_account_lockouts',
+    ],
+
     'rate_limit' => [
         'max_attempts'  => (int) env(key: 'AUTHKIT_RATE_LIMIT_MAX_ATTEMPTS', default: 5),
         'decay_minutes' => (int) env(key: 'AUTHKIT_RATE_LIMIT_DECAY_MINUTES', default: 1),

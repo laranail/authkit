@@ -35,6 +35,10 @@ class AuthKitServiceProvider extends PackageServiceProvider
                 tag: 'laranail::authkit-passkey-migrations',
             )
             ->publish(
+                paths: ['database/migrations/lockout' => database_path(path: 'migrations')],
+                tag: 'laranail::authkit-lockout-migrations',
+            )
+            ->publish(
                 paths: ['database/migrations/two-factor' => database_path(path: 'migrations')],
                 tag: 'laranail::authkit-two-factor-migrations',
             );
@@ -87,6 +91,28 @@ class AuthKitServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        // Passkeys, social providers and pending browser MFA may call a session guard directly.
+        // Reject those sign-ins too, undoing the guard's staged session/remember-cookie changes.
+        $this->app['events']->listen(\Illuminate\Auth\Events\Login::class, function (\Illuminate\Auth\Events\Login $event): void {
+            $remaining = $this->app->make(Services\AccountLockout::class)->retryAfter($event->user, $event->guard);
+            if ($remaining === 0) {
+                return;
+            }
+            $guard = $this->app['auth']->guard($event->guard);
+            if ($guard instanceof \Illuminate\Contracts\Auth\StatefulGuard) {
+                if (method_exists($guard, 'logoutCurrentDevice')) {
+                    $guard->logoutCurrentDevice();
+                } else {
+                    $guard->logout();
+                }
+            }
+            $this->app['events']->dispatch(new \Simtabi\Laranail\AuthKit\Events\AuthenticationFailed($event->guard, 'locked'));
+            throw new \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException(
+                $remaining,
+                __('laranail/authkit::messages.account_locked', ['seconds' => $remaining]),
+            );
+        });
+
         $this->loadTranslationsFrom($this->packagePath('lang'), 'laranail/authkit');
 
         // The REST API ships with the core, so an API-only or Filament consumer that installs

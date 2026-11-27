@@ -9,4 +9,5 @@ enum AuthStatus: string
     case Passed = 'passed';
     case Failed = 'failed';
     case Throttled = 'throttled';
+    case Locked = 'locked';
 }

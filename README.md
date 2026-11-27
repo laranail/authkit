@@ -99,7 +99,7 @@ The documentation lives in this repository under [`docs/`](docs/).
 
 - [Login](docs/login.md) · [Registration](docs/registration.md) · [Logout](docs/logout.md)
 - [Password reset](docs/password-reset.md) · [Password updates](docs/password-updates.md)
-- [Account deletion](docs/account-deletion.md)
+- [Account lockout](docs/account-lockout.md) · [Account deletion](docs/account-deletion.md)
 - [Profile management](docs/profile-management.md) · [Email verification](docs/email-verification.md)
 - [Browser sessions](docs/browser-sessions.md) · [API routes](docs/api-routes.md) · [API tokens](docs/api-tokens.md)
 - [Two-factor authentication](docs/two-factor-authentication.md)

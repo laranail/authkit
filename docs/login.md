@@ -50,8 +50,9 @@ Validation follows the list rather than being configured twice. With email alone
 validated as an address; with anything wider that rule is dropped, because a username is not an
 address and validating one as an address rejects every username before the lookup runs.
 
-Throttling, the generic invalid-credential response, and two-factor behaviour are unchanged — the
-limiter already keyed on the submitted identifier rather than on an address specifically.
+Request throttling remains keyed on the submitted identifier, IP and guard. Optional
+[account lockout](account-lockout.md) instead follows the resolved account across identifiers and
+login surfaces, and persists independently of throttle windows.
 
 ### The application owns the username column
 
