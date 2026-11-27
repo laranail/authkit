@@ -63,6 +63,7 @@ return [
         'features' => [
             'reset-passwords',
             'update-profile-information',
+            'delete-account',
             'update-passwords',
             'email-verification',
             'passkeys',

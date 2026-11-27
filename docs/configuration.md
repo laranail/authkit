@@ -30,13 +30,13 @@ See [Login](login.md) and [Identity linking](identity-linking.md) for validation
 | Key | Default | Purpose |
 | --- | --- | --- |
 | `fortify.views` | `false` | Fortify view registration. The core supplies no Blade pages. |
-| `fortify.features` | reset, profile, password, email verification, passkeys | Exact feature names below. |
+| `fortify.features` | reset, profile, password, email verification, passkeys, account deletion | Exact feature names below. |
 | `two_factor.enabled` | `false` | Exposes the TOTP enrollment/challenge API routes. Enrolled accounts still require a factor at login. |
 | `two_factor.table` | `users` | Table targeted by the published TOTP migration. |
 | `two_factor.challenge_expiration_minutes` | `5` | Login-challenge lifetime. |
 
 The default feature identifiers are `reset-passwords`, `update-profile-information`,
-`update-passwords`, `email-verification` and `passkeys`. Remove an identifier to disable its gated
+`update-passwords`, `email-verification`, `passkeys` and `delete-account`. Remove an identifier to disable its gated
 routes, and remove application UI that calls them. `social-login` is the shared browser capability
 identifier used by compatible social-login releases; check that package's installed version and
 [configuration](https://github.com/laranail/authkit-social-login/blob/main/docs/configuration.md).

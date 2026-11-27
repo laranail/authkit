@@ -6,6 +6,7 @@
 |--------------------------------|-----------------------------------------------------------------------|
 | `AttemptEmailPasswordLogin`    | Verify email + password against a guard, returns `AuthResult`         |
 | `LoginUser`                    | Log user into session + regenerate session                            |
+| `DeleteUser` | Password-confirmed self-service deletion through `DeleteUserInterface`; cleanup hooks and model retention policy apply. |
 | `LogoutUser`                   | Log out + invalidate session                                          |
 | `CreateNewUser`                | Validate and create user (Fortify `CreatesNewUsers`)                  |
 | `ResetUserPassword`            | Validate and reset password (Fortify `ResetsUserPasswords`)           |

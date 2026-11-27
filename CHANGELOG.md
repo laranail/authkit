@@ -9,6 +9,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Authenticated, password-confirmed account deletion API and `DeleteUserInterface`, with token/passkey/reset/session cleanup, pending email cancellation, soft-delete credential clearing and `AccountDeleting`/`AccountDeleted` extension events.
+
 - Verified email changes with encrypted, expiring pending requests, single-use proofs sent to the new address, authenticated API management and lifecycle audit events.
 
 - Immutable lifecycle events for registration, credential rejection, sessions, password/profile updates, token operations and two-factor management, with documented audit payloads and listeners.

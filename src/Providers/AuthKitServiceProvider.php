@@ -68,6 +68,7 @@ class AuthKitServiceProvider extends PackageServiceProvider
         $this->app->bind(abstract: Contracts\FindUserByEmailInterface::class, concrete: Actions\FindUserByEmail::class);
         $this->app->bind(abstract: Contracts\LoginUserInterface::class, concrete: Actions\LoginUser::class);
         $this->app->bind(abstract: Contracts\IdentityLinkingInterface::class, concrete: Services\IdentityLinking::class);
+        $this->app->bind(Contracts\DeleteUserInterface::class, Actions\DeleteUser::class);
         $this->app->bind(abstract: Contracts\LogoutUserInterface::class, concrete: Actions\LogoutUser::class);
         $this->app->bind(abstract: Contracts\IssueTokenForUserInterface::class, concrete: Actions\IssueTokenForUser::class);
         $this->app->singleton(Contracts\TokenIssuerRegistryInterface::class, function (): Services\TokenIssuerRegistry {
