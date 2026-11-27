@@ -7,12 +7,15 @@ namespace Simtabi\Laranail\AuthKit\Http\Controllers\Api;
 use BackedEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Simtabi\Laranail\AuthKit\Services\TwoFactorAuthentication;
 
 final class TwoFactorManagementController
 {
+    public function __construct(
+        private \Illuminate\Contracts\Hashing\Hasher $hasher,
+    ) {}
+
     public function show(Request $request, TwoFactorAuthentication $twoFactor): JsonResponse
     {
         return response()->json([
@@ -32,7 +35,7 @@ final class TwoFactorManagementController
         $validated = $request->validate(['password' => ['required', 'string']]);
         $user = $request->user();
 
-        if (! Hash::check($validated['password'], $user->getAuthPassword())) {
+        if (! $this->hasher->check($validated['password'], $user->getAuthPassword())) {
             throw ValidationException::withMessages(['password' => __('laranail/authkit::messages.incorrect_password')]);
         }
 

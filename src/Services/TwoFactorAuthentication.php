@@ -8,8 +8,6 @@ use Throwable;
 use BackedEnum;
 use LogicException;
 use Laravel\Fortify\RecoveryCode;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Cache\LockTimeoutException;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -18,7 +16,12 @@ use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 
 final class TwoFactorAuthentication
 {
-    public function __construct(private TwoFactorAuthenticationProvider $provider) {}
+    public function __construct(
+        private TwoFactorAuthenticationProvider $provider,
+        private \Illuminate\Contracts\Config\Repository $config,
+        private \Illuminate\Contracts\Cache\Repository $cache,
+        private \Illuminate\Contracts\Encryption\Encrypter $encrypter,
+    ) {}
 
     public function enabled(Authenticatable $user): bool
     {
@@ -45,7 +48,7 @@ final class TwoFactorAuthentication
             $secret = $this->provider->generateSecretKey(32);
             $this->fill($user, [
                 'two_factor_method'         => TwoFactorMethod::NONE->value,
-                'two_factor_secret'         => Crypt::encryptString($secret),
+                'two_factor_secret'         => $this->encrypter->encryptString($secret),
                 'two_factor_recovery_codes' => null,
                 'two_factor_confirmed_at'   => null,
             ]);
@@ -55,7 +58,7 @@ final class TwoFactorAuthentication
 
         return [
             'secret'      => $secret,
-            'qr_code_url' => $this->provider->qrCodeUrl((string) config('app.name'), $label, $secret),
+            'qr_code_url' => $this->provider->qrCodeUrl((string) $this->config->get('app.name'), $label, $secret),
         ];
     }
 
@@ -92,7 +95,7 @@ final class TwoFactorAuthentication
         }
 
         try {
-            $codes = json_decode(Crypt::decryptString($stored), true, flags: JSON_THROW_ON_ERROR);
+            $codes = json_decode($this->encrypter->decryptString($stored), true, flags: JSON_THROW_ON_ERROR);
         } catch (Throwable) {
             return [];
         }
@@ -103,7 +106,7 @@ final class TwoFactorAuthentication
     public function rotateRecoveryCodes(Authenticatable $user): array
     {
         $codes = array_map(static fn (): string => RecoveryCode::generate(), range(1, 8));
-        $this->fill($user, ['two_factor_recovery_codes' => Crypt::encryptString(json_encode($codes, JSON_THROW_ON_ERROR))]);
+        $this->fill($user, ['two_factor_recovery_codes' => $this->encrypter->encryptString(json_encode($codes, JSON_THROW_ON_ERROR))]);
 
         return $codes;
     }
@@ -125,7 +128,7 @@ final class TwoFactorAuthentication
         $codes = array_map(static fn (): string => RecoveryCode::generate(), range(1, 8));
         $this->fill($user, [
             'two_factor_method'         => TwoFactorMethod::TOTP->value,
-            'two_factor_recovery_codes' => Crypt::encryptString(json_encode($codes, JSON_THROW_ON_ERROR)),
+            'two_factor_recovery_codes' => $this->encrypter->encryptString(json_encode($codes, JSON_THROW_ON_ERROR)),
             'two_factor_confirmed_at'   => now(),
         ]);
 
@@ -150,7 +153,7 @@ final class TwoFactorAuthentication
             $this->fill($user, [
                 'two_factor_recovery_codes' => $codes === []
                     ? null
-                    : Crypt::encryptString(json_encode(array_values($codes), JSON_THROW_ON_ERROR)),
+                    : $this->encrypter->encryptString(json_encode(array_values($codes), JSON_THROW_ON_ERROR)),
             ]);
 
             return true;
@@ -169,11 +172,11 @@ final class TwoFactorAuthentication
     private function decrypt(string $secret): ?string
     {
         try {
-            return Crypt::decryptString($secret);
+            return $this->encrypter->decryptString($secret);
         } catch (Throwable) {
             // Back-compat: secrets written with encrypt() rather than encryptString().
             try {
-                return (string) decrypt($secret);
+                return (string) $this->encrypter->decrypt($secret);
             } catch (Throwable) {
                 return null;
             }
@@ -201,10 +204,10 @@ final class TwoFactorAuthentication
             $user::class . ':' . (string) $user->getAuthIdentifier(),
         );
 
-        $store = Cache::getStore();
+        $store = $this->cache->getStore();
 
         // Three of the stores Laravel ships are not LockProviders -- apc, session and storage --
-        // and Cache::lock() on one of them fails with PHP's Error: Call to undefined method,
+        // and $this->cache->lock() on one of them fails with PHP's Error: Call to undefined method,
         // surfacing as a 500 on the challenge. Not BadMethodCallException, as this comment said
         // until it was checked: none of those stores declares lock() or __call, and
         // Repository::__call forwards straight to the store, so nothing translates the call into

@@ -6,7 +6,6 @@ namespace Simtabi\Laranail\AuthKit\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -27,7 +26,10 @@ final class DeprecatedTwoFactorAlias
 
     private static bool $warned = false;
 
-    public function __construct(private readonly RequireTwoFactorAuthentication $middleware) {}
+    public function __construct(
+        private readonly RequireTwoFactorAuthentication $middleware,
+        private \Psr\Log\LoggerInterface $logger,
+    ) {}
 
     /** @internal Lets a test observe the once-per-process warning again. */
     public static function resetWarning(): void
@@ -40,7 +42,7 @@ final class DeprecatedTwoFactorAlias
         if (! self::$warned) {
             self::$warned = true;
 
-            Log::warning(
+            $this->logger->warning(
                 'The "two-factor" middleware alias is deprecated; use "laranail-authkit-two-factor" instead. '
                 . 'The bare alias may be removed in the next minor after 0.1.',
             );

@@ -16,6 +16,10 @@ class TokenIssuerRegistry implements TokenIssuerRegistryInterface
     /** @var array<string, TokenIssuerInterface> */
     private array $issuers = [];
 
+    public function __construct(
+        private \Illuminate\Contracts\Config\Repository $config,
+    ) {}
+
     public function register(string $driver, TokenIssuerInterface $issuer): void
     {
         $this->issuers[$driver] = $issuer;
@@ -47,7 +51,7 @@ class TokenIssuerRegistry implements TokenIssuerRegistryInterface
 
     private function selectedIssuer(): TokenIssuerInterface
     {
-        $driver = (string) config('laranail.authkit.tokens.driver', 'sanctum');
+        $driver = (string) $this->config->get('laranail.authkit.tokens.driver', 'sanctum');
 
         return $this->issuers[$driver]
             ?? throw new InvalidArgumentException("The AuthKit token issuer [{$driver}] is not registered.");

@@ -31,6 +31,7 @@ class RegisterRequest extends FormRequest
             'email'    => ['required', 'string', 'email', 'max:255', Rule::unique(table: UserModelResolver::resolve())],
             'password' => ['required', 'string', Password::default(), 'confirmed'],
         ], [
+            // @facade-call-exempt: The public static validation API shares rules with non-HTTP Fortify callers.
             config(key: 'laranail.authkit.turnstile.input', default: 'cf-turnstile-response') => AuthKit::turnstileRules(),
         ]);
     }

@@ -11,6 +11,10 @@ use Simtabi\Laranail\AuthKit\Services\TwoFactorAuthentication;
 
 final class RequireTwoFactorAuthentication
 {
+    public function __construct(
+        private TwoFactorAuthentication $twoFactor,
+    ) {}
+
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
@@ -19,7 +23,7 @@ final class RequireTwoFactorAuthentication
             abort(401);
         }
 
-        abort_unless(app(TwoFactorAuthentication::class)->enabled($user), 403, __('laranail/authkit::messages.two_factor_required'));
+        abort_unless($this->twoFactor->enabled($user), 403, __('laranail/authkit::messages.two_factor_required'));
 
         $token = method_exists($user, 'currentAccessToken') ? $user->currentAccessToken() : null;
 

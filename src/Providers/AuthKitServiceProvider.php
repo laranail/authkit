@@ -58,6 +58,7 @@ class AuthKitServiceProvider extends PackageServiceProvider
             return new Services\Turnstile(
                 url: (string) config(key: 'laranail.authkit.turnstile.url'),
                 secretKey: (string) config(key: 'laranail.authkit.turnstile.secret_key'),
+                http: $this->app->make(\Illuminate\Http\Client\Factory::class),
             );
         });
         $this->app->singleton(Services\TwoFactorAuthentication::class);
@@ -70,7 +71,7 @@ class AuthKitServiceProvider extends PackageServiceProvider
         $this->app->bind(abstract: Contracts\LogoutUserInterface::class, concrete: Actions\LogoutUser::class);
         $this->app->bind(abstract: Contracts\IssueTokenForUserInterface::class, concrete: Actions\IssueTokenForUser::class);
         $this->app->singleton(Contracts\TokenIssuerRegistryInterface::class, function (): Services\TokenIssuerRegistry {
-            $registry = new Services\TokenIssuerRegistry;
+            $registry = $this->app->make(Services\TokenIssuerRegistry::class);
             $registry->register('sanctum', app(Actions\SanctumTokenIssuer::class));
 
             return $registry;

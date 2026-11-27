@@ -12,6 +12,10 @@ use Simtabi\Laranail\AuthKit\Http\Requests\UpdateProfileInformationRequest;
 
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
+    public function __construct(
+        private UserValidationService $validation,
+    ) {}
+
     public function update($user, array $input): void
     {
         // Normalised before validating for the same reason as registration: a differently-cased
@@ -20,7 +24,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $input['email'] = Str::lower(value: $input['email']);
         }
 
-        app(abstract: UserValidationService::class)->validate(
+        $this->validation->validate(
             input: $input,
             rules: UpdateProfileInformationRequest::rulesFor(
                 table: $user->getTable(),

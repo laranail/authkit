@@ -12,11 +12,15 @@ class UserModelResolver
 {
     public static function resolve(?string $guard = null): string
     {
+        // @facade-call-exempt: Public static model resolver reads the active guard configuration at call time.
         $model = config('laranail.authkit.user_model');
 
         if (! is_string($model) || $model === '') {
+            // @facade-call-exempt: Public static model resolver reads the active guard configuration at call time.
             $guard ??= config('laranail.authkit.guard', 'web');
+            // @facade-call-exempt: Public static model resolver reads the active guard configuration at call time.
             $provider = config("auth.guards.{$guard}.provider", config('auth.defaults.provider'));
+            // @facade-call-exempt: Public static model resolver reads the active guard configuration at call time.
             $model = config("auth.providers.{$provider}.model");
         }
 

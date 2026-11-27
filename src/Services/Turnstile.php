@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AuthKit\Services;
 
 use Throwable;
-use Illuminate\Support\Facades\Http;
 
 class Turnstile
 {
     public function __construct(
         protected string $url,
         protected string $secretKey,
+        private \Illuminate\Http\Client\Factory $http,
     ) {}
 
     public function validate(string $token): bool
@@ -21,7 +21,7 @@ class Turnstile
         }
 
         try {
-            $response = Http::retry(4, 100)
+            $response = $this->http->retry(4, 100)
                 ->acceptJson()
                 ->asForm()
                 ->post(

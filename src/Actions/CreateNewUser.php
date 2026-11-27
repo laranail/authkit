@@ -14,6 +14,11 @@ use Laravel\Fortify\Contracts\CreatesNewUsers as FortifyCreateNewUser;
 
 class CreateNewUser implements FortifyCreateNewUser
 {
+    public function __construct(
+        private UserProvisioningService $provisioning,
+        private UserValidationService $validation,
+    ) {}
+
     public function create(array $input): Authenticatable
     {
         $model = UserModelResolver::resolve();
@@ -24,15 +29,15 @@ class CreateNewUser implements FortifyCreateNewUser
         // constraint. The user saw a 500 from a PDOException where they should have seen "this
         // email is already taken".
         if (isset($input['email']) && is_string($input['email'])) {
-            $input['email'] = app(abstract: UserProvisioningService::class)->normaliseEmail($input['email']);
+            $input['email'] = $this->provisioning->normaliseEmail($input['email']);
         }
 
-        app(abstract: UserValidationService::class)->validate(
+        $this->validation->validate(
             input: $input,
             rules: RegisterRequest::rulesFor(),
         );
 
-        $user = app(abstract: UserProvisioningService::class)->create(attributes: [
+        $user = $this->provisioning->create(attributes: [
             'name'     => $input['name'],
             'email'    => $input['email'],
             'password' => $input['password'],

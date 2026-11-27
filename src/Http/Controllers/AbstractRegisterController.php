@@ -16,12 +16,16 @@ use Laravel\Fortify\Contracts\CreatesNewUsers as FortifyCreateNewUser;
 
 abstract class AbstractRegisterController extends AbstractAuthController
 {
+    public function __construct(
+        protected \Illuminate\Contracts\Events\Dispatcher $events,
+    ) {}
+
     public function store(
         Request $request,
         FortifyCreateNewUser $creator,
         LoginUserInterface $loginAction,
     ): mixed {
-        event(new Registered($user = $creator->create($request->all())));
+        $this->events->dispatch(new Registered($user = $creator->create($request->all())));
 
         if ($request->expectsJson()) {
             return $this->jsonResponse(status: 'passed', data: ['user' => $user], code: 201);

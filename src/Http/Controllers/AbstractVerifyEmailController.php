@@ -10,6 +10,10 @@ use Laravel\Fortify\Http\Requests\VerifyEmailRequest;
 
 abstract class AbstractVerifyEmailController extends AbstractAuthController
 {
+    public function __construct(
+        private \Illuminate\Contracts\Events\Dispatcher $events,
+    ) {}
+
     public function __invoke(VerifyEmailRequest $request): mixed
     {
         if ($request->user()->hasVerifiedEmail()) {
@@ -17,7 +21,7 @@ abstract class AbstractVerifyEmailController extends AbstractAuthController
         }
 
         if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
+            $this->events->dispatch(new Verified($request->user()));
         }
 
         return $this->verifiedResponse($request, alreadyVerified: false);
