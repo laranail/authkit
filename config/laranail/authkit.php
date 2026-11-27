@@ -28,6 +28,12 @@ return [
         'identifiers' => ['email'],
     ],
 
+    // Browser clients may supply a verification page URL containing {token}.
+    'email_change' => [
+        'expires_after_minutes' => 60,
+        'verification_url'      => null,
+    ],
+
     'identity_linking' => [
         /*
          * How long a link attempt stays valid.

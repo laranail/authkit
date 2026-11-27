@@ -8,7 +8,7 @@ providers and OAuth server integration are separate packages.
 | Password login and registration | Web actions and REST controllers; configurable identifiers and throttling. |
 | Password reset and change | Fortify-backed validation; password-tools/history are not integrated. |
 | Email verification | Verification notifications and signed-link completion. |
-| Profile email change | Changes the address immediately; `MustVerifyEmail` users become unverified and receive a new notification. The old email is not retained pending verification. |
+| Profile email change | Keeps the current address active until an expiring, single-use proof sent to the new address succeeds; authenticated API and shared service are available. Preset form integration is separate. |
 | TOTP and recovery codes | Opt-in enrollment and challenge flows; 21-character alphanumeric recovery codes are single-use. |
 | Passkeys | Browser/session ceremonies; no token API for passkey registration or authentication. |
 | Account lockout | Request/credential throttling only; no persistent account lockout. |

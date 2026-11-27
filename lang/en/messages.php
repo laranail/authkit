@@ -3,6 +3,13 @@
 declare(strict_types=1);
 
 return [
+    'email_change_same_address'              => 'Choose a different email address.',
+    'email_change_invalid'                   => 'This email change link is invalid or expired. Request a new link.',
+    'email_change_subject'                   => 'Verify your new email address',
+    'email_change_intro'                     => 'Confirm this address to change the email on your account.',
+    'email_change_action'                    => 'Verify new email address',
+    'email_change_expiry'                    => 'This link expires in :minutes minutes. Sign in to the account that requested the change to complete verification.',
+    'email_change_ignore'                    => 'If you did not request this change, ignore this email. Your current address remains active.',
     'invalid_credentials'                    => 'Invalid credentials.',
     'too_many_attempts'                      => 'Too many attempts.',
     'logged_out'                             => 'Logged out successfully.',

@@ -11,7 +11,10 @@ passwords, bearer/provider tokens, authorization codes, recovery values or clien
 | --- | --- | --- |
 | `AuthenticationFailed` | `guard: string`, `reason: string` | A credential attempt is rejected or throttled. `reason` is `invalid_credentials` or `throttled`; no submitted identifier is included. |
 | `PasswordUpdated` | `userType: string`, `userId: string`, `operation: string` | After password persistence and token revocation complete. `operation` is `reset` or `update`. |
-| `ProfileUpdated` | `userType: string`, `userId: string` | After the profile action completes, including the email-verification notification branch. Field values are excluded. |
+| `EmailChangeRequested` | `userType: string`, `userId: string` | After a pending change is stored and verification mail is sent to the new address. |
+| `EmailChanged` | `userType: string`, `userId: string` | After the new address is proved and saved. Invalid or replayed proofs do not emit this. |
+| `EmailChangeCancelled` | `userType: string`, `userId: string` | After explicit cancellation removes a pending record. |
+| `ProfileUpdated` | `userType: string`, `userId: string` | After the profile action completes, including initiation of a pending email change. Field values are excluded. |
 | `RecoveryCodesRegenerated` | `userType: string`, `userId: string` | After replacement recovery codes are stored. No codes are included. |
 | `SessionAuthenticated` | `userType: string`, `userId: string`, `guard: string`, `remember: bool` | After `LoginUser` authenticates the guard and regenerates the session; credential checks alone do not emit this. |
 | `SessionLoggedOut` | `userType: ?string`, `userId: ?string`, `guard: string` | After guard logout, session invalidation and CSRF rotation. User metadata may be null when no session user existed. |
@@ -54,8 +57,8 @@ Laravel's `Registered`, verification dispatches `Verified`, and session guards d
 login/logout events. A package event and a framework event may describe different stages of one
 flow; subscribe to the stage you intend to audit.
 
-The profile hook covers the current immediate email update. It does not imply a pending verified
-email-change feature. Token revocation hooks report completed operations even when no tokens exist;
+The profile hook covers profile-action completion; use `EmailChanged` to audit the actual verified
+address replacement. Email values and verification proofs are excluded from all event payloads. Token revocation hooks report completed operations even when no tokens exist;
 no affected-row count is promised. Factor lifecycle events exclude enrollment secrets and codes.
 
 ## Listener execution and transactions
