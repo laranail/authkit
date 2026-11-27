@@ -9,6 +9,7 @@ use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerInterface;
 
 it('dispatches issuance to the configured token issuer', function (): void {
     $user = Mockery::mock(Authenticatable::class);
+    $user->shouldReceive('getAuthIdentifier')->andReturn('registry-user');
     $result = new TokenResult($user, 'passport-token');
     $issuer = Mockery::mock(TokenIssuerInterface::class);
     $issuer->shouldReceive('issue')->once()->with($user, 'client', ['user:read'], null, false)->andReturn($result);
@@ -22,6 +23,7 @@ it('dispatches issuance to the configured token issuer', function (): void {
 
 it('asks every registered issuer to revoke a user current token and all tokens', function (): void {
     $user = Mockery::mock(Authenticatable::class);
+    $user->shouldReceive('getAuthIdentifier')->andReturn('registry-user');
     $issuer = Mockery::mock(TokenIssuerInterface::class);
     $issuer->shouldReceive('revokeCurrent')->once()->with($user);
     $issuer->shouldReceive('revokeAll')->once()->with($user);

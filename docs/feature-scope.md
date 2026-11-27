@@ -14,7 +14,7 @@ providers and OAuth server integration are separate packages.
 | Account lockout | Request/credential throttling only; no persistent account lockout. |
 | Account deletion | No self-service deletion endpoint. |
 | Magic links | Deferred from 1.0. |
-| Audit extension | Container contracts and Laravel/Fortify events exist; no stable package-level lifecycle event catalog. |
+| Audit extension | Public lifecycle events, container contracts and Laravel/Fortify events; see [Events](events.md). |
 
 `authkit-ldap`, `authkit-sso` and `authkit-tenancy` remain experimental scaffolds and are not
 implemented authentication providers. Installing this core does not add them. Do not infer support

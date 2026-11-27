@@ -112,6 +112,8 @@ The documentation lives in this repository under [`docs/`](docs/).
 
 ### Operations
 
+- [Lifecycle events](docs/events.md) — public audit payloads and Laravel listener setup
+
 - [Environment variables](docs/environment.md) — supported names and cached configuration
 - [Localization](docs/localization.md) — language files, overrides and fallback
 - [Troubleshooting](docs/troubleshooting.md) — setup checks and common failures

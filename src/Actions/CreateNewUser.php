@@ -17,6 +17,7 @@ class CreateNewUser implements FortifyCreateNewUser
     public function __construct(
         private UserProvisioningService $provisioning,
         private UserValidationService $validation,
+        private \Illuminate\Contracts\Events\Dispatcher $events,
     ) {}
 
     public function create(array $input): Authenticatable
@@ -42,6 +43,8 @@ class CreateNewUser implements FortifyCreateNewUser
             'email'    => $input['email'],
             'password' => $input['password'],
         ]);
+
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\UserRegistered($user::class, (string) $user->getAuthIdentifier()));
 
         return $user;
     }

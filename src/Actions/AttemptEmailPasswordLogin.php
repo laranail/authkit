@@ -19,6 +19,7 @@ class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
         private AuthFactory $auth,
         private RateLimiter $limiter,
         private \Illuminate\Contracts\Config\Repository $config,
+        private \Illuminate\Contracts\Events\Dispatcher $events,
     ) {}
 
     public function execute(Request $request, string $guard): AuthResult
@@ -32,6 +33,8 @@ class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
         $decaySeconds = (int) $this->config->get(key: 'laranail.authkit.rate_limit.decay_minutes', default: 1) * 60;
 
         if ($this->limiter->tooManyAttempts(key: $key, maxAttempts: $maxAttempts)) {
+            $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\AuthenticationFailed($guard, 'throttled'));
+
             return AuthResult::throttled(retryAfterSeconds: $this->limiter->availableIn(key: $key));
         }
 
@@ -43,6 +46,8 @@ class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
 
         if ($user === null) {
             $this->limiter->hit(key: $key, decaySeconds: $decaySeconds);
+
+            $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\AuthenticationFailed($guard, 'invalid_credentials'));
 
             return AuthResult::failed();
         }

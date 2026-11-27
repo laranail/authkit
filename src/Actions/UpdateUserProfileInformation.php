@@ -14,6 +14,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
     public function __construct(
         private UserValidationService $validation,
+        private \Illuminate\Contracts\Events\Dispatcher $events,
     ) {}
 
     public function update($user, array $input): void
@@ -35,6 +36,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 
         if ($input['email'] !== $user->email && $user instanceof MustVerifyEmail) {
             $this->updateVerifiedUser(user: $user, input: $input);
+            $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\ProfileUpdated($user::class, (string) $user->getAuthIdentifier()));
 
             return;
         }
@@ -43,6 +45,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'name'  => $input['name'],
             'email' => $input['email'],
         ])->save();
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\ProfileUpdated($user::class, (string) $user->getAuthIdentifier()));
     }
 
     protected function updateVerifiedUser($user, array $input): void

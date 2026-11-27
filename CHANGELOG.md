@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Immutable lifecycle events for registration, credential rejection, sessions, password/profile updates, token operations and two-factor management, with documented audit payloads and listeners.
+
 ### Changed
 
 - Run shared facade/config-key guards and two-request state isolation checks alongside real driver-contract and published-config tests.

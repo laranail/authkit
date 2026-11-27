@@ -13,12 +13,15 @@ class LogoutUser implements LogoutUserInterface
     public function __construct(
         private AuthFactory $auth,
         private Session $session,
+        private \Illuminate\Contracts\Events\Dispatcher $events,
     ) {}
 
     public function execute(string $guard): void
     {
+        $user = $this->auth->guard($guard)->user();
         $this->auth->guard($guard)->logout();
         $this->session->invalidate();
         $this->session->regenerateToken();
+        $this->events->dispatch(new \Simtabi\Laranail\AuthKit\Events\SessionLoggedOut($user === null ? null : $user::class, $user === null ? null : (string) $user->getAuthIdentifier(), $guard));
     }
 }
