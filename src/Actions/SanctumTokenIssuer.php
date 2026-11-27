@@ -14,6 +14,10 @@ use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 
 class SanctumTokenIssuer implements TokenIssuerInterface
 {
+    public function __construct(
+        private \Illuminate\Contracts\Config\Repository $config,
+    ) {}
+
     public function issue(
         Authenticatable $user,
         ?string $name = null,
@@ -77,7 +81,7 @@ class SanctumTokenIssuer implements TokenIssuerInterface
      */
     private function defaultAbilities(): array
     {
-        $abilities = config('laranail.authkit.tokens.abilities', ['*']);
+        $abilities = $this->config->get('laranail.authkit.tokens.abilities', ['*']);
 
         if (! is_array($abilities) || $abilities === []) {
             return ['*'];
@@ -92,7 +96,7 @@ class SanctumTokenIssuer implements TokenIssuerInterface
      */
     private function defaultExpiry(): ?DateTimeInterface
     {
-        $minutes = config('laranail.authkit.tokens.expires_after_minutes');
+        $minutes = $this->config->get('laranail.authkit.tokens.expires_after_minutes');
 
         if ($minutes === null || ! is_numeric($minutes) || (int) $minutes <= 0) {
             return null;

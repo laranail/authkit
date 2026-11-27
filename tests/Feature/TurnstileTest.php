@@ -43,7 +43,7 @@ it('rejects an invalid token', function (): void {
 
     $validator = Validator::make(
         data: ['cf-turnstile-response' => 'invalid-token'],
-        rules: ['cf-turnstile-response' => [new TurnstileRule]],
+        rules: ['cf-turnstile-response' => [app(TurnstileRule::class)]],
     );
 
     expect($validator->fails())->toBeTrue()

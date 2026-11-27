@@ -18,6 +18,7 @@ class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
     public function __construct(
         private AuthFactory $auth,
         private RateLimiter $limiter,
+        private \Illuminate\Contracts\Config\Repository $config,
     ) {}
 
     public function execute(Request $request, string $guard): AuthResult
@@ -27,8 +28,8 @@ class AttemptEmailPasswordLogin implements AttemptEmailPasswordLoginInterface
         $ip = $request->ip();
 
         $key = 'login:' . $guard . ':' . mb_strtolower(string: $identifier) . ':' . ($ip ?? '_');
-        $maxAttempts = (int) config(key: 'laranail.authkit.rate_limit.max_attempts', default: 5);
-        $decaySeconds = (int) config(key: 'laranail.authkit.rate_limit.decay_minutes', default: 1) * 60;
+        $maxAttempts = (int) $this->config->get(key: 'laranail.authkit.rate_limit.max_attempts', default: 5);
+        $decaySeconds = (int) $this->config->get(key: 'laranail.authkit.rate_limit.decay_minutes', default: 1) * 60;
 
         if ($this->limiter->tooManyAttempts(key: $key, maxAttempts: $maxAttempts)) {
             return AuthResult::throttled(retryAfterSeconds: $this->limiter->availableIn(key: $key));

@@ -18,14 +18,17 @@ class RegisterController extends AbstractRegisterController
 {
     public function __construct(
         private IssueTokenForUserInterface $issuer,
-    ) {}
+        \Illuminate\Contracts\Events\Dispatcher $events,
+    ) {
+        parent::__construct($events);
+    }
 
     public function store(
         Request $request,
         FortifyCreateNewUser $creator,
         LoginUserInterface $loginAction,
     ): JsonResponse {
-        event(new Registered($user = $creator->create($request->all())));
+        $this->events->dispatch(new Registered($user = $creator->create($request->all())));
 
         $tokenResult = $this->issuer->execute(
             user: $user,

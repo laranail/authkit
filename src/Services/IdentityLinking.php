@@ -32,6 +32,7 @@ final class IdentityLinking implements IdentityLinkingInterface
     public function __construct(
         private CacheRepository $cache,
         private AuthFactory $auth,
+        private \Illuminate\Contracts\Config\Repository $config,
     ) {}
 
     public function issueIntent(Request $request, Authenticatable $user, string $guard, string $provider): string
@@ -126,7 +127,7 @@ final class IdentityLinking implements IdentityLinkingInterface
      */
     private function recentlyAuthenticated(Request $request, Authenticatable $user, string $guard): bool
     {
-        $timeout = (int) config(key: 'auth.password_timeout', default: 10800);
+        $timeout = (int) $this->config->get(key: 'auth.password_timeout', default: 10800);
 
         if ($request->hasSession()) {
             $confirmedAt = (int) $request->session()->get('auth.password_confirmed_at', 0);
@@ -194,7 +195,7 @@ final class IdentityLinking implements IdentityLinkingInterface
 
     private function ttlMinutes(): int
     {
-        $minutes = (int) config(key: 'laranail.authkit.identity_linking.intent_ttl_minutes', default: 10);
+        $minutes = (int) $this->config->get(key: 'laranail.authkit.identity_linking.intent_ttl_minutes', default: 10);
 
         return $minutes > 0 ? $minutes : 10;
     }

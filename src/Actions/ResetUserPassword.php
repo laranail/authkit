@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AuthKit\Actions;
 
-use Illuminate\Support\Facades\Hash;
 use Simtabi\Laranail\AuthKit\Services\UserValidationService;
 use Simtabi\Laranail\AuthKit\Http\Requests\ResetPasswordRequest;
 use Simtabi\Laranail\AuthKit\Contracts\TokenIssuerRegistryInterface;
@@ -12,18 +11,24 @@ use Laravel\Fortify\Contracts\ResetsUserPasswords as FortifyResetUserPassword;
 
 class ResetUserPassword implements FortifyResetUserPassword
 {
+    public function __construct(
+        private \Illuminate\Contracts\Hashing\Hasher $hasher,
+        private UserValidationService $validation,
+        private TokenIssuerRegistryInterface $issuers,
+    ) {}
+
     public function reset($user, array $input): void
     {
-        app(abstract: UserValidationService::class)->validate(
+        $this->validation->validate(
             input: $input,
             rules: ResetPasswordRequest::rulesFor(),
         );
 
         $user->forceFill([
-            'password'       => Hash::make($input['password']),
+            'password'       => $this->hasher->make($input['password']),
             'remember_token' => null,
         ])->save();
 
-        app(TokenIssuerRegistryInterface::class)->revokeAll($user);
+        $this->issuers->revokeAll($user);
     }
 }

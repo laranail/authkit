@@ -31,6 +31,7 @@ class AuthKit
 
     public static function guard(): string
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         return config(key: 'laranail.authkit.guard', default: 'web');
     }
 
@@ -42,6 +43,7 @@ class AuthKit
      */
     public static function loginField(): string
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         $field = config(key: 'laranail.authkit.login.field', default: 'email');
 
         return is_string($field) && $field !== '' ? $field : 'email';
@@ -57,6 +59,7 @@ class AuthKit
      */
     public static function loginIdentifiers(): array
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         $identifiers = config(key: 'laranail.authkit.login.identifiers', default: ['email']);
 
         if (! is_array($identifiers)) {
@@ -108,6 +111,7 @@ class AuthKit
      */
     public static function hasFeature(string $feature): bool
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         return in_array($feature, (array) config(key: 'laranail.authkit.fortify.features', default: []), strict: true);
     }
 
@@ -125,6 +129,7 @@ class AuthKit
 
     public static function apiEnabled(): bool
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         return (bool) config(key: 'laranail.authkit.api.enabled', default: true);
     }
 
@@ -143,11 +148,13 @@ class AuthKit
      */
     public static function twoFactorEnabled(): bool
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         return (bool) config(key: 'laranail.authkit.two_factor.enabled', default: false);
     }
 
     public static function apiPrefix(): string
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         return (string) config(key: 'laranail.authkit.api.prefix', default: 'api/auth');
     }
 
@@ -159,12 +166,14 @@ class AuthKit
      */
     public static function apiRouteNamePrefix(): string
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         return (string) config(key: 'laranail.authkit.api.name_prefix', default: 'laranail-auth-api.');
     }
 
     /** @return array<int, string> */
     public static function apiMiddleware(): array
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         return (array) config(key: 'laranail.authkit.api.middleware', default: ['api']);
     }
 
@@ -175,11 +184,14 @@ class AuthKit
     public static function apiTokenMiddleware(): string
     {
         $guards = array_values(array_filter(
+            // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
             (array) config(key: 'laranail.authkit.api.token_guards', default: ['sanctum']),
             is_string(...),
         ));
 
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         if (config(key: 'laranail.authkit-oauth.enabled', default: false)) {
+            // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
             $guards[] = (string) config(key: 'laranail.authkit-oauth.passport.guard', default: 'passport');
         }
 
@@ -196,6 +208,7 @@ class AuthKit
             }
         }
 
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         return config(key: "laranail.authkit.redirects.{$key}", default: $default);
     }
 
@@ -226,10 +239,12 @@ class AuthKit
 
     public static function turnstileRules(): array
     {
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         if (! config(key: 'laranail.authkit.turnstile.enabled', default: false)) {
             return [];
         }
 
+        // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
         $route = request()->route();
         if ($route === null || ! in_array('web', (array) $route->middleware(), true)) {
             return [];
@@ -237,7 +252,8 @@ class AuthKit
 
         return [
             'required',
-            new TurnstileRule,
+            // @facade-call-exempt: Public static compatibility API resolves current configuration/request at call time, never retaining request state.
+            app(TurnstileRule::class),
         ];
     }
 }

@@ -13,12 +13,16 @@ use Simtabi\Laranail\AuthKit\Http\Controllers\AbstractLogoutController;
 
 class LogoutController extends AbstractLogoutController
 {
+    public function __construct(
+        private TokenIssuerRegistryInterface $issuers,
+    ) {}
+
     public function __invoke(Request $request, LogoutUserInterface $action): JsonResponse
     {
         $user = $request->user();
         $action->execute(guard: $this->guard());
         if ($user !== null) {
-            app(TokenIssuerRegistryInterface::class)->revokeCurrent($user);
+            $this->issuers->revokeCurrent($user);
         }
 
         return $this->jsonResponse(status: 'success', data: [
@@ -34,7 +38,7 @@ class LogoutController extends AbstractLogoutController
     protected function loggedOut(Request $request): JsonResponse
     {
         if ($request->user() !== null) {
-            app(TokenIssuerRegistryInterface::class)->revokeCurrent($request->user());
+            $this->issuers->revokeCurrent($request->user());
         }
 
         return response()->json([

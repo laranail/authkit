@@ -2,6 +2,15 @@
 
 Breaking changes, and what to do about them. Versions not listed here need no action.
 
+## Explicit service dependencies
+
+Actions, HTTP controllers and Turnstile rules now receive their service contracts through
+constructors so package guard checks can catch hidden dependencies. Laravel resolves these
+automatically; application code should use `app(TheAction::class)` or inject the action's contract.
+If you manually construct a class or override its constructor, supply its declared dependencies
+and forward inherited ones to the parent. Use `app(TurnstileRule::class)` in manually built rule
+arrays. Existing execution methods, result types and static support methods are unchanged.
+
 ## Social login moved to `laranail/authkit-social-login`
 
 Social login is no longer part of this package. Fifteen classes, the `socials` migration, the factory

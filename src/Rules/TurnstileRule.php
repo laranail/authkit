@@ -11,6 +11,10 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 
 class TurnstileRule implements ValidationRule
 {
+    public function __construct(
+        private Turnstile $turnstile,
+    ) {}
+
     /**
      * Run the validation rule.
      *
@@ -18,7 +22,7 @@ class TurnstileRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (empty($value) || ! app(Turnstile::class)->validate(token: (string) $value)) {
+        if (empty($value) || ! $this->turnstile->validate(token: (string) $value)) {
             $fail(trans(key: 'The computer thinks you are a robot. Prove it wrong!'));
         }
     }

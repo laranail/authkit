@@ -20,6 +20,9 @@ class LoginController extends AbstractAttemptEmailPasswordLoginController
 {
     public function __construct(
         private IssueTokenForUserInterface $issuer,
+        private \Illuminate\Contracts\Config\Repository $config,
+        private \Illuminate\Contracts\Cache\Repository $cache,
+        private TwoFactorAuthentication $twoFactor,
     ) {}
 
     public function store(
@@ -53,17 +56,17 @@ class LoginController extends AbstractAttemptEmailPasswordLoginController
         // ordering came out false. `authkit-preset`'s browser login has always asked the service
         // and nothing else; this matches it. The flag still gates the enrolment and challenge
         // endpoints, which is what a feature switch should do.
-        if (app(TwoFactorAuthentication::class)->enabled($result->user)) {
+        if ($this->twoFactor->enabled($result->user)) {
             $challenge = bin2hex(random_bytes(32));
-            cache()->put(
+            $this->cache->put(
                 'authkit:two-factor:challenge:' . hash('sha256', $challenge),
                 ['user_id' => $result->user->getAuthIdentifier(), 'guard' => $this->guard()],
-                now()->addMinutes((int) config('laranail.authkit.two_factor.challenge_expiration_minutes', 5)),
+                now()->addMinutes((int) $this->config->get('laranail.authkit.two_factor.challenge_expiration_minutes', 5)),
             );
 
             return $this->jsonResponse(status: 'mfa_required', data: [
                 'challenge_token' => $challenge,
-                'expires_in'      => (int) config('laranail.authkit.two_factor.challenge_expiration_minutes', 5) * 60,
+                'expires_in'      => (int) $this->config->get('laranail.authkit.two_factor.challenge_expiration_minutes', 5) * 60,
             ], code: 202)->header('Cache-Control', 'no-store');
         }
 
