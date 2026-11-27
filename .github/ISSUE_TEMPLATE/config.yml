@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/laranail/authkit/security/policy
+    about: Report vulnerabilities privately. See SECURITY.md for reporting options.
+  - name: Documentation
+    url: https://github.com/laranail/authkit/blob/main/README.md#documentation
+    about: Check the installation, configuration and troubleshooting guides first.

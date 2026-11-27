@@ -15,7 +15,7 @@ The routes are registered when `laranail.authkit.api.enabled` is true; their def
 | Method and path                                  | Feature            | Protection                             | Result                                                                                 |
 |--------------------------------------------------|--------------------|----------------------------------------|----------------------------------------------------------------------------------------|
 | `POST /api/auth/register`                        | Registration       | Guest; `throttle:10,1`                 | `201` with `status`, `data.token`, and `data.user`.                                    |
-| `POST /api/auth/login`                           | Login              | Guest; `throttle:10,1`                 | `200` with token and user; invalid credentials return `422`, throttling returns `429`. |
+| `POST /api/auth/login`                           | Login              | Guest; `throttle:10,1`                 | `200` with token and user; enrolled TOTP accounts receive `202` with a challenge, invalid credentials return `422`, throttling returns `429`. |
 | `POST /api/auth/logout`                          | Logout             | configured token guards               | Revokes the current token.                                                             |
 | `POST /api/auth/email/verification-notification` | Email verification | configured token guards, `throttle:6,1` | Sends a verification notification.                                                   |
 | `GET /api/auth/email/verify/{id}/{hash}`         | Email verification | configured token guards, signed, `throttle:6,1` | Completes verification.                                                       |
@@ -23,6 +23,23 @@ The routes are registered when `laranail.authkit.api.enabled` is true; their def
 | `POST /api/auth/reset-password`                  | Password reset     | Guest; `throttle:10,1`                 | Validates the token and resets the password.                                           |
 | `PUT /api/auth/user/password`                    | Password updates   | configured token guards               | Uses AuthKit's password-update action.                                                |
 | `PUT /api/auth/user/profile-information`         | Profile management | configured token guards               | Uses AuthKit's profile-update action.                                                 |
+
+### Two-factor endpoints
+
+When `laranail.authkit.two_factor.enabled` is true, these endpoints are also registered:
+
+| Method and path | Purpose |
+| --- | --- |
+| `POST /api/auth/two-factor/challenge` | Exchange a login challenge token plus TOTP/recovery code for a full token. |
+| `GET /api/auth/user/two-factor` | Inspect enrollment status using a bearer token. |
+| `POST /api/auth/user/two-factor` | Begin enrollment after checking the current password. |
+| `POST /api/auth/user/two-factor/confirm` | Confirm enrollment and return recovery codes once. |
+| `POST /api/auth/user/two-factor/disable` | Disable enrollment with factor proof. |
+| `POST /api/auth/user/two-factor/recovery-codes` | Replace recovery codes with factor proof. |
+
+The challenge endpoint is throttled to five requests per minute; authenticated management endpoints
+to ten. Enrollment controls route availability; a confirmed enrolled user's login still requires a
+factor even if the route flag was subsequently disabled. See [Two-factor authentication](two-factor-authentication.md).
 
 Register, login and logout are always present when the API is enabled; the rest follow the Fortify-style feature list in `laranail.authkit.fortify.features`, so removing `reset-passwords` removes the two password endpoints. `POST /register` and `POST /login` have both the API group's `throttle:60,1` and their endpoint `throttle:10,1` middleware. Authentication failures from the login action return `422`; rate-limit responses return `429`.
 

@@ -1,23 +1,13 @@
 # laranail/authkit
 
-[![Tests](https://img.shields.io/github/actions/workflow/status/laranail/authkit/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/laranail/authkit/actions/workflows/tests.yml)
-[![Static analysis](https://img.shields.io/github/actions/workflow/status/laranail/authkit/static.yml?branch=main&label=static%20analysis&style=flat-square)](https://github.com/laranail/authkit/actions/workflows/static.yml)
-[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Tests](https://github.com/laranail/authkit/actions/workflows/tests.yml/badge.svg)](https://github.com/laranail/authkit/actions/workflows/tests.yml)
+[![Code style](https://github.com/laranail/authkit/actions/workflows/code-style.yml/badge.svg)](https://github.com/laranail/authkit/actions/workflows/code-style.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-`laranail/authkit` is not published to Packagist, so there is no registry-version badge to show: see [Install](#install).
+> Headless Laravel authentication: actions, contracts, result objects and a token-based REST API.
 
-Headless authentication for Laravel 13+. Ships the REST API; no views and no web routes.
-
-> [!WARNING]
-> This package is still in development. Breaking changes are imminent; use it in production at your own risk.
-
-- **Fortify-backed** — password reset, profile updates, password updates, email verification, passkeys, login throttling
-- **Extensible API tokens** — Sanctum is the default `IssueTokenForUser` backend; optional packages can register additional token issuers
-- **Composable** — separate actions for credential check vs session login
-
-## Requirements
-
-PHP 8.4+ / Laravel 13.x
+Requires PHP `^8.4.1 || ^8.5` and Laravel `^13.0`. This package is pre-1.0; review
+[feature scope](docs/feature-scope.md) before choosing the flows to enable.
 
 ## Install
 
@@ -27,12 +17,10 @@ the whole transitive closure:
 
 ```json
 "repositories": [
-    { "type": "vcs", "url": "https://github.com/laranail/authkit.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/console.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/enumerator.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/package-tools.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/captcha.git" },
-    { "type": "vcs", "url": "https://github.com/laranail/db-tools.git" }
+    {"type": "vcs", "url": "https://github.com/laranail/authkit.git"},
+    {"type": "vcs", "url": "https://github.com/laranail/package-tools.git"},
+    {"type": "composer", "url": "https://repo.packagist.org", "exclude": ["laranail/*"]},
+    {"packagist.org": false}
 ]
 ```
 
@@ -49,21 +37,21 @@ See [installation](docs/installation.md) for the full walkthrough.
 
 ### Getting started
 
-1. The guard defaults to `web`. To use another one, set it in `.env`:
+Use a model with Sanctum's `HasApiTokens` trait, publish its token migration if needed, and migrate:
 
-   ```env
-   AUTHKIT_GUARD=web
-   ```
+```bash
+php artisan vendor:publish --tag=sanctum-migrations
+php artisan migrate
+php artisan route:list --path=api/auth
+```
 
-2. Publish and run only the migrations for the features you enable:
-
-   ```bash
-   php artisan vendor:publish --tag=laranail::authkit-passkey-migrations
-   php artisan vendor:publish --tag=laranail::authkit-two-factor-migrations
-   php artisan migrate
-   ```
+See [Installation](docs/installation.md) for model setup and optional passkey/TOTP migrations.
+The API defaults to `/api/auth`; the package does not ship a browser frontend.
 
 ### Usage
+
+The core exposes low-level actions for custom pipelines. The shipped login controllers also
+coordinate enrolled TOTP challenges; preserve those checks when composing your own flow.
 
 ```php
 use Illuminate\Http\Request;
@@ -96,7 +84,7 @@ The full walkthrough is in [Getting started](docs/getting-started.md); everythin
 
 ## <a name="documentation"></a>Documentation
 
-Full documentation: <https://opensource.simtabi.com/documentation/laranail/authkit/>
+The documentation lives in this repository under [`docs/`](docs/).
 
 ### Guides
 
@@ -115,207 +103,27 @@ Full documentation: <https://opensource.simtabi.com/documentation/laranail/authk
 - [Browser sessions](docs/browser-sessions.md) · [API routes](docs/api-routes.md) · [API tokens](docs/api-tokens.md)
 - [Two-factor authentication](docs/two-factor-authentication.md)
 - [Identity linking](docs/identity-linking.md)
-- [Social login](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md) · [Passkeys](docs/passkeys.md) · [API tokens](docs/api-tokens.md)
+- [Social login](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md) · [Passkeys](docs/passkeys.md)
 
 ### Project
 
 - [Testing](docs/testing.md) — how the suite is arranged and what it does not cover
 - [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md)
 
-## Configuration
+### Operations
 
-`.env`:
+- [Environment variables](docs/environment.md) — supported names and cached configuration
+- [Localization](docs/localization.md) — language files, overrides and fallback
+- [Troubleshooting](docs/troubleshooting.md) — setup checks and common failures
+- [Feature scope](docs/feature-scope.md) — supported flows, limitations and deferred work
+- [Actions and extension points](docs/actions.md) — contracts, results and controller hooks
 
-```env
-AUTHKIT_GUARD=web
-AUTHKIT_RATE_LIMIT_MAX_ATTEMPTS=5
-AUTHKIT_RATE_LIMIT_DECAY_MINUTES=1
-```
+## Contributing & security
 
-`config/laranail/authkit.php`:
-
-```php
-return [
-    'guard' => env('AUTHKIT_GUARD', 'web'),
-
-    'rate_limit' => [
-        'max_attempts'  => (int) env('AUTHKIT_RATE_LIMIT_MAX_ATTEMPTS', 5),
-        'decay_minutes' => (int) env('AUTHKIT_RATE_LIMIT_DECAY_MINUTES', 1),
-    ],
-
-    'fortify' => [
-        'views'    => false,
-        'features' => ['reset-passwords', 'update-profile-information', 'update-passwords', 'email-verification', 'passkeys'],
-    ],
-];
-```
-
-Remove `passkeys` from `laranail.authkit.fortify.features` to disable Fortify's passkey routes. Auth Kit only enables and configures Fortify; passkey ceremonies, responses, and persistence remain provided by Fortify and `laravel/passkeys`.
-
-### Security defaults
-
-- TOTP two-factor authentication is opt-in. See the [TOTP setup and API flow](docs/two-factor-authentication.md).
-- Before production, configure HTTPS, secure session cookies, a working mail transport, and Turnstile keys when bot protection is enabled.
-
-## Passkeys
-
-Passkey support uses Fortify's native integration with `laravel/passkeys`. It is stateful and requires the consuming application's authenticatable model to implement Fortify's `PasskeyUser` contract and use Auth Kit's morph-aware `PasskeyAuthenticatable` trait:
-
-```php
-use Laravel\Fortify\Contracts\PasskeyUser;
-use Simtabi\Laranail\AuthKit\PasskeyAuthenticatable;
-
-class User extends Authenticatable implements PasskeyUser
-{
-    use PasskeyAuthenticatable;
-}
-```
-
-The published migration stores ownership in `passkeyable_type` and `passkeyable_id`, so the same passkey implementation can be used by users, admins, or another authenticatable model. Auth Kit configures its morph-aware `Passkey` model for Fortify and retains the vendor package's WebAuthn actions, controllers, responses, and credential validation.
-
-Publish Auth Kit's passkeys migration in the consuming application and run it:
-
-```bash
-php artisan vendor:publish --tag=laranail::authkit-passkey-migrations
-php artisan migrate
-```
-
-Do not publish Fortify's migration tag for passkeys; Auth Kit owns this table migration while Fortify and `laravel/passkeys` provide the model and WebAuthn behavior.
-
-Configure the relying party and allowed browser origins in `config/fortify.php`. The defaults use the host and URL from `APP_URL`; set them explicitly for production HTTPS domains when necessary:
-
-```php
-'passkeys' => [
-    'relying_party_id' => parse_url(config('app.url'), PHP_URL_HOST),
-    'allowed_origins'   => [config('app.url')],
-    'user_handle_secret' => env('PASSKEYS_USER_HANDLE_SECRET', config('app.key')),
-    'timeout' => 60000,
-],
-```
-
-Fortify's passkey management routes honor the `fortify-options.confirmPassword` setting and the `passkeys` rate limiter in `fortify.limiters`. Passkey login and confirmation require the configured stateful guard and session, so Auth Kit does not expose equivalent Sanctum API endpoints.
-
-The browser ceremony is application-owned. Install the official client and connect it to Fortify's canonical route names; Auth Kit does not bundle JavaScript or a build pipeline:
-
-```bash
-npm install @laravel/passkeys
-```
-
-The application client should use Fortify's `/passkeys/login/options`, `/passkeys/login`, `/passkeys/confirm/options`, `/passkeys/confirm`, `/user/passkeys/options`, `/user/passkeys`, and `/user/passkeys/{passkey}` endpoints. Keep the browser origin, relying-party ID, and `APP_URL` aligned or WebAuthn validation will fail.
-
-## Actions
-
-| Action                         | Purpose                                                               |
-|--------------------------------|-----------------------------------------------------------------------|
-| `AttemptEmailPasswordLogin`    | Verify email + password against a guard, returns `AuthResult`         |
-| `LoginUser`                    | Log user into session + regenerate session                            |
-| `LogoutUser`                   | Log out + invalidate session                                          |
-| `CreateNewUser`                | Validate and create user (Fortify `CreatesNewUsers`)                  |
-| `ResetUserPassword`            | Validate and reset password (Fortify `ResetsUserPasswords`)           |
-| `UpdateUserProfileInformation` | Validate and update profile (Fortify `UpdatesUserProfileInformation`) |
-| `UpdateUserPassword`           | Validate and update password (Fortify `UpdatesUserPasswords`)         |
-| `IssueTokenForUser`            | Issue a token using the configured backend, returns `TokenResult`      |
-| `CheckEmailExists`             | Check if email is registered                                          |
-| `FindUserByEmail`              | Retrieve user by email                                                |
-
-## Result types
-
-**`AuthResult`** — returned by login actions:
-
-```php
-AuthResult::passed($user)   // credentials valid
-AuthResult::failed()        // credentials invalid
-AuthResult::throttled($seconds)  // rate limited
-```
-
-Check with `$result->isPassed()` or match on `$result->status` (`AuthStatus::Passed|Failed|Throttled`).
-
-**`TokenResult`** — returned by `IssueTokenForUser`:
-
-```php
-new TokenResult(user: $user, token: $token)
-```
-
-## Abstract controllers
-
-Extend these to wire up your own routes. JSON responses are handled automatically.
-
-| Controller                                    | Overridable methods                   |
-|-----------------------------------------------|---------------------------------------|
-| `AbstractAttemptEmailPasswordLoginController` | `passed()`, `failed()`, `throttled()` |
-| `AbstractCheckEmailExistsController`          | `respond()`                           |
-| `AbstractLogoutController`                    | `loggedOut()`                         |
-| `AbstractRegisterController`                  | `registered()`                        |
-## Social login
-
-Social login is maintained in [`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login),
-which extends this package. See its [social login guide](https://github.com/laranail/authkit-social-login/blob/main/docs/social-login.md)
-for installation, providers, routes, persistence, and account-linking behavior.
-
-## <a name="usage-reference"></a>Usage
-
-### Session login (web)
-
-```php
-$result = app(AttemptEmailPasswordLogin::class)->execute(
-    request: $request,
-    guard: 'web',
-);
-
-if (! $result->isPassed()) {
-    return back()->withErrors(['email' => 'Invalid credentials']);
-}
-
-app(LoginUser::class)->execute($result->user, guard: 'web');
-return redirect()->intended('/dashboard');
-```
-
-### API token
-
-```php
-$tokenResult = app(IssueTokenForUser::class)->execute(
-    user: $user,
-    name: 'api-token',
-);
-
-return response()->json([
-    'token' => $tokenResult->token,
-    'user'  => $tokenResult->user,
-]);
-```
-
-## Sister packages
-
-| Package | Role |
-|---|---|
-| [`laranail/authkit`](https://github.com/laranail/authkit) | Headless core — actions, contracts, result objects, REST API |
-| [`laranail/authkit-preset`](https://github.com/laranail/authkit-preset) | Blade scaffolding on top of the core |
-| [`laranail/authkit-social-login`](https://github.com/laranail/authkit-social-login) | Social login through Socialite |
-| `laranail/authkit-sso` | SAML 2.0 and OIDC single sign-on |
-| `laranail/authkit-oauth` | OAuth server, apps and scopes |
-| `laranail/authkit-tenancy` | Multi-tenancy |
-| `laranail/authkit-ldap` | LDAP and Active Directory |
-
-The family shares one root namespace, `Simtabi\Laranail\AuthKit\`, with each sibling a segment
-under it.
-
-## Contributing and security
-
-See [CONTRIBUTING.md](CONTRIBUTING.md). Report security issues privately — [SECURITY.md](SECURITY.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities privately through the
+[security policy](SECURITY.md). Participation follows the
+[Laranail Code of Conduct](https://github.com/laranail/.github/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
-MIT
-
-## Localization
-
-English package messages ship in `lang/en/messages.php` under `laranail/authkit::messages`.
-Laravel uses the current application locale and its configured fallback locale.
-Publish the language files to customize messages or add locales:
-
-```sh
-php artisan vendor:publish --tag=laranail::authkit-translations
-```
-
-Edit `lang/vendor/laranail/authkit/en/messages.php`, or add another locale directory there.
-You can override individual keys; the remaining messages keep their package defaults.
+MIT © Simtabi LLC. See [LICENSE](LICENSE).

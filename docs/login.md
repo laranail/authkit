@@ -3,6 +3,9 @@
 Use `AttemptEmailPasswordLogin` to validate credentials and obtain an `AuthResult`:
 
 ```php
+use Simtabi\Laranail\AuthKit\Actions\AttemptEmailPasswordLogin;
+use Simtabi\Laranail\AuthKit\Actions\LoginUser;
+
 $result = app(AttemptEmailPasswordLogin::class)->execute(
     request: $request,
     guard: 'web',
@@ -16,6 +19,10 @@ app(LoginUser::class)->execute($result->user, 'web');
 ```
 
 `AuthResult` distinguishes passed, failed, and throttled attempts. The limiter key combines the guard, lowercased submitted email, and client IP; failed attempts increment it and a successful attempt clears it. Handle throttling separately so users receive an appropriate retry message.
+
+These are low-level actions. The shipped API/preset login controllers additionally enforce enrolled
+TOTP challenges; preserve those checks in a custom pipeline. A direct `LoginUser` call does not
+perform the factor challenge.
 
 `LoginUser` creates the session and regenerates it. `LogoutUser` logs the user out, invalidates the session, and regenerates the CSRF token. For controller-based integration, extend `AbstractAttemptEmailPasswordLoginController` and customize `passed()`, `failed()`, or `throttled()`; extend `AbstractLogoutController` and customize `loggedOut()`.
 

@@ -7,11 +7,11 @@ How the core is layered, what it delegates to Fortify, and the seams the sibling
 ```
 laranail/authkit           Simtabi\Laranail\AuthKit\           this package — headless core
 laranail/authkit-preset    Simtabi\Laranail\AuthKit\Preset\    Blade scaffolding
-laranail/authkit-sso       Simtabi\Laranail\AuthKit\Sso\       SAML and OIDC
+laranail/authkit-sso       Simtabi\Laranail\AuthKit\Sso\       experimental scaffold (SAML/OIDC planned)
 laranail/authkit-oauth     Simtabi\Laranail\AuthKit\OAuth\     OAuth server, apps and scopes
 laranail/authkit-social-login Simtabi\Laranail\AuthKit\Social\ social login (Socialite)
-laranail/authkit-tenancy   Simtabi\Laranail\AuthKit\Tenancy\   multi-tenancy
-laranail/authkit-ldap      Simtabi\Laranail\AuthKit\Ldap\      LDAP and Active Directory
+laranail/authkit-tenancy   Simtabi\Laranail\AuthKit\Tenancy\   experimental scaffold (tenancy planned)
+laranail/authkit-ldap      Simtabi\Laranail\AuthKit\Ldap\      experimental scaffold (LDAP planned)
 ```
 
 The family shares one root namespace and each sibling is a segment under it. Two packages mapping
@@ -41,7 +41,7 @@ Password reset, email verification, profile and password updates, and passkey ce
 Fortify's. This package supplies the actions Fortify calls — `CreateNewUser`, `ResetUserPassword`,
 `UpdateUserPassword`, `UpdateUserProfileInformation` — and configures which features are on.
 
-That is a deliberate trade: first-party, audited code for the flows where hand-rolling is most
+That is a deliberate trade: first-party implementations for the flows where hand-rolling is most
 dangerous, and this package's own actions where the shape matters more than the cryptography.
 
 ## Extension seams
@@ -51,11 +51,10 @@ The sibling packages exist only if these are real. Each is a container-bound con
 | Seam | Purpose | Consumers |
 |---|---|---|
 | `SocialIdentityProviderInterface` | Describes a social identity provider to the social-login package and provider registry | social-login |
-| `IdentityProviderRegistryInterface` | A registry a sibling pushes a provider into, replacing a closed enum as the universe of providers | social-login, oauth, sso |
+| `IdentityProviderRegistryInterface` | Registry for contributed identity providers | social-login |
+| `IdentityLinkingInterface` | Credential-confirmed, single-use identity-link attempts | social-login |
+| `TokenIssuerRegistryInterface` | Registers issuers and coordinates token revocation | social-login, oauth |
 | `IssueTokenForUserInterface` | Token issuance, with ability scoping and expiry | all |
-| `TenantResolverInterface` | Resolves the active tenant; identity tables carry a nullable tenant key | tenancy |
-| `DirectoryResolverInterface` | Resolves and syncs a directory entry to a local user | ldap |
-| `GuardProfileInterface` | A named guard profile — domain or prefix, redirects, features, user model | all |
 
 **Sequencing rule.** Every one of these changes a published contract, so they land here before the
 first sibling is written. A sub-package that has to edit the core to do its job is not extending
