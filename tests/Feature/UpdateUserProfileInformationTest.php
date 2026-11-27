@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use Workbench\App\Models\User;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Validation\ValidationException;
+use Simtabi\Laranail\AuthKit\Services\EmailChange;
 use Simtabi\Laranail\Package\Tools\Testing\TestCredentials;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 use Simtabi\Laranail\AuthKit\Actions\UpdateUserProfileInformation;
@@ -59,7 +61,8 @@ it('binds the Fortify profile updater to Auth Kit', function (): void {
     expect(app(UpdatesUserProfileInformation::class))->toBeInstanceOf(UpdateUserProfileInformation::class);
 });
 
-it('updates the user profile information', function (): void {
+it('updates the name while waiting for email verification', function (): void {
+    Notification::fake();
     $user = User::factory()->create([
         'name'  => 'Ada Lovelace',
         'email' => 'ada@example.com',
@@ -72,8 +75,9 @@ it('updates the user profile information', function (): void {
 
     expect($user->fresh()->only(['name', 'email']))->toBe([
         'name'  => 'Grace Hopper',
-        'email' => 'grace@example.com',
+        'email' => 'ada@example.com',
     ]);
+    expect(app(EmailChange::class)->pending($user)['email'])->toBe('grace@example.com');
 });
 
 it('rejects invalid profile information', function (): void {
@@ -103,20 +107,22 @@ it('rejects an email address already used by another user', function (): void {
     );
 });
 
-it('resets email verification when a verified user changes their email', function (): void {
+it('preserves existing verification until the new address is verified', function (): void {
+    Notification::fake();
     $user = new ProfileVerifiableUser([
         'name'              => 'Ada Lovelace',
         'email'             => 'ada@example.com',
         'password'          => TestCredentials::password('profile'),
         'email_verified_at' => now(),
     ]);
-    $user->save();
+    $user->forceFill(['email_verified_at' => now()])->save();
 
     app(UpdateUserProfileInformation::class)->update($user, [
         'name'  => 'Ada Lovelace',
         'email' => 'ada@lovelace.example',
     ]);
 
-    expect($user->fresh()->email_verified_at)->toBeNull()
-        ->and($user->verificationNotificationSent)->toBeTrue();
+    expect($user->fresh()->email_verified_at)->not->toBeNull()
+        ->and($user->fresh()->email)->toBe('ada@example.com')
+        ->and(app(EmailChange::class)->pending($user)['email'])->toBe('ada@lovelace.example');
 });

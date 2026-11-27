@@ -24,6 +24,12 @@ The routes are registered when `laranail.authkit.api.enabled` is true; their def
 | `PUT /api/auth/user/password`                    | Password updates   | configured token guards               | Uses AuthKit's password-update action.                                                |
 | `PUT /api/auth/user/profile-information`         | Profile management | configured token guards               | Uses AuthKit's profile-update action.                                                 |
 
+### Verified email change
+
+The profile feature also exposes pending email request, status, verification and cancellation
+endpoints. The active address stays unchanged until the new address is verified. See
+[profile management](profile-management.md) for paths, payloads and frontend mail-link integration.
+
 ### Two-factor endpoints
 
 When `laranail.authkit.two_factor.enabled` is true, these endpoints are also registered:

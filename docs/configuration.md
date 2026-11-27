@@ -17,6 +17,8 @@ Laravel's `mergeConfigFrom` merge is shallow.
 | `user_model` | `null` | Optional explicit authenticatable model; otherwise resolved from the configured auth provider. |
 | `login.field` | `email` | Input field containing the login identifier. |
 | `login.identifiers` | `['email']` | User columns checked in order; add application-owned `username` when needed. |
+| `email_change.expires_after_minutes` | `60` | Pending email-change proof lifetime in minutes. |
+| `email_change.verification_url` | `null` | Optional frontend URL containing `{token}`; defaults to the authenticated API verification URL. See [profile management](profile-management.md). |
 | `identity_linking.intent_ttl_minutes` | `10` | Lifetime of a single-use link attempt. |
 | `rate_limit.max_attempts` | `5` | Credential failures allowed per throttle key. |
 | `rate_limit.decay_minutes` | `1` | Credential-throttle window. This is not account lockout. |

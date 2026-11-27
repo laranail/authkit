@@ -9,9 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Verified email changes with encrypted, expiring pending requests, single-use proofs sent to the new address, authenticated API management and lifecycle audit events.
+
 - Immutable lifecycle events for registration, credential rejection, sessions, password/profile updates, token operations and two-factor management, with documented audit payloads and listeners.
 
 ### Changed
+
+- Profile updates retain the active email and verification state until the new address is verified; reject duplicate addresses again at confirmation.
 
 - Run shared facade/config-key guards and two-request state isolation checks alongside real driver-contract and published-config tests.
 - Inject authentication service dependencies; retain documented line-level exceptions for public static compatibility APIs and framework-owned construction.

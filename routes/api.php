@@ -88,8 +88,15 @@ Route::prefix(AuthKit::apiPrefix())
         }
 
         if (AuthKit::hasFeature('update-profile-information')) {
+            Route::middleware([AuthKit::apiTokenMiddleware(), 'throttle:6,1,authkit-email-change:'])->group(function (): void {
+                Route::get('/user/email-change', [Api\EmailChangeController::class, 'show'])->name('user-email-change.show');
+                Route::post('/user/email-change', [Api\EmailChangeController::class, 'store'])->name('user-email-change.store');
+                Route::match(['get', 'post'], '/user/email-change/verify', [Api\EmailChangeController::class, 'verify'])->name('user-email-change.verify');
+                Route::delete('/user/email-change', [Api\EmailChangeController::class, 'destroy'])->name('user-email-change.destroy');
+            });
+
             Route::put('/user/profile-information', [Api\UpdateProfileInformationController::class, 'update'])
-                ->middleware(AuthKit::apiTokenMiddleware())
+                ->middleware([AuthKit::apiTokenMiddleware(), 'throttle:6,1,authkit-email-change:'])
                 ->name('user-profile-information.update');
         }
     });
