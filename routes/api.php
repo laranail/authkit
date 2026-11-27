@@ -87,6 +87,12 @@ Route::prefix(AuthKit::apiPrefix())
                 ->name('user-password.update');
         }
 
+        if (AuthKit::hasFeature('delete-account')) {
+            Route::delete('/user', Api\DeleteAccountController::class)
+                ->middleware([AuthKit::apiTokenMiddleware(), 'throttle:6,1,authkit-account-deletion:'])
+                ->name('user.destroy');
+        }
+
         if (AuthKit::hasFeature('update-profile-information')) {
             Route::middleware([AuthKit::apiTokenMiddleware(), 'throttle:6,1,authkit-email-change:'])->group(function (): void {
                 Route::get('/user/email-change', [Api\EmailChangeController::class, 'show'])->name('user-email-change.show');

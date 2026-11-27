@@ -22,6 +22,7 @@ The routes are registered when `laranail.authkit.api.enabled` is true; their def
 | `POST /api/auth/forgot-password`                 | Password reset     | Guest; `throttle:10,1`                 | Sends a reset link through Laravel's password broker.                                  |
 | `POST /api/auth/reset-password`                  | Password reset     | Guest; `throttle:10,1`                 | Validates the token and resets the password.                                           |
 | `PUT /api/auth/user/password`                    | Password updates   | configured token guards               | Uses AuthKit's password-update action.                                                |
+| `DELETE /api/auth/user` | Account deletion | configured token guards, current password, `throttle:6,1` | `204`; deletes the authenticated account and cleans up authentication data. See [account deletion](account-deletion.md). |
 | `PUT /api/auth/user/profile-information`         | Profile management | configured token guards               | Uses AuthKit's profile-update action.                                                 |
 
 ### Verified email change

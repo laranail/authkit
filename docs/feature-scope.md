@@ -12,7 +12,7 @@ providers and OAuth server integration are separate packages.
 | TOTP and recovery codes | Opt-in enrollment and challenge flows; 21-character alphanumeric recovery codes are single-use. |
 | Passkeys | Browser/session ceremonies; no token API for passkey registration or authentication. |
 | Account lockout | Request/credential throttling only; no persistent account lockout. |
-| Account deletion | No self-service deletion endpoint. |
+| Account deletion | Authenticated, password-confirmed API deletion and core authentication cleanup, with hooks for application/optional-package data; see [account deletion](account-deletion.md). |
 | Magic links | Deferred from 1.0. |
 | Audit extension | Public lifecycle events, container contracts and Laravel/Fortify events; see [Events](events.md). |
 
